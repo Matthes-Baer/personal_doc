@@ -166,3 +166,15 @@ Registers are the fastest type of memory available in a computer architecture. B
 ## Elimination of Bounds Checks
 
 Normally, accessing an array would require bounds checks at runtime to prevent out-of-bounds errors, which can be a source of significant overhead, especially in loops. Rust is capable of ensuring memory safety at compile time through its ownership and types system, along with its borrowing rules. In cases where the compiler can definitively determine that all accesses are within valid bounds, it can safely eliminate these runtime checks.
+
+## Box<T>
+
+Source: https://doc.rust-lang.org/book/ch15-01-box.html
+
+Boxes don’t have performance overhead, other than storing their data on the heap instead of on the stack. But they don’t have many extra capabilities either. You’ll use them most often in these situations:
+
+- When you have a type whose size can’t be known at compile time and you want to use a value of that type in a context that requires an exact size.
+- When you have a large amount of data and you want to transfer ownership but ensure the data won’t be copied when you do so.
+- When you want to own a value and you care only that it’s a type that implements a particular trait rather than being of a specific type.
+
+Boxes provide only the indirection and heap allocation; they don’t have any other special capabilities, like other smart pointer types. They also don’t have the performance overhead that these special capabilities incur, so they can be useful in cases like the cons list where the indirection is the only feature we need.
