@@ -167,6 +167,14 @@ Registers are the fastest type of memory available in a computer architecture. B
 
 Normally, accessing an array would require bounds checks at runtime to prevent out-of-bounds errors, which can be a source of significant overhead, especially in loops. Rust is capable of ensuring memory safety at compile time through its ownership and types system, along with its borrowing rules. In cases where the compiler can definitively determine that all accesses are within valid bounds, it can safely eliminate these runtime checks.
 
+## General Explanation of Smart Pointers
+
+Source and more information: https://doc.rust-lang.org/book/ch15-00-smart-pointers.html
+
+A pointer is a general concept for a variable that contains an address in memory. This address refers to, or “points at,” some other data. The most common kind of pointer in Rust is a reference, which you learned about in Chapter 4. References are indicated by the & symbol and borrow the value they point to. They don’t have any special capabilities other than referring to data, and have no overhead.
+
+Smart pointers, on the other hand, are data structures that act like a pointer but also have additional metadata and capabilities.
+
 ## Box<T>
 
 Source: https://doc.rust-lang.org/book/ch15-01-box.html
