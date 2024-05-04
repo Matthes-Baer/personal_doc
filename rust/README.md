@@ -178,3 +178,31 @@ Boxes don’t have performance overhead, other than storing their data on the he
 - When you want to own a value and you care only that it’s a type that implements a particular trait rather than being of a specific type.
 
 Boxes provide only the indirection and heap allocation; they don’t have any other special capabilities, like other smart pointer types. They also don’t have the performance overhead that these special capabilities incur, so they can be useful in cases like the cons list where the indirection is the only feature we need.
+
+## Drop Trait
+
+Source: https://doc.rust-lang.org/book/ch15-03-drop.html
+
+Implementing the Drop trait on a struct to configure the custom cleanup code after the instance went out of scope:
+
+```rs
+struct CustomSmartPointer {
+    data: String,
+}
+
+impl Drop for CustomSmartPointer {
+    fn drop(&mut self) {
+        println!("Dropping CustomSmartPointer with data `{}`!", self.data);
+    }
+}
+
+fn main() {
+    let c = CustomSmartPointer {
+        data: String::from("my stuff"),
+    };
+    let d = CustomSmartPointer {
+        data: String::from("other stuff"),
+    };
+    println!("CustomSmartPointers created.");
+}
+```
