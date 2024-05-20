@@ -9,6 +9,11 @@ This section covers information about the programming language Rust.
 - get sum from all Vector elements: `let sum: i32 = (1..=n).collect().iter().sum();`
 - get product from all Vector elements: `let product: i32 = (1..=n).collect().iter().product();`
 
+## Short Overviews
+
+- The **Arc** type is used to share ownership of the data across multiple threads.
+- The **Mutex** type is used to ensure that only one thread can mutate the data at a time.
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
