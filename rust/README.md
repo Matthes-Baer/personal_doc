@@ -13,6 +13,10 @@ This section covers information about the programming language Rust.
 
 - The **Arc** type is used to share ownership of the data across multiple threads.
 - The **Mutex** type is used to ensure that only one thread can mutate the data at a time.
+- The **mod** keyword declares a module. Used to tell Rust to look for the corresponding file or directory (like `mod routes` or `mod services` in the `main.rs` file).
+- The **use** keyword brings items into scope, allowing you to use them without fully qualifying their paths.
+- Use **pub** to make functions, structs, or modules public. Without pub, items are private to the module.
+- Use **pub use** to re-export items, making them accessible through the parent module.
 
 ## Project Structuring
 
