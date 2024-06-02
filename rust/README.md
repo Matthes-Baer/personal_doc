@@ -201,6 +201,21 @@ A pointer is a general concept for a variable that contains an address in memory
 
 Smart pointers, on the other hand, are data structures that act like a pointer but also have additional metadata and capabilities.
 
+## Smart Pointers in General
+
+A smart pointer is a data structure that not only acts like a pointer but also has additional metadata and capabilities. Smart pointers manage the lifecycle of the object they point to through automated reference counting, ownership rules, and other mechanisms. Rust's standard library provides several types of smart pointers, including `Box`, `Rc`, and `Arc`.
+
+- `Box<T>`: Used for heap allocation. It provides ownership for the data it points to and deallocates the data when the Box goes out of scope.#
+- `Rc<T>`: A reference-counted smart pointer for single-threaded scenarios where multiple ownership is required. `Rc` stands for Reference Counted.
+- `Arc<T>`: An atomically reference-counted smart pointer suitable for multi-threaded scenarios where multiple ownership is required. `Arc` stands for Atomic Reference Counted.
+
+**Dynamic Dispatch with dyn Error**
+The `dyn Error` syntax in Rust is used to create trait objects. A trait object is a way of achieving dynamic dispatch in Rust, allowing you to call methods on types that implement a particular trait without knowing the exact type at compile time.
+
+- `dyn Error` is a trait object that allows you to handle different error types uniformly. Since the exact type of error might not be known at compile time, you use `dyn Error` for dynamic dispatch.
+- Types implementing traits can have different sizes, making them "unsized" types. Rust needs to know the size of every type at compile time for stack allocation. Using `Box<dyn Error>` allocates the error on the heap, providing a fixed-size pointer on the stack.
+- Many async functions and libraries work with different types of errors. `Box<dyn Error>` provides a convenient way to return errors of any type that implements the Error trait, making it easier to write generic code.
+
 ## Box<T>
 
 Source: https://doc.rust-lang.org/book/ch15-01-box.html
@@ -212,6 +227,16 @@ Boxes don’t have performance overhead, other than storing their data on the he
 - When you want to own a value and you care only that it’s a type that implements a particular trait rather than being of a specific type.
 
 Boxes provide only the indirection and heap allocation; they don’t have any other special capabilities, like other smart pointer types. They also don’t have the performance overhead that these special capabilities incur, so they can be useful in cases like the cons list where the indirection is the only feature we need.
+
+### `Box<dyn Error>`
+
+The `Box<dyn Error>` part represents the type of value that is returned in the Err variant of the Result. Let's break this down further:
+
+- Box: A heap-allocated smart pointer provided by the Rust standard library. Box is used here to allocate the error value on the heap and provide a reference to it.
+- dyn: Stands for "dynamic". It indicates that the type is a trait object, meaning the concrete type will be determined at runtime.
+- Error: A trait from the std::error module that represents error types.
+
+So, `Box<dyn Error>` is a heap-allocated pointer to a type that implements the Error trait. This allows for dynamic dispatch of error types, enabling the function to return different types of errors that all conform to the Error trait.
 
 ## Drop Trait
 
