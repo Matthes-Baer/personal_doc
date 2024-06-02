@@ -4,10 +4,27 @@ This section covers information about the programming language Rust.
 
 ## Useful Rust Lines
 
-- convert a number to it's binary representation: `let binary_repr = format!("{:b}", n);`
-- convert a binary number to it's decimal representation: `match isize::from_str_radix(&reversed_binary, 2) { ... handle Ok() and Err() ... }`
-- get sum from all Vector elements: `let sum: i32 = (1..=n).collect().iter().sum();`
-- get product from all Vector elements: `let product: i32 = (1..=n).collect().iter().product();`
+- Convert a number to it's binary representation: `let binary_repr = format!("{:b}", n);`
+- Convert a binary number to it's decimal representation: `match isize::from_str_radix(&reversed_binary, 2) { ... handle Ok() and Err() ... }`
+- Get sum from all Vector elements: `let sum: i32 = (1..=n).collect().iter().sum();`
+- Get product from all Vector elements: `let product: i32 = (1..=n).collect().iter().product();`
+- Setup Diesel: `diesel setup`
+- Create Diesel migration: `diesel migration generate NAME`
+- Run Diesel migration: `diesel migration run`
+
+## Useful Crates
+
+- actix-web = "4.6.0"
+- anyhow = "1.0.86"
+- diesel = { version = "2.2", features = ["postgres", "r2d2"] }
+- dotenv = "0.15.0"
+- reqwest = { version = "0.12.4", features = ["json"] }
+- serde_json = "1.0.117"
+- serde = { version = "1.0", features = ["derive"] }
+- tokio = { version = "1.38.0", features = ["full"] }
+- tokio_schedule = "0.3.1"
+- env_logger = "0.11.3"
+- log = "0.4.21"
 
 ## Short Overviews
 
@@ -235,3 +252,92 @@ To accomplish message-sending concurrency, Rust's standard library provides an i
 You can imagine a channel in programming as being like a directional channel of water, such as a stream or a river. If you put something like a rubber duck into a river, it will travel downstream to the end of the waterway.
 
 A channel has two halves: a transmitter and a receiver. The transmitter half is the upstream location where you put rubber ducks into the river, and the receiver half is where the rubber duck ends up downstream. One part of your code calls methods on the transmitter with the data you want to send, and another part checks the receiving end for arriving messages. A channel is said to be closed if either the transmitter or receiver half is dropped.
+
+## Diesel
+
+To set up Diesel it is recommended to use the diesel_cli which will help generating and running migrations or also just set up the project in general (`diesel setup`):
+
+`cargo install diesel_cli --no-default-features --features postgres`
+
+Have in mind, that you need postgreSQL installed for this (even if you don't use the CLI you will need to have it installed when using PostgreSQL), since it's reliant on specific PostgreSQL files.
+
+To make this work, you will also have to set up environment variables on your system (example values below):
+
+`LIBPQ_LIB_DIR=C:\Program Files\PostgreSQL\16\lib`
+`LIBPQ_INCLUDE_DIR=C:\Program Files\PostgreSQL\16\include`
+
+Also include the `bin` and `lib` directories to PATH:
+
+- `C:\Program Files\PostgreSQL\16\bin`
+- `C:\Program Files\PostgreSQL\16\lib`
+
+If you still get errors, try setting the `PQ_LIB_STATIC` environment variable on your system:
+
+- `PQ_LIB_STATIC=1`
+
+Afterwards, you will need to adjust the migration file according to your needs (example below):
+
+```rs
+CREATE TABLE lands (
+    id SERIAL PRIMARY KEY,
+    token_id VARCHAR NOT NULL,
+    owner VARCHAR,
+    land_type VARCHAR,
+    row INT,
+    col INT,
+    current_price_usd FLOAT NOT NULL,
+    UNIQUE(token_id, current_price_usd)
+);
+```
+
+Create the models and schemas (examples below):
+
+**src/schema.rs:**
+
+```rs
+use diesel::table;
+
+table! {
+    lands (id) {
+        id -> Int4,
+        token_id -> Varchar,
+        owner -> Nullable<Varchar>,
+        land_type -> Nullable<Varchar>,
+        row -> Nullable<Int4>,
+        col -> Nullable<Int4>,
+        current_price_usd -> Float8,
+    }
+}
+```
+
+**src/models.rs:**
+
+```rs
+use crate::schema::lands;
+use diesel::{Insertable, Queryable};
+use serde::{Deserialize, Serialize};
+
+#[derive(Queryable, Deserialize, Serialize, Debug)]
+pub struct Land {
+    pub id: i32,
+    pub token_id: String,
+    pub owner: Option<String>,
+    pub land_type: Option<String>,
+    pub row: Option<i32>,
+    pub col: Option<i32>,
+    pub current_price_usd: f64,
+}
+
+#[derive(Insertable, Deserialize, Serialize, Debug)]
+#[table_name = "lands"]
+pub struct NewLand {
+    pub token_id: String,
+    pub owner: Option<String>,
+    pub land_type: Option<String>,
+    pub row: Option<i32>,
+    pub col: Option<i32>,
+    pub current_price_usd: f64,
+}
+```
+
+If you are familiar with Nest.js and Mikroorm, for example, you can imagine the schemas being the entities and the models being the DTOs in some way or another.
