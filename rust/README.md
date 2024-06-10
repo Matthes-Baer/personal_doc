@@ -12,6 +12,92 @@ This section covers information about the programming language Rust.
 - Create Diesel migration: `diesel migration generate NAME`
 - Run Diesel migration: `diesel migration run`
 
+## Useful Methods
+
+### String Methods
+
+- len() (String, &str)
+- chars() (String, &str)
+- bytes() (String, &str)
+- is_empty() (String, &str)
+- contains() (String, &str)
+- starts_with() (String, &str)
+- ends_with() (String, &str)
+- split() (String, &str)
+- trim() (String, &str)
+- to_lowercase() (String, &str)
+- to_uppercase() (String, &str)
+
+### Vector Methods
+
+- len() (Vec)
+- is_empty() (Vec)
+- push() (Vec)
+- pop() (Vec)
+- contains() (Vec)
+- iter() (Vec)
+- extend() (Vec)
+- sort() (Vec)
+- sort_by() (Vec)
+- sort_by_key() (Vec)
+- map() (Vec, Iter)
+- filter() (Vec, Iter)
+- collect() (Vec, Iter)
+- find() (Vec, Iter)
+- fold() (Vec, Iter)
+- for_each() (Vec, Iter)
+- any() (Vec, Iter)
+- all() (Vec, Iter)
+- take() (Vec, Iter)
+- skip() (Vec, Iter)
+- enumerate() (Vec, Iter)
+- zip() (Vec, Iter)
+
+### HashMap Methods
+
+- insert() (HashMap)
+- get() (HashMap)
+- contains_key() (HashMap)
+- remove() (HashMap)
+- keys() (HashMap)
+- values() (HashMap)
+- iter() (HashMap)
+- iter_mut() (HashMap)
+
+### Result and Option Methods
+
+- unwrap() (Option, Result)
+- unwrap_or() (Option, Result)
+- is_some() (Option)
+- is_ok() (Result)
+- is_err() (Result)
+- map() (Option, Result)
+- map_err() (Result)
+- and_then() (Option, Result)
+- or_else() (Option, Result)
+- ok() (Result)
+- err() (Result)
+- as_ref() (Option, Result)
+
+### Iterator Methods
+
+- next() (Iterator)
+- map() (Iterator)
+- filter() (Iterator)
+- collect() (Iterator)
+- find() (Iterator)
+- fold() (Iterator)
+- for_each() (Iterator)
+- any() (Iterator)
+- all() (Iterator)
+- take() (Iterator)
+- skip() (Iterator)
+- enumerate() (Iterator)
+- zip() (Iterator)
+- flat_map() (Iterator)
+- cloned() (Iterator)
+- cycle() (Iterator)
+
 ## Useful Crates
 
 - actix-web = "4.6.0"
