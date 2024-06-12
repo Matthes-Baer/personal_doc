@@ -121,6 +121,28 @@ This section covers information about the programming language Rust.
 - Use **pub** to make functions, structs, or modules public. Without pub, items are private to the module.
 - Use **pub use** to re-export items, making them accessible through the parent module.
 
+## Code examples
+
+### Counting Digits in String
+
+```rs
+fn nb_dig(n: i32, d: i32) -> i32 {
+    let ex = d.to_string();
+    (0..=n).map(|v| (v*v).to_string()).fold(0, |acc, v| acc + v.matches(&ex).count() as i32)
+}
+```
+
+### Odd or Even Sum
+
+```rs
+fn odd_or_even(numbers: Vec<i32>) -> String {
+    match numbers.iter().sum::<i32>() % 2 == 0 {
+        true => "even".to_string(),
+        false => "odd".to_string()
+    }
+}
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
