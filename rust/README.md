@@ -143,6 +143,20 @@ fn odd_or_even(numbers: Vec<i32>) -> String {
 }
 ```
 
+### Get First Char and Return String
+
+```rs
+fn are_you_playing_banjo(name: &str) -> String {
+    let first_char = name.chars().next().unwrap();
+
+    if first_char == 'r' || first_char == 'R' {
+        return format!("{} plays banjo", name)
+    }
+
+    format!("{} does not play banjo", name)
+}
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
