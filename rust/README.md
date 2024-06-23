@@ -92,7 +92,7 @@ This section covers information about the programming language Rust.
 - all() (Iterator)
 - take() (Iterator)
 - skip() (Iterator)
-- enumerate() (Iterator)
+- enumerate() (Iterator) - returns iterator of tuples with each tuple containing a reference to the index and a reference to the value
 - zip() (Iterator)
 - flat_map() (Iterator)
 - cloned() (Iterator)
