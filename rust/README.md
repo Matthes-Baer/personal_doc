@@ -157,6 +157,28 @@ fn are_you_playing_banjo(name: &str) -> String {
 }
 ```
 
+### Strin Transformation
+
+```rs
+fn accum(s: &str) -> String {
+    s.chars()
+        .enumerate()
+        .map(|(i, c)| {
+            let mut result = String::new();
+            result.push(c.to_ascii_uppercase());
+            result.push_str(&c.to_ascii_lowercase().to_string().repeat(i));
+            result
+        })
+        .collect::<Vec<String>>()
+        .join("-")
+}
+
+fn main() {
+    let result = accum("abcd");
+    println!("{}", result);  // Output: "A-Bb-Ccc-Dddd"
+}
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
