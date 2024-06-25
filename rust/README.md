@@ -157,7 +157,7 @@ fn are_you_playing_banjo(name: &str) -> String {
 }
 ```
 
-### Strin Transformation
+### String Transformation
 
 ```rs
 fn accum(s: &str) -> String {
@@ -176,6 +176,24 @@ fn accum(s: &str) -> String {
 fn main() {
     let result = accum("abcd");
     println!("{}", result);  // Output: "A-Bb-Ccc-Dddd"
+}
+```
+
+### IsPrime
+
+```rs
+fn isPrime(n: i32) -> bool {
+    let mut i = 2;
+
+    while i * i <= n {
+        if n % i == 0 {
+            return false;
+        }
+
+        i += 1;
+    }
+
+    return n > 1;
 }
 ```
 
