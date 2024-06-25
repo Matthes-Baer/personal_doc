@@ -197,6 +197,28 @@ fn isPrime(n: i32) -> bool {
 }
 ```
 
+### Next Char in Alphabet with Wrap-Around
+
+```rs
+fn main() {
+    let mut input_line = String::new();
+    io::stdin().read_line(&mut input_line).unwrap();
+    let letter = input_line.trim().to_string();
+
+    // This is basically charCodeAt()
+    let char_code = letter.chars().next().unwrap() as u32;
+    let mut new_char_code = char_code + 1;
+
+    // Wraps around the alphabet if the new char code would exceed the threshold of the lowercase alphabet characters
+    if new_char_code > 122 {
+        new_char_code = 97 + (new_char_code - 123) % 26;
+    }
+
+    // This is the method for String.fromCharCode()
+    println!("{}", std::char::from_u32(new_char_code).unwrap())
+}
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
