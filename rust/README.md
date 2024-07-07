@@ -219,6 +219,29 @@ fn main() {
 }
 ```
 
+### Find Temperature closest to 0
+
+```rs
+...
+    let mut numbers_iter = inputs.split_whitespace();
+
+    if numbers_iter.clone().count() == 0 {
+        println!("{}", 0);
+        return;
+    }
+
+    let mut ans: i32 = numbers_iter.next().unwrap().parse::<i32>().unwrap();
+
+    for i in inputs.split_whitespace() {
+        let t = parse_input!(i, i32);
+
+        if t.abs().cmp(&ans.abs()) == Ordering::Less || (t.abs() == ans.abs() && t > ans) {
+            ans = t;
+        }
+    }
+...
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
