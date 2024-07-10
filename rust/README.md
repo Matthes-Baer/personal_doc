@@ -242,6 +242,21 @@ fn main() {
 ...
 ```
 
+### Let Some & Unicode Transform
+
+```rs
+    if let Some(unicode_char) = char::from_u32(n as u32) {
+        if unicode_char.is_digit(10) {
+            let ans = n / unicode_char.to_digit(10).unwrap() as i32;
+            println!("{}", ans);
+        } else {
+            println!("ERROR!");
+        }
+    } else {
+        println!("Parsing Error");
+    }
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
