@@ -206,13 +206,11 @@ fn main() {
     let letter = input_line.trim().to_string();
 
     // This is basically charCodeAt()
-    let char_code = letter.chars().next().unwrap() as u32;
-    let mut new_char_code = char_code + 1;
+    let char_code = letter.chars().next().unwrap() as u32 + 1;
 
     // Wraps around the alphabet if the new char code would exceed the threshold of the lowercase alphabet characters
-    if new_char_code > 122 {
-        new_char_code = 97 + (new_char_code - 123) % 26;
-    }
+    let new_char_code = 97 + (char_code - 97) % 26;
+    let new_char = char::from_u32(new_char_code).unwrap();
 
     // This is the method for String.fromCharCode()
     println!("{}", std::char::from_u32(new_char_code).unwrap())
