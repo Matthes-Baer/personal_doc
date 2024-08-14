@@ -255,6 +255,26 @@ fn main() {
     }
 ```
 
+### Shortened CodinGame example
+
+```rs
+use std::io;
+
+macro_rules! parse_input {
+    ($t:ident) => {
+        {
+            let mut input_line = String::new();
+            io::stdin().read_line(&mut input_line).unwrap();
+            input_line.trim().parse::<$t>().unwrap()
+        }
+    };
+}
+
+fn main() {
+    println!("{}", (parse_input!(f64) / (1.0 - (parse_input!(f64).log10() - parse_input!(f64).log10()))) as i32);
+}
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
