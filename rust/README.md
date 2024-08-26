@@ -275,6 +275,16 @@ fn main() {
 }
 ```
 
+### Convert Number to Binary and Back
+
+```rs
+    let number = 42;
+    let binary_string = format!("{:b}", number);
+
+    // Convert binary back to number
+    let binary_number = u32::from_str_radix(&binary_string, 2).unwrap();
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
