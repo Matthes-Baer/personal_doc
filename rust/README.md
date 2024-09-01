@@ -285,6 +285,25 @@ fn main() {
     let binary_number = u32::from_str_radix(&binary_string, 2).unwrap();
 ```
 
+### Create HashSet with Initial Values
+
+```rs
+ let technologies: HashSet<String> = ["HTML", "CSS", "JavaScript", "Bootstrap", "Tailwind CSS", "React", "Vue.js", "Angular"]
+        .iter()
+        .cloned()
+        .map(String::from)
+        .collect();
+```
+
+### Create HashMap with Initial Values
+
+```rs
+let technologies: HashMap<&str, &str> = [
+        ("HTML", "Markup language for creating web pages"),
+        ("CSS", "Style sheet language for designing web pages"),
+    ].iter().cloned().collect();
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
