@@ -635,3 +635,28 @@ pub struct NewLand {
 ```
 
 If you are familiar with Nest.js and Mikroorm, for example, you can imagine the schemas being the entities and the models being the DTOs in some way or another.
+
+## Struct vs. HashMap
+
+_Use Cases for struct:_
+
+- When you have a fixed number of fields known at compile time (e.g., user profiles, configuration settings).
+- When you need type safety and want each field to have its own type.
+- When performance is important because struct fields are stored in contiguous memory and access is very fast.
+- When you want to model objects with specific attributes (e.g., a Point, Rectangle, User, etc.).
+
+_Use Cases for HashMap:_
+
+- When you need to store dynamic data where the keys are determined at runtime.
+- When you need to look up values based on a key (e.g., caching, storing user preferences, word frequency counts).
+- When you don't know ahead of time the exact set of keys or the data structure needs to change often.
+- When you need flexibility and are willing to sacrifice some performance for it (e.g., configurations loaded from a file, dynamic settings).
+
+| Feature              | `struct`                                              | `HashMap`                                                    |
+| -------------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| **Fields/Keys**      | Fixed, known at compile time                          | Dynamic, added at runtime                                    |
+| **Field Access**     | Fast, direct field access                             | Slower, requires key hashing and lookup                      |
+| **Type Safety**      | Enforced, each field has its own type                 | All keys and values must have same type                      |
+| **Memory Layout**    | Contiguous, efficient                                 | Non-contiguous, involves hashing                             |
+| **Flexibility**      | Rigid, fields are static                              | Flexible, keys and values can be added or removed            |
+| **Common Use Cases** | Modeling well-defined objects (e.g., `User`, `Point`) | Storing dynamic key-value data (e.g., caching, dictionaries) |
