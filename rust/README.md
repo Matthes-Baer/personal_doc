@@ -304,6 +304,32 @@ let technologies: HashMap<&str, &str> = [
     ].iter().cloned().collect();
 ```
 
+### Count Word Occurences in a String and Print Them in Their Order of Appearance
+
+```rs
+fn main() {
+    let mut input_line = String::new();
+    io::stdin().read_line(&mut input_line).unwrap();
+    let message = input_line.trim_matches('\n').to_string();
+    let mut words: HashMap<&str, i32> = HashMap::new();
+    let mut order: Vec<&str> = Vec::new();
+
+    for word in message.split_ascii_whitespace() {
+        if !words.contains_key(word) {
+            order.push(word);
+        }
+
+        *words.entry(word).or_insert(0) += 1;
+    }
+
+    for word in order {
+        if let Some(count) = words.get(word) {
+            println!("{}: {}", word, count);
+        }
+    }
+}
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
