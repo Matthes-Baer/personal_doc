@@ -330,6 +330,73 @@ fn main() {
 }
 ```
 
+### Change the First Letter of a String
+
+```rs
+let mut chars = val.chars().collect::<Vec<char>>();
+
+if let Some(first_char) = chars.get_mut(0) {
+    *first_char = first_char.to_ascii_uppercase();
+}
+
+ans.push(chars.into_iter().collect::<String>());
+```
+
+### Check for Missing Socks and Sort Them by Size, Then Color
+
+```rs
+use std::io;
+use std::collections::HashMap;
+use itertools::Itertools;
+
+macro_rules! parse_input {
+    ($x:expr, $t:ident) => ($x.trim().parse::<$t>().unwrap())
+}
+
+fn main() {
+    let mut input_line = String::new();
+    io::stdin().read_line(&mut input_line).unwrap();
+    let n = parse_input!(input_line, i32);
+    let mut socks: HashMap<String, i32> = HashMap::new();
+
+    for _ in 0..n as usize {
+        let mut input_line = String::new();
+        io::stdin().read_line(&mut input_line).unwrap();
+        let inputs = input_line.split(" ").collect::<Vec<_>>();
+        let clothes_type = inputs[0].trim().to_string();
+        let clothes_size = parse_input!(inputs[1], i32);
+        let clothes_color = inputs[2].trim().to_string();
+
+        if clothes_type == "sock" {
+            let cur = format!("{} {}", clothes_size, clothes_color);
+
+            *socks.entry(cur).or_insert(0) += 1;
+        }
+    }
+
+    let mut filtered: Vec<(&String, &i32)> = socks.iter().filter(|(_, &v)| v % 2 != 0).collect();
+    println!("{}", filtered.len());
+
+    filtered.sort_by(|a, b| {
+        let (a_size, a_color) = parse_key(a.0);
+        let (b_size, b_color) = parse_key(b.0);
+
+        a_size.cmp(&b_size).then(a_color.cmp(&b_color))
+    });
+
+    for (key, _) in filtered.iter() {
+        println!("{}", key);
+    }
+}
+
+fn parse_key(key: &str) -> (i32, &str) {
+    let parts: Vec<&str> = key.split_whitespace().collect();
+    let number = parts[0].parse::<i32>().unwrap();
+    let color = parts[1];
+    (number, color)
+}
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
