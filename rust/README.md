@@ -11,6 +11,8 @@ This section covers information about the programming language Rust.
 - Setup Diesel: `diesel setup`
 - Create Diesel migration: `diesel migration generate NAME`
 - Run Diesel migration: `diesel migration run`
+- Redirect standard console messages to another file: `cargo run > console.txt`
+- Redirect only the console error messages to another file: `cargo run 2> errors.txt`
 
 ## Useful Methods
 
