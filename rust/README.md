@@ -115,7 +115,7 @@ This section covers information about the programming language Rust.
 - env_logger = "0.11.3"
 - log = "0.4.21"
 
-## Short Overviews
+## General Information
 
 - The **Arc** type is used to share ownership of the data across multiple threads.
 - The **Mutex** type is used to ensure that only one thread can mutate the data at a time.
@@ -123,6 +123,7 @@ This section covers information about the programming language Rust.
 - The **use** keyword brings items into scope, allowing you to use them without fully qualifying their paths.
 - Use **pub** to make functions, structs, or modules public. Without pub, items are private to the module.
 - Use **pub use** to re-export items, making them accessible through the parent module.
+- By implementing a "Trait" for a type, that type gains the ability to utilize the methods defined by the trait. This enables **polymorphism**, where different types can be treated interchangeably as long as they implement the same trait.
 
 ## Code examples
 
