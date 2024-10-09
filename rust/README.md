@@ -14,6 +14,7 @@ This section covers information about the programming language Rust.
 - Redirect standard console messages to another file: `cargo run > console.txt`
 - Redirect only the console error messages to another file: `cargo run 2> errors.txt`
 - Shortcut for strings with escape sequences (instead of having to escape with \\ for each occurence, for example): `let text = r#"C:\Program Files\PostgreSQL\16\lib"#`
+- Create an array with one value for all entries and with a specific size: `let array = [0_u8; 256];`
 
 ## Useful Methods
 
