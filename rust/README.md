@@ -116,6 +116,51 @@ This section covers information about the programming language Rust.
 - env_logger = "0.11.3"
 - log = "0.4.21"
 
+## Important Attributes
+
+- #[derive(...)]: Automatically generates trait implementations for types (e.g., Debug, Clone, PartialEq).
+- #[cfg(...)]: Conditional compilation, only compiles the code if a specific condition is met (e.g., test, debug_assertions).
+- #[cfg(test)]: Marks code (e.g., test modules) to only be compiled during testing.
+- #[test]: Marks a function as a test function, which the test runner will execute.
+- #[allow(...)]: Suppresses specific compiler warnings (e.g., unused_variables, dead_code).
+- #[warn(...)]: Turns specific compiler warnings on (e.g., deprecated, unused_imports).
+- #[deny(...)]: Treats specific warnings as errors, halting compilation.
+- #[inline]: Suggests to the compiler that a function should be inlined for performance.
+- #[non_exhaustive]: Prevents users of a type (usually enums or structs) from matching on all variants or fields, allowing future changes.
+- #[must_use]: Marks a function's return value or a type as something that should not be ignored.
+- #[repr(...)]: Specifies how a struct or enum should be represented in memory (e.g., C, transparent).
+- #[panic_handler]: Defines a custom panic handler for no_std environments.
+- #[no_std]: Disables linking to the standard library, often used for embedded or bare-metal programming.
+- #[macro_export]: Marks a macro to be exported from the current crate for use in other crates.
+- #[doc(...)]: Adds documentation comments or controls the visibility of documentation (e.g., hidden to hide an item from docs).
+- #[ignore]: Marks a test function to be ignored by default during testing.
+- #[inline(always)]: Strongly suggests that a function should always be inlined.
+- #[global_allocator]: Defines a global memory allocator for the program.
+- #[tokio::main]: Marks an async function as the entry point for a Tokio-based application.
+- #[serde(...)]: Used with the serde crate to customize (de)serialization behavior of types.
+
+## Important Traits
+
+- **Debug**: Allows formatting a type using {:?} for debugging purposes.
+- **Clone**: Enables the type to be cloned explicitly using .clone() (deep copy).
+- **Copy**: Allows types to be copied implicitly instead of moved. Must be a simple, stack-only type (like numbers or small structs).
+- **PartialEq**: Enables equality comparisons (==, !=) between instances, comparing fields.
+- **Eq**: A stricter version of PartialEq, indicating that all values of the type are comparable (no partial comparisons).
+- **PartialOrd**: Allows partial ordering comparisons (<, >, <=, >=), for types where not all values can be ordered.
+- **Ord**: Defines a total ordering for types, allowing comparisons (<, >, etc.) where all values can be ordered.
+- **Hash**: Allows types to be used as keys in hash maps by providing a hashing mechanism.
+- **Default**: Provides a default value for the type, which can be created with Default::default().
+- **Serialize**: Enables serialization of a type into formats like JSON or YAML.
+- **Deserialize**: Allows deserialization of a type from formats like JSON or YAML.
+- **AsRef**: Converts a type to a reference of another type, usually used for converting to slices or strings.
+- **AsMut**: Converts a type to a mutable reference of another type.
+- **From**: Provides a way to create an instance of a type from another type.
+- **Into**: Allows converting a type into another type, the inverse of From.
+- **TryFrom**: Allows fallible conversions from one type to another (with possible errors).
+- **TryInto**: The fallible counterpart to Into, allowing type conversion with error handling.
+- **Iterator**: Enables an object to yield a sequence of values, allowing it to be used in for loops.
+- **Fn, FnMut, FnOnce**: For types that can be invoked as functions, representing callable closures or function-like types with different mutability levels.
+
 ## General Information
 
 - The **Arc** type is used to share ownership of the data across multiple threads.
