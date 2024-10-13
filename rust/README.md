@@ -142,6 +142,7 @@ This section covers information about the programming language Rust.
 ## Important Traits
 
 - **Debug**: Allows formatting a type using {:?} for debugging purposes.
+- **Display**: Provides user-facing string formatting, typically for error messages or final output using {}.
 - **Clone**: Enables the type to be cloned explicitly using .clone() (deep copy).
 - **Copy**: Allows types to be copied implicitly instead of moved. Must be a simple, stack-only type (like numbers or small structs).
 - **PartialEq**: Enables equality comparisons (==, !=) between instances, comparing fields.
@@ -150,8 +151,8 @@ This section covers information about the programming language Rust.
 - **Ord**: Defines a total ordering for types, allowing comparisons (<, >, etc.) where all values can be ordered.
 - **Hash**: Allows types to be used as keys in hash maps by providing a hashing mechanism.
 - **Default**: Provides a default value for the type, which can be created with Default::default().
-- **Serialize**: Enables serialization of a type into formats like JSON or YAML.
-- **Deserialize**: Allows deserialization of a type from formats like JSON or YAML.
+- **Serialize** (Serde): Enables serialization of a type into formats like JSON or YAML.
+- **Deserialize** (Serde): Allows deserialization of a type from formats like JSON or YAML.
 - **AsRef**: Converts a type to a reference of another type, usually used for converting to slices or strings.
 - **AsMut**: Converts a type to a mutable reference of another type.
 - **From**: Provides a way to create an instance of a type from another type.
@@ -160,6 +161,10 @@ This section covers information about the programming language Rust.
 - **TryInto**: The fallible counterpart to Into, allowing type conversion with error handling.
 - **Iterator**: Enables an object to yield a sequence of values, allowing it to be used in for loops.
 - **Fn, FnMut, FnOnce**: For types that can be invoked as functions, representing callable closures or function-like types with different mutability levels.
+- **Queryable** (Diesel): Allows a type to be built from database query results.
+- **Insertable** (Diesel): Enables a type to be inserted into a database table.
+- **Identifiable** (Diesel): Marks a type as having a primary key for database use.
+- **AsChangeset** (Diesel): Allows updating database rows with a type.
 
 ## General Information
 
@@ -465,6 +470,50 @@ src/
 ```
 
 Here, the modules from `calculations.rs` would be defined in the `utils/mod.rs` (like `pub mod calculations`), to make the modules accesible from elsewhere. Then, you would also have to use `pub mod utils` in the `lib.rs` file to make the whole utils modules' directory accessible from anywhere (other packages that use your package as dependency).
+
+## Lifetimes
+
+**Example Code:**
+
+```rs
+#[derive(Insertable)]
+#[table_name = "users"]
+struct NewUser<'a> {
+    name: &'a str,
+    email: &'a str,
+}
+
+fn create_user<'a>(name: &'a str, email: &'a str) -> NewUser<'a> {
+    NewUser { name, email }
+}
+
+fn main() {
+    let name = "Alice";    // This string slice has an implicit lifetime
+    let email = "alice@example.com";
+
+    let user = create_user(name, email);  // No need to specify lifetimes explicitly
+    println!("User: {}, Email: {}", user.name, user.email);
+}
+```
+
+In this context, <'a> is a lifetime annotation in Rust. Lifetimes are a way of telling the Rust compiler how long references should be valid to prevent dangling references or invalid memory access. In the example you've given, <'a> specifies that the references (&'a str) inside the NewUser struct must live at least as long as the lifetime 'a.
+
+**Here’s what it means step by step:**
+
+- Explanation of <'a>:
+  'a is a lifetime: The <'a> after the struct name indicates that the struct has a generic lifetime parameter 'a. This lifetime is a placeholder representing the scope during which the data referenced by name and email will be valid.
+
+- &'a str: Both the name and email fields are references to str slices, and these references are annotated with the lifetime 'a. This means that these references must point to data that will live for at least as long as 'a.
+
+- Lifetime ensures data validity: By specifying the lifetime 'a, Rust guarantees that the data being referenced (in name and email) will not be invalidated (dropped) while the NewUser struct is still being used. In other words, the struct can’t outlive the data it references.
+
+To invoke a function with lifetime annotation, you don't need to explicitly provide the lifetime 'a in the function call. Rust's compiler automatically infers lifetimes based on the input and output references. Here's how you would call the function:
+
+- String literals like "Alice" and "alice@example.com" are static, meaning they have the 'static lifetime, which means they are valid for the entire program.
+- The create_user function accepts &'a str (references with some lifetime 'a), and Rust automatically infers the lifetime 'a for these inputs.
+- You just call the function by passing string slices (or any other references that fit the lifetime constraints). Rust figures out the correct lifetimes and ensures everything is safe.
+
+You don’t need to explicitly specify lifetimes when invoking the function, because lifetimes are part of Rust’s type system, but the actual annotation is only required in function or struct definitions. When calling a function, Rust’s compiler infers the correct lifetimes based on the references you pass.
 
 ## Ownership
 
