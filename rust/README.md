@@ -143,6 +143,7 @@ This section covers information about the programming language Rust.
 ## Important Traits
 
 - **Debug**: Allows formatting a type using {:?} for debugging purposes.
+- **Add**: In Rust, the Add trait is used to overload the + operator, allowing custom behavior when adding two values of a type. Due to this trait you are able to calculate like this: `sum = i32 + &i32` (this is valid even though there are two different types used).
 - **Display**: Provides user-facing string formatting, typically for error messages or final output using {}.
 - **Clone**: Enables the type to be cloned explicitly using .clone() (deep copy).
 - **Copy**: Allows types to be copied implicitly instead of moved. Must be a simple, stack-only type (like numbers or small structs).
@@ -630,6 +631,35 @@ The & symbol in Rust can serve different roles depending on the context, and und
 
 2. Pattern Matching/Destructuring: When used in the context of a pattern (like in function arguments, let bindings, or match arms), & can actually perform a dereference operation. This might seem counterintuitive, but it's a shorthand provided by Rust's pattern matching capabilities.
    For example, in a function call like function(&x), &x is passing a reference to x. However, in the function signature, if you see something like fn function(&x: &i32), the & in &x is actually dereferencing the passed reference to directly work with the value in the function body, without needing to manually dereference it using \*.
+
+## Pattern Matching
+
+The following explanation is based on this code example:
+
+```rs
+    let my_array = [1, 2, 3, 4, 5];
+    let slice = &my_array[..];
+
+    for i in slice {
+        println!("{}", i)
+    }
+```
+
+In Rust, when you write for i in slice, i is a reference to the element of the array,
+so it has the type &i32 because the array slice &my_array[..] is a reference to the array elements.
+
+When you use for &i in slice, you're using pattern matching in the loop.
+In this case, the &i pattern means that you are destructuring the reference &i32 into the value it points to, which is of type i32.
+
+**Here's what's happening in detail:**
+
+- slice is a reference to an array (i.e., &[i32]).
+- When you iterate over slice using for i in slice, each element is of type &i32 (a reference to an integer).
+- By using the pattern for &i in slice, you're telling Rust to dereference the &i32 value to get the i32 directly.
+
+So, instead of getting a reference to each element (&i32), you pattern match to extract the value (i32).
+
+The reason it doesn't become &&i32 is that pattern matching with &i destructures one level of reference, converting &i32 into i32.
 
 ## Understanding `mut` in Rust
 
