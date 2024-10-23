@@ -16,6 +16,7 @@ This section covers information about the programming language Rust.
 - Shortcut for strings with escape sequences (instead of having to escape with \\ for each occurence, for example): `let text = r#"C:\Program Files\PostgreSQL\16\lib"#`
 - Create an array with one value for all entries and with a specific size: `let array = [0_u8; 256];`
 - Print the memory location of a variable (also works for references): `println!("{:p}", some_variable);`
+- Make use of [Clippy](https://github.com/rust-lang/rust-clippy): `cargo clippy`
 
 ## Useful Methods
 
