@@ -17,6 +17,7 @@ This section covers information about the programming language Rust.
 - Create an array with one value for all entries and with a specific size: `let array = [0_u8; 256];`
 - Print the memory location of a variable (also works for references): `println!("{:p}", some_variable);`
 - Make use of [Clippy](https://github.com/rust-lang/rust-clippy): `cargo clippy`
+- If Let with @ symbol (if y is within the inclusive range of 1..=4): `if let (_, y @ 1..=4) = (4, 2) { ... }`
 
 ## Useful Methods
 
