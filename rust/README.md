@@ -456,6 +456,44 @@ fn parse_key(key: &str) -> (i32, &str) {
 }
 ```
 
+### Multi-Task Multi-Thread Approach for Incoming Request With Tokio Crate
+
+```rs
+use tokio::time::{sleep, Duration};
+
+#[tokio::main]
+async fn main() {
+    let max_concurrent_tasks = 10;
+    let sem = tokio::sync::Semaphore::new(max_concurrent_tasks);
+
+    let tasks: Vec<_> = (0..15) // Simulate 15 incoming requests
+        .map(|i| {
+            let permit = sem.clone().acquire_owned();
+            tokio::spawn(async move {
+                let _permit = permit.await.unwrap(); // Limits to 10 concurrent tasks
+                handle_request(i).await;
+            })
+        })
+        .collect();
+
+    for task in tasks {
+        task.await.unwrap();
+    }
+
+    println!("All requests handled.");
+}
+
+async fn handle_request(id: usize) {
+    println!("Handling request: {}", id);
+    sleep(Duration::from_secs(2)).await;
+    println!("Completed request: {}", id);
+}
+```
+
+- **Tasks Start Independently**: When tokio::spawn is used, each request (handle_request) is started independently and doesn’t wait for the previous task to complete.
+- **Concurrent Execution**: Multiple requests can be processed simultaneously, up to the concurrency limit set by the semaphore (or as allowed by the runtime threads). This concurrency means that faster tasks may complete earlier, even if they were started later than others.
+- **Out-of-Order Completion**: Since tasks are concurrent, some may take longer than others, leading to a completion order that doesn’t necessarily match the order in which requests were received.
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
