@@ -506,7 +506,19 @@ for n in &mut numbers {
 }
 ```
 
-Result of numbers array would be [23, 34, 0, 0, 0, 88]
+**Alternative Approach:**
+
+```rs
+let mut numbers = [23, 34, 5, 6, 7, 88];
+
+for i in 0..numbers.len() {
+    if numbers[i] < 10 {
+        numbers[i] = 0;
+    }
+}
+```
+
+Result of numbers array would be [23, 34, 0, 0, 0, 88] in both cases.
 
 ## Project Structuring
 
