@@ -179,6 +179,7 @@ This section covers information about the programming language Rust.
 - Use **pub** to make functions, structs, or modules public. Without pub, items are private to the module.
 - Use **pub use** to re-export items, making them accessible through the parent module.
 - By implementing a "Trait" for a type, that type gains the ability to utilize the methods defined by the trait. This enables **polymorphism**, where different types can be treated interchangeably as long as they implement the same trait.
+- Rust provides automatic dereferencing for method calls and field access when you have a reference to an object, such as a tuple, or an object of a struct or enum (so you don't have to explicitly use _\*_ for derefencing but can just use **my_tuple.0 += 1** while **my_tuple** would be a reference in this case).
 
 ## Code examples
 
