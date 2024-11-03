@@ -520,6 +520,40 @@ for i in 0..numbers.len() {
 
 Result of numbers array would be [23, 34, 0, 0, 0, 88] in both cases.
 
+### While Let Loop
+
+Similar to `if let`, using a pattern match (normally used for de-structuring an `Option` (`Some` and `None`) or `Result` (`Ok` and `Err`))
+
+```rs
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+let mut iterator = numbers.iter();
+
+while let Some(number) = iterator.next() {
+    ...
+}
+```
+
+### 'outer and 'inner Loops
+
+You can name 'outer and 'inner anything you like.
+
+```rs
+let result = 'outer: loop {
+    for i in 1..5 {
+        println!("Outer loop iteration: {}", i);
+        'inner: for j in 1..5 {
+            println!("  Inner loop iteration: {}", j);
+            if i * j == 6 {
+                break 'outer "Match found at i * j = 6"; // Exit both loops and return a string
+            } else if i + j == 3 {
+                break 'inner; // Exit the inner loop only and continue with the next iteration of the outer loop
+            }
+        }
+    }
+    break "No match found"; // This will be executed if no condition in the inner loop matches
+};
+```
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
