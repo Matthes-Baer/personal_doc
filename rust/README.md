@@ -494,6 +494,20 @@ async fn handle_request(id: usize) {
 - **Concurrent Execution**: Multiple requests can be processed simultaneously, up to the concurrency limit set by the semaphore (or as allowed by the runtime threads). This concurrency means that faster tasks may complete earlier, even if they were started later than others.
 - **Out-of-Order Completion**: Since tasks are concurrent, some may take longer than others, leading to a completion order that doesn’t necessarily match the order in which requests were received.
 
+### Change Value of an Array
+
+```rs
+let mut numbers = [23, 34, 5, 6, 7, 88];
+
+for n in &mut numbers {
+    if *n < 10 {
+        *n = 0;
+    }
+}
+```
+
+Result of numbers array would be [23, 34, 0, 0, 0, 88]
+
 ## Project Structuring
 
 - **Binary Crate (`main.rs`):** This is defined by having a `main.rs` file, which is the entry point for a binary executable. The `main.rs` file is responsible for running the actual application and can utilize the library crate by importing its modules.
