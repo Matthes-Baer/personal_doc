@@ -183,6 +183,35 @@ This section covers information about the programming language Rust.
 
 ## Code examples
 
+### Initialize a Struct Instance with Default Values
+
+```rs
+struct Person {
+    name: String,
+    age: u8,
+    height: f32,
+}
+
+let user = Person::default() // Use this for adding default values for all fields of this instance
+
+// Use this approach to assign some fields to specific values and default values for all the other fields of that instance
+let user_2 = Person {
+    name: "Ally".to_string(),
+    ..Default::default()
+};
+```
+
+You may also use the `Default` trait like this instead of calling the `default()` function:
+
+```rs
+#[derive(Default)]
+struct Person {
+    name: String,
+    age: u8,
+    height: f32,
+}
+```
+
 ### Counting Digits in String
 
 ```rs
