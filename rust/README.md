@@ -2,6 +2,10 @@
 
 This section covers information about the programming language Rust.
 
+## Useful Rust Related Links
+
+- [Vectors under the hood (on the Stack (capacity, length, pointer) - potential re-allocation; on the Heap)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44274774#overview)
+
 ## Useful Rust Lines
 
 - Convert a number to it's binary representation: `let binary_repr = format!("{:b}", n);`
