@@ -22,6 +22,7 @@ This section covers information about the programming language Rust.
 - Print the memory location of a variable (also works for references): `println!("{:p}", some_variable);`
 - Make use of [Clippy](https://github.com/rust-lang/rust-clippy): `cargo clippy`
 - If Let with @ symbol (if y is within the inclusive range of 1..=4): `if let (_, y @ 1..=4) = (4, 2) { ... }`
+- Declare and Initialize a Vector with some initial values: `let vector_variable: Vec<i32> = Vec::from([1, 2, 3])` or `let vector_variable: Vec<i32> = vec![1, 2, 3]`
 
 ## Useful Methods
 
