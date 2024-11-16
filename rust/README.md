@@ -23,6 +23,7 @@ This section covers information about the programming language Rust.
 - Make use of [Clippy](https://github.com/rust-lang/rust-clippy): `cargo clippy`
 - If Let with @ symbol (if y is within the inclusive range of 1..=4): `if let (_, y @ 1..=4) = (4, 2) { ... }`
 - Declare and Initialize a Vector with some initial values: `let vector_variable: Vec<i32> = Vec::from([1, 2, 3])` or `let vector_variable: Vec<i32> = vec![1, 2, 3]`
+- Prepend elements to a vector: `vec.splice(0..0, elements_to_prepend)` or create a new vector and use `extend()`
 
 ## Useful Methods
 
