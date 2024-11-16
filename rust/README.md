@@ -49,6 +49,7 @@ This section covers information about the programming language Rust.
 - contains() (Vec)
 - iter() (Vec)
 - extend() (Vec)
+- drain() (Vec) - returns an iterator over the range of removed elements of the original vector
 - sort() (Vec)
 - sort_by() (Vec)
 - sort_by_key() (Vec)
