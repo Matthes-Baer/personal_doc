@@ -64,7 +64,7 @@ This section covers information about the programming language Rust.
 - skip() (Vec, Iter)
 - enumerate() (Vec, Iter)
 - zip() (Vec, Iter)
-- Vec::with_capacity() - minimize memory re-allocations by specifiying a specific capacitiy of the vector at the start (the capacity on the Stack is larger than the actual current vector length; If the vector length would exceed the capacity, a re-allocation occurs (such re-allocations can be minimized by specifiying a capacity by yourself instead of letting it increase on its own)) -> helpful for situations where you have information on how many elements a vector will hold in the future.
+- Vec::with_capacity() - minimize memory re-allocations by specifiying a specific capacitiy of the vector at the start (the capacity on the Stack is larger than the actual current vector length; If the vector length would exceed the capacity, a re-allocation occurs (a new pointer is assigned in the Stack which points to different location on the Heap compared to the original used pointer) (such re-allocations can be minimized by specifiying a capacity by yourself instead of letting it increase on its own)) -> helpful for situations where you have information on how many elements a vector will hold in the future.
 
 ### HashMap Methods
 
