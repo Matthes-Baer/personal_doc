@@ -5,6 +5,7 @@ This section covers information about the programming language Rust.
 ## Useful Rust Related Links
 
 - [Vectors under the hood (on the Stack (capacity, length, pointer) - potential re-allocation; on the Heap)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44274774#overview)
+- [Error propagation operator `?`](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44105998#overview)
 
 ## Useful Rust Lines
 
@@ -189,6 +190,7 @@ This section covers information about the programming language Rust.
 - Use **pub use** to re-export items, making them accessible through the parent module.
 - By implementing a "Trait" for a type, that type gains the ability to utilize the methods defined by the trait. This enables **polymorphism**, where different types can be treated interchangeably as long as they implement the same trait.
 - Rust provides automatic dereferencing for method calls and field access when you have a reference to an object, such as a tuple, or an object of a struct or enum (so you don't have to explicitly use _\*_ for derefencing but can just use **my_tuple.0 += 1** while **my_tuple** would be a reference in this case).
+- The `?` operator in Rust is used for error propagation, allowing you to return an error from a function if a `Result` or `Option` is `Err` or `None`, respectively, simplifying error handling. Apply the `?` operator to the end of the calling expression to use it.
 
 ## Code examples
 
