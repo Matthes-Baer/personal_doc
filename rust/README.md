@@ -770,8 +770,18 @@ The & symbol in Rust can serve different roles depending on the context, and und
 
 1. Creating References: In the context of creating references, & is used to borrow a value, creating a reference to it. For example, let ref_to_x = &x; creates a reference ref_to_x that points to the value of x.
 
-2. Pattern Matching/Destructuring: When used in the context of a pattern (like in function arguments, let bindings, or match arms), & can actually perform a dereference operation. This might seem counterintuitive, but it's a shorthand provided by Rust's pattern matching capabilities.
+2. Pattern Matching/Destructuring: When used in the context of a pattern (like in function arguments, let bindings, or match arms), & can actually perform a dereference operation.
    For example, in a function call like function(&x), &x is passing a reference to x. However, in the function signature, if you see something like fn function(&x: &i32), the & in &x is actually dereferencing the passed reference to directly work with the value in the function body, without needing to manually dereference it using \*.
+   **Example for Pattern Matching/Destructuring:**
+   ```rs
+        fn main() {
+            let value = Some(42);
+            match &value {
+                Some(&x) => println!("Matched x = {}", x), // x is a plain value
+                None => println!("Matched None"),
+            }
+        }
+   ```
 
 ## Pattern Matching
 
