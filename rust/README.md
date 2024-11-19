@@ -26,6 +26,17 @@ This section covers information about the programming language Rust.
 - Declare and Initialize a Vector with some initial values: `let vector_variable: Vec<i32> = Vec::from([1, 2, 3])` or `let vector_variable: Vec<i32> = vec![1, 2, 3]`
 - Prepend elements to a vector: `vec.splice(0..0, elements_to_prepend)` or create a new vector and use `extend()` | or use a VecDeque for such situations
 - Modify an existing key-value pair of a HashMap or insert if not already existing: `hashmap_variable.entry("some_key").and_modify(|value| *value += 1).or_insert(1);`
+- Specify which traits a generic type must include in a generic function (only those types with all needed traits are accepted for this function's calls):
+
+```rs
+fn some_function<T>(v: &v[T]) -> Option<T>
+    where T: std::cmp::PartialOrd + Copy
+{
+    ...
+}
+```
+
+Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Useful Methods
 
@@ -191,6 +202,7 @@ This section covers information about the programming language Rust.
 - By implementing a "Trait" for a type, that type gains the ability to utilize the methods defined by the trait. This enables **polymorphism**, where different types can be treated interchangeably as long as they implement the same trait.
 - Rust provides automatic dereferencing for method calls and field access when you have a reference to an object, such as a tuple, or an object of a struct or enum (so you don't have to explicitly use _\*_ for derefencing but can just use **my_tuple.0 += 1** while **my_tuple** would be a reference in this case).
 - The `?` operator in Rust is used for error propagation, allowing you to return an error from a function if a `Result` or `Option` is `Err` or `None`, respectively, simplifying error handling. This will also make the `Some` or `Ok` value response directly available instead of having it to handle with `match` or `if let` or similar. Apply the `?` operator to the end of the calling expression to use it.
+- **Monomorphization** in Rust is a compilation process where generic functions and types are specialized for their specific types at compile time. This means that for each concrete type used with a generic function or type, Rust generates a separate version of that function or type, tailored specifically to the concrete type. The specialized code can be as efficient as hand-written code for each type since there are no dynamic type checks or runtime polymorphism (no additional runtime overhead). If many different types are used with a generic, it can lead to increased binary size, as separate versions are created for each type.
 
 ## Code examples
 
