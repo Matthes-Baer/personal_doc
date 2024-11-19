@@ -772,18 +772,8 @@ The & symbol in Rust can serve different roles depending on the context, and und
 
 2. Pattern Matching/Destructuring: When used in the context of a pattern (like in function arguments, let bindings, or match arms), & can actually perform a dereference operation.
    For example, in a function call like function(&x), &x is passing a reference to x. However, in the function signature, if you see something like fn function(&x: &i32), the & in &x is actually dereferencing the passed reference to directly work with the value in the function body, without needing to manually dereference it using \*.
-   **Example for Pattern Matching/Destructuring:**
-   ```rs
-        fn main() {
-            let value = Some(42);
-            match &value {
-                Some(&x) => println!("Matched x = {}", x), // x is a plain value
-                None => println!("Matched None"),
-            }
-        }
-   ```
 
-## Pattern Matching
+### Pattern Matching
 
 The following explanation is based on this code example:
 
@@ -796,21 +786,27 @@ The following explanation is based on this code example:
     }
 ```
 
-In Rust, when you write for i in slice, i is a reference to the element of the array,
-so it has the type &i32 because the array slice &my_array[..] is a reference to the array elements.
+When you write `for i in slice` here, i is a reference to the element of the array,
+so it has the type &i32 because the array slice `&my_array[..]` is a reference to the array elements.
 
-When you use for &i in slice, you're using pattern matching in the loop.
-In this case, the &i pattern means that you are destructuring the reference &i32 into the value it points to, which is of type i32.
-
-**Here's what's happening in detail:**
-
-- slice is a reference to an array (i.e., &[i32]).
-- When you iterate over slice using for i in slice, each element is of type &i32 (a reference to an integer).
-- By using the pattern for &i in slice, you're telling Rust to dereference the &i32 value to get the i32 directly.
-
+When you would use `for &i in slice`, pattern matching would be utilized.
+In such a case, the &i pattern means that you are destructuring the reference &i32 into the value it points to, which is of type i32.
 So, instead of getting a reference to each element (&i32), you pattern match to extract the value (i32).
-
 The reason it doesn't become &&i32 is that pattern matching with &i destructures one level of reference, converting &i32 into i32.
+
+**Another Example for Pattern Matching**
+
+```rs
+fn main() {
+    let value = Some(42);
+    match &value {
+        Some(&x) => println!("Matched x = {}", x), // x is a plain value
+        None => println!("Matched None"),
+    }
+}
+```
+
+Here, `Some` destructures the `Option`. The `&x` matches the reference inside the `Some`. This lets you extract the value `x` as a plain integer (i32 in this case).
 
 ## Understanding `mut` in Rust
 
