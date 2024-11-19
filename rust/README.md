@@ -6,6 +6,7 @@ This section covers information about the programming language Rust.
 
 - [Vectors under the hood (on the Stack (capacity, length, pointer) - potential re-allocation; on the Heap)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44274774#overview)
 - [Error propagation operator `?`](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44105998#overview)
+- [Lifetime and Scope](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44416360#overview)
 
 ## Useful Rust Lines
 
