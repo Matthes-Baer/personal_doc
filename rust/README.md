@@ -210,6 +210,59 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code examples
 
+### Create a Custom Trait, Implement It And Create a Function With a Corresponding Trait Object
+
+```rs
+trait Animal {
+    fn make_sound(&self);
+    fn set_age(&mut self, _age: u8) {
+        println!("This feature is not suppored!"); // This is used as the default function's implementation
+    }
+    fn get_age(&self) -> u8 {
+        println!("This feature is not suppored!"); // This is used as the default function's implementation
+        0
+    }
+}
+
+struct Dog {
+    age: u8;
+}
+
+// This implements the Animal trait for the Dog struct with all methods defined
+impl Animal for Dog {
+    fn make_sound(&self) {
+        println!("bark!");
+    }
+
+    fn set_age(&mut self, age: u8) {
+        self.age = age;
+    }
+
+    fn get_age(&self) {
+        self.age
+    }
+}
+
+struct Cat {
+    age: u8;
+}
+
+// This implements the Animal trait for the Cat struct but two methods are not defined and will use the default implementation from the trait
+impl Animal for Cat {
+    fn make_sound(&self) {
+        println!("meow!");
+    }
+}
+
+// This function can be used for any struct that implements the Animal trait.
+// The `&dyn Animal` type is a trait object, which allows for dynamic dispatch.
+// This means that at runtime, the actual type of the object (any type implementing the Animal trait)
+// will be determined, and the appropriate implementation of `make_sound` will be called.
+fn produce_sound(animal: &dyn Animal) {
+    animal.make_sound();
+}
+```
+
 ### Initialize a Struct Instance with Default Values
 
 ```rs
