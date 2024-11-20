@@ -210,7 +210,7 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code examples
 
-### Pass a Immutable Value to a Function that Handles it as Mutable Inside
+### Pass an Immutable Value to a Function that Handles it as Mutable Inside
 
 ```rs
 fn increment(mut x: i32) -> i32 {
