@@ -210,6 +210,48 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code examples
 
+### Pass a Immutable Value to a Function that Handles it as Mutable Inside
+
+```rs
+fn increment(mut x: i32) -> i32 {
+    x += 1; // Modify x inside the function
+    x       // Return the modified value
+}
+
+fn main() {
+    let num = 5;          // num is immutable in main
+    let new_num = increment(num); // Pass num by value (a copy is made)
+    println!("{}", num);      // Output: 5 (original value is unchanged)
+    println!("{}", new_num);  // Output: 6 (returned value)
+}
+```
+
+**Useful when:**
+
+- You want to work with a mutable copy of the value without affecting the original.
+- You don’t want to require mutability in the caller: The caller can pass an immutable variable (let num = 5), and the function still works, because the function creates its own mutable copy of the value.
+
+**But:**
+
+- The behavior described above works because i32 implements the Copy trait.
+  For non-Copy types like String, passing a value to the function would involve an ownership transfer, and the original value would no longer be accessible in the caller.
+
+**Example for non-Copy types:**
+
+```rs
+fn modify(mut s: String) -> String {
+    s.push_str(" world");
+    s
+}
+
+fn main() {
+    let text = String::from("Hello");
+    let new_text = modify(text); // Ownership of `text` is moved
+    // println!("{}", text); // ERROR: text is no longer accessible
+    println!("{}", new_text); // Output: Hello world
+}
+```
+
 ### Create a Custom Trait, Implement It And Create a Function With a Corresponding Trait Object
 
 ```rs
