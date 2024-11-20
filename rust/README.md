@@ -877,10 +877,6 @@ fn main() {
 
 Here, `Some` destructures the `Option`. The `&x` matches the reference inside the `Some`. This lets you extract the value `x` as a plain integer (i32 in this case).
 
-## Understanding `mut` in Rust
-
-mut stands for mutable. It's used to declare that a variable can be modified after its initial declaration. In Rust, variables are immutable by default, meaning once a value is bound to a name, you can’t change that value. To allow a variable to be mutable, you prepend it with mut.
-
 ## Moving and Borrowing
 
 The following information is based on this example:
@@ -1145,3 +1141,43 @@ _Use Cases for HashMap:_
 | **Memory Layout**    | Contiguous, efficient                                 | Non-contiguous, involves hashing                             |
 | **Flexibility**      | Rigid, fields are static                              | Flexible, keys and values can be added or removed            |
 | **Common Use Cases** | Modeling well-defined objects (e.g., `User`, `Point`) | Storing dynamic key-value data (e.g., caching, dictionaries) |
+
+## `&dyn` vs. `Box<dyn>`
+
+**Use &dyn (Trait Object as a Reference) When:**
+
+- Ownership is not required: You only need a borrowed reference to the trait object.
+- No heap allocation is needed: The reference points to an object that exists elsewhere, either on the stack or heap.
+- Short-lived interactions: The lifetime of the reference is tied to the scope in which it is used.
+- Low-overhead dynamic dispatch: Since it doesn't involve heap allocation, it's lightweight
+
+**Example:**
+
+```rs
+fn print_sound(animal: &dyn Animal) {
+    animal.make_sound();
+}
+```
+
+**Use Box<dyn> (Heap-Allocated Trait Object) When:**
+
+- You need ownership: The function or structure owning the Box<dyn> takes responsibility for the trait object’s lifetime and deallocation.
+- Heap allocation is acceptable: The trait object is stored on the heap, allowing it to outlive its scope or be moved around freely.
+- Dynamic polymorphism with longer lifetimes: For example, storing different types in a collection or returning a trait object from a function.
+
+**Example:**
+
+```rs
+fn get_animal() -> Box<dyn Animal> {
+    Box::new(Dog) // Ownership of `Dog` is transferred to the caller
+}
+```
+
+| Feature      | `&dyn`                    | `Box<dyn>`                 |
+| ------------ | ------------------------- | -------------------------- |
+| Ownership    | Borrowed (doesn't own)    | Owned (takes ownership)    |
+| Lifetime     | Scoped to the borrow      | Tied to the `Box`          |
+| Allocation   | No additional allocation  | Heap-allocated             |
+| Polymorphism | Supports dynamic dispatch | Supports dynamic dispatch  |
+| Mutability   | Requires `&mut dyn`       | Can own a mutable object   |
+| Use Case     | Temporary or shared usage | Long-lived or transferable |
