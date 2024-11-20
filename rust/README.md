@@ -253,9 +253,12 @@ fn main() {
 }
 ```
 
-### Create a Custom Trait, Implement It And Create a Function With a Corresponding Trait Object
+### Create a Custom Trait, Implement It And Create a Function With a Corresponding Trait Object (Including Associated Type, Display Trait Implementation)
 
 ```rs
+use std::fmt; // Used for the Display Implementation
+
+
 trait Animal {
     fn make_sound(&self);
     type Weight; // This is an Associated Type
@@ -274,6 +277,26 @@ struct Dog {
     age: u8;
     weight: u8;
 }
+
+// This implements the Display trait that can't be automatically derived (used to make println!("{}", instance_of_dog) work)
+impl fmt::Display for Dog {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(w) = f.width() { // This is used to have the option to provide a width like println!("{:15}", instance_of_dog) for the displaying
+            writeln!(f, "{:#^w$}", " Dog Details ", w = 2 * w)?;
+            writeln!(f, "{:<w$}:{:>w$}", "Age", self.age)?;
+            writeln!(f, "{:<w$}:{:>w$}", "Weight", self.weight)?;
+            writeln!(f, "{:<w$}:{:>w$}", "Name", self.name)?;
+        } else {
+            writeln!(f, "{:#^17}", " Dog Details ")?;
+            writeln!(f, "{:<8}:{:>8}", "Age", self.age)?;
+            writeln!(f, "{:<8}:{:>8}", "Weight", self.weight)?;
+            writeln!(f, "{:<8}:{:>8}", "Name", self.name)?;
+        }
+
+        Ok(())
+    }
+}
+
 
 // This implements the Animal trait for the Dog struct with all methods defined
 impl Animal for Dog {
