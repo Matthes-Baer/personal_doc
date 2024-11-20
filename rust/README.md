@@ -28,6 +28,7 @@ This section covers information about the programming language Rust.
 - Prepend elements to a vector: `vec.splice(0..0, elements_to_prepend)` or create a new vector and use `extend()` | or use a VecDeque for such situations
 - Modify an existing key-value pair of a HashMap or insert if not already existing: `hashmap_variable.entry("some_key").and_modify(|value| *value += 1).or_insert(1);`
 - Specify which traits a generic type must include in a generic function (only those types with all needed traits are accepted for this function's calls):
+- Create a Type: `type Point = (i32, i32);`
 
 ```rs
 fn some_function<T>(v: &v[T]) -> Option<T>
@@ -257,6 +258,9 @@ fn main() {
 ```rs
 trait Animal {
     fn make_sound(&self);
+    type Weight; // This is an Associated Type
+    fn set_weight(&mut self, weight: Self::Weight);
+    fn get_weight(&self) -> Self::Weight;
     fn set_age(&mut self, _age: u8) {
         println!("This feature is not suppored!"); // This is used as the default function's implementation
     }
@@ -268,12 +272,23 @@ trait Animal {
 
 struct Dog {
     age: u8;
+    weight: u8;
 }
 
 // This implements the Animal trait for the Dog struct with all methods defined
 impl Animal for Dog {
     fn make_sound(&self) {
         println!("bark!");
+    }
+
+    type Weight = u8;
+
+    fn set_weight(&mut self, weight: u8) {
+        self.weight = weight;
+    }
+
+    fn get_weight(&self) -> u8 {
+        self.weight
     }
 
     fn set_age(&mut self, age: u8) {
@@ -287,6 +302,7 @@ impl Animal for Dog {
 
 struct Cat {
     age: u8;
+    weight: f32;
 }
 
 // This implements the Animal trait for the Cat struct but two methods are not defined and will use the default implementation from the trait
@@ -294,13 +310,24 @@ impl Animal for Cat {
     fn make_sound(&self) {
         println!("meow!");
     }
+
+    type Weight = f32;
+
+     fn set_weight(&mut self, weight: f32) {
+        self.weight = weight;
+    }
+
+    fn get_weight(&self) -> f32 {
+        self.weight
+    }
 }
 
 // This function can be used for any struct that implements the Animal trait.
 // The `&dyn Animal` type is a trait object, which allows for dynamic dispatch.
 // This means that at runtime, the actual type of the object (any type implementing the Animal trait)
 // will be determined, and the appropriate implementation of `make_sound` will be called.
-fn produce_sound(animal: &dyn Animal) {
+// Weight = T is needed due to the added implemented associated type to the trait
+fn produce_sound<T>(animal: &dyn Animal<Weight = T>) {
     animal.make_sound();
 }
 ```
