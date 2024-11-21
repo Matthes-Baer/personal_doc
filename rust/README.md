@@ -374,7 +374,7 @@ impl Animal for Dog {
     type Weight = u8;
 
     fn set_weight(&mut self, weight: u8) {
-        self.weight = weight;
+        self.weight = weight; // Rust dereferences &mut self automatically to get to the actual struct
     }
 
     fn get_weight(&self) -> u8 {
