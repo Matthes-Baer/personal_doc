@@ -202,7 +202,7 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code examples
 
-### Trait Bound Example:
+### Trait Bounds:
 
 **only those types with all needed traits are accepted for this function's calls:**
 
