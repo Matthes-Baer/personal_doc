@@ -203,7 +203,54 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code examples
 
-### Trait Bounds:
+### Enum
+
+Instead of having three different classes in JavaScript for Rectangle, Circle, and Triangle, in Rust you can use one Enum which implementes corresponding methods for each case.
+
+```rs
+#[derive(Debug)]
+enum Shape {
+    Rectangle { width: f64, height: f64 },
+    Circle { radius: f64 },
+    Triangle { base: f64, height: f64 },
+}
+
+impl Shape {
+    // Method to calculate the area of the shape
+    fn area(&self) -> f64 {
+        match self {
+            Shape::Rectangle { width, height } => width * height,
+            Shape::Circle { radius } => std::f64::consts::PI * radius.powi(2),
+            Shape::Triangle { base, height } => 0.5 * base * height,
+        }
+    }
+
+    // Method to describe the shape
+    fn describe(&self) -> String {
+        match self {
+            Shape::Rectangle { width, height } => {
+                format!("Rectangle with width {} and height {}", width, height)
+            }
+            Shape::Circle { radius } => format!("Circle with radius {}", radius),
+            Shape::Triangle { base, height } => {
+                format!("Triangle with base {} and height {}", base, height)
+            }
+        }
+    }
+}
+
+fn main() {
+    let rect = Shape::Rectangle { width: 10.0, height: 5.0 };
+    let circ = Shape::Circle { radius: 3.0 };
+    let tri = Shape::Triangle { base: 4.0, height: 6.0 };
+
+    println!("{} has an area of {:.2}", rect.describe(), rect.area());
+    println!("{} has an area of {:.2}", circ.describe(), circ.area());
+    println!("{} has an area of {:.2}", tri.describe(), tri.area());
+}
+```
+
+### Trait Bounds
 
 **only those types with all needed traits are accepted for this function's calls:**
 
