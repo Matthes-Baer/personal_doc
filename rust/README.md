@@ -27,16 +27,7 @@ This section covers information about the programming language Rust.
 - Declare and Initialize a Vector with some initial values: `let vector_variable: Vec<i32> = Vec::from([1, 2, 3])` or `let vector_variable: Vec<i32> = vec![1, 2, 3]`
 - Prepend elements to a vector: `vec.splice(0..0, elements_to_prepend)` or create a new vector and use `extend()` | or use a VecDeque for such situations
 - Modify an existing key-value pair of a HashMap or insert if not already existing: `hashmap_variable.entry("some_key").and_modify(|value| *value += 1).or_insert(1);`
-- Specify which traits a generic type must include in a generic function (only those types with all needed traits are accepted for this function's calls):
 - Create a Type: `type Point = (i32, i32);`
-
-```rs
-fn some_function<T>(v: &v[T]) -> Option<T>
-    where T: std::cmp::PartialOrd + Copy
-{
-    ...
-}
-```
 
 Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
@@ -210,6 +201,34 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - There are lifetime elision rules which help specifiying lifetimes (it's not something programmers need to follow, they are automatically applied): **1.** The first rule of lifetime elision is specifically for input lifetimes. Each parameter that is a reference gets its own lifetime parameter. **2.** If there is exactly one input lifetime parameter, that lifetime is assigned to all output lifetime parameters. **3.** If there are multiple input lifetime parameters, but one of them is `&self` or `&mut self` as part of a method, the lifetime of `self` is assigned to all ouput lifetime parameters.
 
 ## Code examples
+
+### Trait Bound Example:
+
+**only those types with all needed traits are accepted for this function's calls:**
+
+```rs
+fn some_function<T>(v: &v[T]) -> Option<T>
+    where T: std::cmp::PartialOrd + Copy // This is the Trait Bound
+{
+    ...
+}
+```
+
+**Same procedure for methods of a Struct:**
+
+```rs
+struct Rectangle<T> {
+    width: T,
+    height: T,
+}
+
+// This uses the default syntax for applying a trait bound (without the `where` operator)
+impl<T: std::ops::Mul<Output = T> + Copy> Rectangle<T> {
+    fn area(&self) -> T {
+        self.width * self.height
+    }
+}
+```
 
 ### Pass an Immutable Value to a Function that Handles it as Mutable Inside
 
