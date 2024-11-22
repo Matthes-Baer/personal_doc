@@ -184,6 +184,8 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - **Insertable** (Diesel): Enables a type to be inserted into a database table.
 - **Identifiable** (Diesel): Marks a type as having a primary key for database use.
 - **AsChangeset** (Diesel): Allows updating database rows with a type.
+- **FnOnce**: This trait allows a closure to consume the variables it captures from its environment. After being called once, a `FnOnce` closure cannot be called again as the environment has been consumed.
+- **FnMut**: With the `FnMut` trait a closure can be called multiple times and can mutate the environment.
 
 ## General Information
 
@@ -202,6 +204,46 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - There are lifetime elision rules which help specifiying lifetimes (it's not something programmers need to follow, they are automatically applied): **1.** The first rule of lifetime elision is specifically for input lifetimes. Each parameter that is a reference gets its own lifetime parameter. **2.** If there is exactly one input lifetime parameter, that lifetime is assigned to all output lifetime parameters. **3.** If there are multiple input lifetime parameters, but one of them is `&self` or `&mut self` as part of a method, the lifetime of `self` is assigned to all ouput lifetime parameters.
 
 ## Code examples
+
+### Move Keyword in a Closure
+
+The `move` keyword is used to transfer ownership of variables to a closure when capturing them.
+
+```rs
+fn main () {
+    let mut print;
+
+    {
+        let mut x = 10;
+
+        print move || { // Without the `move` keyword, x would not live long enough since it's dropped at the end of this current scope while it's still used within the print function outside of the scope afterwards
+            x += 1;
+            println!("Modified x: {}", x);
+        }
+    }
+
+    print();
+}
+
+```
+
+### Value Consuming Closure
+
+```rs
+fn main () {
+    let mut x = "10".to_string();
+
+    let print = || {
+        x += "11";
+        println!("Modified x: {}", x);
+        x
+    }
+
+    println!("{}", print());
+    // print() cannot be called another time since the variable x was consumed/moved outside of the current environment in the first print() call (FnOnce trait)
+}
+
+```
 
 ### Enum
 
