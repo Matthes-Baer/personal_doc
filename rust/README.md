@@ -185,7 +185,8 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - **Identifiable** (Diesel): Marks a type as having a primary key for database use.
 - **AsChangeset** (Diesel): Allows updating database rows with a type.
 - **FnOnce**: This trait allows a closure to consume the variables it captures from its environment. After being called once, a `FnOnce` closure cannot be called again as the environment has been consumed.
-- **FnMut**: With the `FnMut` trait a closure can be called multiple times and can mutate the environment.
+- **FnMut**: If a closure does not consume its environment, it can also implement the `FnMut` trait. With this trait a closure can be called multiple times and can mutate the environment.
+- _Fn_: If a closure does not mutate its environment, it can also implement the `Fn` trait. This means that the closure can be called multiple times without mutation the environment.
 
 ## General Information
 
