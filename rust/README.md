@@ -11,6 +11,8 @@ This section covers information about the programming language Rust.
 
 ## Useful Rust Lines
 
+- Create new Rust project: `cargo new project_name`
+- Add a crate to your project: `cargo add crate_name`
 - Convert a number to it's binary representation: `let binary_repr = format!("{:b}", n);`
 - Convert a binary number to it's decimal representation: `match isize::from_str_radix(&reversed_binary, 2) { ... handle Ok() and Err() ... }`
 - Get sum from all Vector elements: `let sum: i32 = (1..=n).collect().iter().sum();`
