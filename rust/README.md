@@ -31,6 +31,8 @@ This section covers information about the programming language Rust.
 - Prepend elements to a vector: `vec.splice(0..0, elements_to_prepend)` or create a new vector and use `extend()` | or use a VecDeque for such situations
 - Modify an existing key-value pair of a HashMap or insert if not already existing: `hashmap_variable.entry("some_key").and_modify(|value| *value += 1).or_insert(1);`
 - Create a Type: `type Point = (i32, i32);`
+- Loop through a collection with references (borrowing): `for x in collection.iter() { ... }`
+- Loop through a collection with values (taking ownership and consuming the collection (for arrays it yields references to elements)): `for x in collection.into_iter() { ... }`
 
 Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
