@@ -209,6 +209,35 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code examples
 
+### Read txt file input (two values on each line with space character between)
+
+```rs
+use std::fs::File;
+use std::io::{self, BufRead};
+
+...
+
+let path = "src/values.txt";
+
+let mut left_column = Vec::new();
+let mut right_column = Vec::new();
+
+let file = File::open(&path)?;
+let reader = io::BufReader::new(file);
+
+for line in reader.lines() {
+    let line = line?;
+    let parts: Vec<&str> = line.split_ascii_whitespace().collect();
+
+    if parts.len() == 2 {
+        if let (Ok(left), Ok(right)) = (parts[0].parse::<i32>(), parts[1].parse::<i32>()) {
+            left_column.push(left);
+            right_column.push(right);
+        }
+    }
+}
+```
+
 ### Move Keyword in a Closure
 
 The `move` keyword is used to transfer ownership of variables to a closure when capturing them.
