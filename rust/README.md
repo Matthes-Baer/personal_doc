@@ -8,6 +8,7 @@ This section covers information about the programming language Rust.
 - [Error propagation operator `?`](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44105998#overview)
 - [Lifetime and Scope](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44416360#overview)
 - [Trait Objects and Virtual Table](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/45093215#overview)
+- [Organizing Modules in Seperate Files (this and the next video)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/47092443#overview)
 
 ## Useful Rust Lines
 
