@@ -13,7 +13,7 @@ This section covers information about the programming language Rust.
 ## Useful Rust Lines
 
 - Create new Rust project: `cargo new project_name`
-- Add a crate to your project: `cargo add crate_name`
+- Add a crate to your project (with the feature `full` in this example): `cargo add crate_name --features full`
 - Convert a number to it's binary representation: `let binary_repr = format!("{:b}", n);`
 - Convert a binary number to it's decimal representation: `match isize::from_str_radix(&reversed_binary, 2) { ... handle Ok() and Err() ... }`
 - Get sum from all Vector elements: `let sum: i32 = (1..=n).collect().iter().sum();`
@@ -207,6 +207,7 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - When working with Generic Structs, you may use multiple `impl` blocks to declare generic methods and associated functions, like `impl<T> My_Struct<T> { ... }` (you can also use `impl<T: Copy> ...` to indicate that the used type needs to include the Copy trait), while having other blocks like `impl My_Struct<i32> { ... }` or `impl My_Struct<&str> { ... }` to declare methods and associated functions which only work for those specific types.
 - Enums in Rust are much more powerful and versatile than in TypeScript. For example, you may add methods to enums. Such enums are helpful for cases where you have multiple shapes, for example, like `Rectangle` or `Circle`. Instead of having multiple classes for each shape (in JavaScript), you may create one enum that holds those shape states and implements corresponding methods to calculate the area of each shape, for example.
 - There are lifetime elision rules which help specifiying lifetimes (it's not something programmers need to follow, they are automatically applied): **1.** The first rule of lifetime elision is specifically for input lifetimes. Each parameter that is a reference gets its own lifetime parameter. **2.** If there is exactly one input lifetime parameter, that lifetime is assigned to all output lifetime parameters. **3.** If there are multiple input lifetime parameters, but one of them is `&self` or `&mut self` as part of a method, the lifetime of `self` is assigned to all ouput lifetime parameters.
+- `cargo` is Rust's package manager with functionality like `cargo build --release`, `cargo fmt`, `cargo update`, and many more.
 
 ## Code examples
 
