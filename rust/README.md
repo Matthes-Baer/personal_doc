@@ -211,6 +211,16 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code examples
 
+### Import Modules
+
+```
+├── main.rs (in here, use 'mod funcs_a' and 'mod other_funcs' (the folder's name), then you can access the crates like 'use crate::other_funcs::some_function)
+├── funcs_a.rs (have your functions in here)
+│   ├── other_funcs\
+│   |   ├── funcs_b.rs (have your functions in here)
+│   |   ├── mod.rs (in here, use 'pub mod funcs_b')
+```
+
 ### Read txt file input (two values on each line with space character between)
 
 ```rs
