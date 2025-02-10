@@ -12,6 +12,7 @@ As a general rule, Java programs use more memory than comparable Go programs. Th
 On the other hand, Rust and C programs use slightly less memory than Go programs because more control is given to the developer to optimize the memory usage of the program. The Go runtime just handles it for us automatically.
 - On of the main purposes of the Go Runtime (which is within each Go executable), is to cleanup unused memory (an automated process)
 - Constants can be primitive types like strings, integers, booleans and floats. They can not be more complex types like slices, maps and structs. You cannot declare a constant that can only be computed at run-time like you can in JavaScript. (`time.Now()` would break)
+- When you need to work with individual characters in a string, you should use the `rune` type. It breaks strings up into their individual characters, which can be more than one byte long.
 
 
 ## Helpful Methods
@@ -50,5 +51,45 @@ s := fmt.Sprintf("I am %f years old", 10.523)
 // The ".2" rounds the number to 2 decimal places
 s := fmt.Sprintf("I am %.2f years old", 10.523)
 // I am 10.52 years old
+
+// %t for booleans
+s := fmt.Sprintf("Is friendly: %t", false)
+// Is friendly: false
+```
+
+### Initial Statement of an If Block
+```go
+// length is only available in the if block scope
+if length := getLength(email); length < 1 {
+    fmt.Println("Email is invalid")
+}
+```
+
+### Switch
+
+In Go, the break statement is not required at the end of a case to stop it from falling through to the next case. The break statement is implicit in Go.
+
+```go
+func getCreator(os string) string {
+    var creator string
+    switch os {
+    case "linux":
+        creator = "Linus Torvalds"
+    case "windows":
+        creator = "Bill Gates"
+
+    // all three of these cases will set creator to "A Steve"
+    case "macOS":
+        fallthrough
+    case "Mac OS X":
+        fallthrough
+    case "mac":
+        creator = "A Steve"
+
+    default:
+        creator = "Unknown"
+    }
+    return creator
+}
 ```
 
