@@ -4,11 +4,13 @@ This section covers information about the programming language Rust.
 
 ## Useful Rust Related Links
 
+- [Most Important Information](https://doc.rust-lang.org/book/title-page.html)
 - [Vectors under the hood (on the Stack (capacity, length, pointer) - potential re-allocation; on the Heap)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44274774#overview)
 - [Error propagation operator `?`](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44105998#overview)
 - [Lifetime and Scope](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44416360#overview)
 - [Trait Objects and Virtual Table](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/45093215#overview)
 - [Organizing Modules in Seperate Files (this and the next video)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/47092443#overview)
+- [Deref Coercion](https://doc.rust-lang.org/book/ch15-02-deref.html#implicit-deref-coercions-with-functions-and-methods)
 
 ## Useful Rust Lines
 
@@ -208,6 +210,8 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - Enums in Rust are much more powerful and versatile than in TypeScript. For example, you may add methods to enums. Such enums are helpful for cases where you have multiple shapes, for example, like `Rectangle` or `Circle`. Instead of having multiple classes for each shape (in JavaScript), you may create one enum that holds those shape states and implements corresponding methods to calculate the area of each shape, for example.
 - There are lifetime elision rules which help specifiying lifetimes (it's not something programmers need to follow, they are automatically applied): **1.** The first rule of lifetime elision is specifically for input lifetimes. Each parameter that is a reference gets its own lifetime parameter. **2.** If there is exactly one input lifetime parameter, that lifetime is assigned to all output lifetime parameters. **3.** If there are multiple input lifetime parameters, but one of them is `&self` or `&mut self` as part of a method, the lifetime of `self` is assigned to all ouput lifetime parameters.
 - `cargo` is Rust's package manager with functionality like `cargo build --release`, `cargo fmt`, `cargo update`, and many more.
+- Rust oftentimes dereferences under the hood (Deref Coercion), so that you don't have to explicitely use the `*` character (when printing, for example). In other cases where you have like a mutable reference to some value and try to change that value with the reference, you would have to dereference the reference in order actually be able to change the value (this will by the way change the underlying value, effectively also changing the corresponding reference's value).
+  - Rust's Deref Coercion is a feature that automatically converts a reference from one type to another when needed, as long as the first type implements the Deref trait.
 
 ## Code examples
 
