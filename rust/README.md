@@ -36,6 +36,7 @@ This section covers information about the programming language Rust.
 - Create a Type: `type Point = (i32, i32);`
 - Loop through a collection with references (borrowing): `for x in collection.iter() { ... }`
 - Loop through a collection with values (taking ownership and consuming the collection (for arrays it yields references to elements)): `for x in collection.into_iter() { ... }`
+- Use `dbg!()` instead of `println!()` for debugging purposes to avoid writing too much (since `dbg!()` will pretty print like a vector directly)
 
 Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
@@ -213,7 +214,21 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - Rust oftentimes dereferences under the hood (Deref Coercion), so that you don't have to explicitely use the `*` character (when printing, for example). In other cases where you have like a mutable reference to some value and try to change that value with the reference, you would have to dereference the reference in order actually be able to change the value (this will by the way change the underlying value, effectively also changing the corresponding reference's value).
   - Rust's Deref Coercion is a feature that automatically converts a reference from one type to another when needed, as long as the first type implements the Deref trait.
 
-## Code examples
+## Code Examples
+
+### Number Literals
+```rs
+println!("Big number is {}", 98_222_000);
+println!("Hex is {}", 0xff);
+println!("Octal is {}", 0o77);
+println!("Binary is {}", 0b1111_0000);
+println!("Bytes 'A' is {}", b'A');
+```
+
+### Raw - String Literal
+```rs
+let text: &str = r#"{"message": "Rust is awesome"}"#
+```
 
 ### Writing a Unit Test
 
