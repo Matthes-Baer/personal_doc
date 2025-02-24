@@ -1039,6 +1039,12 @@ When your code calls a function, the values passed into the function (including,
 
 Keeping track of what parts of code are using what data on the heap, minimizing the amount of duplicate data on the heap, and cleaning up unused data on the heap so you don’t run out of space are all problems that ownership addresses. Once you understand ownership, you won’t need to think about the stack and the heap very often, but knowing that the main purpose of ownership is to manage heap data can help explain why it works the way it does.
 
+Besides the Stack and the Heap, there is also the Static Memory (RODATA), for example. References to string literals (&str) or other constant data are stored in static (read-only) memory.
+```rs
+let s: &str = "hello";  // Stored in RODATA, s is a reference to it
+```
+
+
 ### Example
 
 Consider a String type in Rust. When you create a String, the struct that represents the String (which includes the pointer, length, and capacity) is stored on the stack. The actual contents of the string, however, are stored on the heap. The pointer in the String struct points to this heap-allocated memory where the characters of the string are stored.
