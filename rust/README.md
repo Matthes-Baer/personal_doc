@@ -216,6 +216,63 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code Examples
 
+### Async API Call with tokio, reqwest, and serde_json
+
+The `?` operator activates the functionality that in case of an error the whole function would throw an error like `Err(...)` instead of having the application panic (when using `unwrap()`, for example).
+
+`serde_json` will automatically parse the data fetched from the API in proper types which can be used by Rust.
+Thus, having like a string, would be fetched as `String(...)`.
+
+```rs
+async fn async_call(url: &str) -> Result<serde_json::Value, reqwest::Error> {
+  let response: serde_json::Value = reqwest::get(url)
+    .await?
+    .json::<serde_json::Value>()
+    .await?;
+
+  Ok(response)
+}
+
+
+
+#[cfg(test)]
+mod tests {
+  use super::*
+
+  #[tokio::test]
+  async fn tests_async_call_fn() {
+    let api_url: &str = "...";
+    let my_res = async_call(api_url).await;
+
+    match my_res {
+      Ok(res) => {
+        dbg!(res)
+      },
+      Err(_) => {
+        panic!("Failed!")
+      }
+    };
+  }
+}
+```
+
+You could also have handled the errors like this (for cases with alternative error types):
+```rs
+
+...
+
+let response = reqwest::get(url)
+  .await
+  .map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "Could not retrieve response"))?;
+
+let json_response: serde_json::Value = response
+  .json::<serde_json::Value>()
+  .await
+  .map_error(|_| std::io::Error::new(std::io::ErrorKind::Other, "Could not decode to JSON"))?;
+```
+
+You could also have used `expect()`, `expect_err()`, or even `unwrap()` etc.
+
 ### Number Literals
 ```rs
 println!("Big number is {}", 98_222_000);
