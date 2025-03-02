@@ -216,6 +216,40 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code Examples
 
+### Creating a custom declarative macro
+
+When creating a custom macro, you have to use macro captures:
+
+- item: Captures any Rust item, such as functions, structs, enums, traits, impl blocks, etc.
+- block: Captures a code block (enclosed in {}).
+- stmt: Captures a statement, which can be followed by ; or =>.
+- pat: Captures a pattern, typically used in match arms or function parameters.
+- expr: Captures an expression, such as a + b or function calls.
+- ty: Captures a type, including paths, generics, and type casts.
+- ident: Captures an identifier (a variable, function, or type name).
+- path: Captures a path (like std::collections::HashMap).
+- meta: Captures meta attributes used in #[...] annotations.
+- tt: Captures a single token tree (any valid Rust syntax unit).
+
+```rs
+macro_rules! custom_macro {
+  ($x: ty) => {
+    match stringify!($x) {
+    "i32" => "You sent an i32 type".to_string(),
+    _ => "You sent something else".to_string(),
+    }
+  }
+}
+```
+
+Another example (from codingame):
+
+```rs
+macro_rules! parse_input {
+    ($x:expr, $t:ident) => ($x.trim().parse::<$t>().unwrap())
+}
+```
+
 ### Async API Call with tokio, reqwest, and serde_json
 
 The `?` operator activates the functionality that in case of an error the whole function would throw an error like `Err(...)` instead of having the application panic (when using `unwrap()`, for example).
