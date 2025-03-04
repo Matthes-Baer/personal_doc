@@ -284,6 +284,7 @@ macro_rules! my_vec {
 }
 ```
 
+Those were just declarative macros, there are also [procedural macros](https://www.udemy.com/course/autogpt-gpt4-code-writing-ai/learn/lecture/38205574#overview) which get way more advanced.
 
 
 ### Async API Call with tokio, reqwest, and serde_json
