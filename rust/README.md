@@ -216,10 +216,18 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code Examples
 
-### Creating a custom declarative macro
+### Creating custom declarative macros
+
+To make custom macros available in other files, you have to export them:
+
+```rs
+#[macro_export]
+
+macro_rules! my_macro {...}
+```
+
 
 When creating a custom macro, you have to use macro captures:
-
 - item: Captures any Rust item, such as functions, structs, enums, traits, impl blocks, etc.
 - block: Captures a code block (enclosed in {}).
 - stmt: Captures a statement, which can be followed by ; or =>.
@@ -249,6 +257,34 @@ macro_rules! parse_input {
     ($x:expr, $t:ident) => ($x.trim().parse::<$t>().unwrap())
 }
 ```
+
+You may also make use of repetition specifiers:
+- `*` match zero or more repetitions
+- `+` match one or more repetitions
+- `?` match zero or one repetition
+
+```rs
+// Basically like vec!() but it requires to provided at least one argument
+macro_rules! my_vec {
+  ($($x: expr), +) => {
+    {
+      // Create the vector
+      let mut temp_vec = Vec::new();
+
+      // Push one or more elements (given through $x) to the vector 
+      // Using it like "$(...)+" basically serves as a loop for all the values from $x (repetition block)
+     $(
+      temp_vec.push($x);
+      )+
+
+      // Return the vector
+      temp_vec
+    }
+  } 
+}
+```
+
+
 
 ### Async API Call with tokio, reqwest, and serde_json
 
