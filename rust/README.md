@@ -11,6 +11,8 @@ This section covers information about the programming language Rust.
 - [Trait Objects and Virtual Table](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/45093215#overview)
 - [Organizing Modules in Seperate Files (this and the next video)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/47092443#overview)
 - [Deref Coercion](https://doc.rust-lang.org/book/ch15-02-deref.html#implicit-deref-coercions-with-functions-and-methods)
+- [Reference Counting (Rc) and RefCell](https://www.udemy.com/course/autogpt-gpt4-code-writing-ai/learn/lecture/38251074#overview)
+- [Reference Counting (Rc) with Weak](https://www.udemy.com/course/autogpt-gpt4-code-writing-ai/learn/lecture/38251700#overview)
 
 ## Useful Rust Lines
 
@@ -197,8 +199,6 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## General Information
 
-- The **Arc** type is used to share ownership of the data across multiple threads.
-- The **Mutex** type is used to ensure that only one thread can mutate the data at a time.
 - The **mod** keyword declares a module. Used to tell Rust to look for the corresponding file or directory (like `mod routes` or `mod services` in the `main.rs` file).
 - The **use** keyword brings items into scope, allowing you to use them without fully qualifying their paths.
 - Use **pub** to make functions, structs, or modules public. Without pub, items are private to the module.
@@ -990,13 +990,14 @@ use tokio::time::{sleep, Duration};
 #[tokio::main]
 async fn main() {
     let max_concurrent_tasks = 10;
-    let sem = tokio::sync::Semaphore::new(max_concurrent_tasks);
+    let sem = tokio::sync::Semaphore::new(max_concurrent_tasks); // Limits to 10 concurrent tasks
+
 
     let tasks: Vec<_> = (0..15) // Simulate 15 incoming requests
         .map(|i| {
             let permit = sem.clone().acquire_owned();
             tokio::spawn(async move {
-                let _permit = permit.await.unwrap(); // Limits to 10 concurrent tasks
+                let _permit = permit.await.unwrap(); 
                 handle_request(i).await;
             })
         })
@@ -1016,9 +1017,28 @@ async fn handle_request(id: usize) {
 }
 ```
 
-- **Tasks Start Independently**: When tokio::spawn is used, each request (handle_request) is started independently and doesn’t wait for the previous task to complete.
-- **Concurrent Execution**: Multiple requests can be processed simultaneously, up to the concurrency limit set by the semaphore (or as allowed by the runtime threads). This concurrency means that faster tasks may complete earlier, even if they were started later than others.
 - **Out-of-Order Completion**: Since tasks are concurrent, some may take longer than others, leading to a completion order that doesn’t necessarily match the order in which requests were received.
+
+**Semaphore (tokio::sync::Semaphore):**
+- The Semaphore::new(max_concurrent_tasks) limits the number of concurrent tasks that can run at the same time. In your case, it's set to max_concurrent_tasks = 10, so no more than 10 tasks can run concurrently.
+- Each task acquires a permit from the semaphore before it can start. When a task finishes (or awaits something like sleep), it releases the permit, allowing another task to acquire it and run.
+
+**Task Execution:**
+- tokio::spawn schedules the tasks to run asynchronously, but the tasks don't necessarily run on different threads at once. Instead, the tasks are executed on a limited number of threads from the Tokio runtime's thread pool.
+- Tokio uses a single or small number of threads (depending on the runtime configuration) to handle many tasks. So, it may start with 10 tasks running concurrently (on separate threads or on the same thread, depending on how the runtime schedules them).
+- When a task hits await, such as sleep(Duration::from_secs(2)).await;, it yields the thread back to the runtime (meaning, it does not occupy the thread anymore) so that another task can run in the meantime, even though the task is not finished. The same thread can then be reused by other tasks.
+
+**What's Happening When a Task Hits await?**
+When a task calls .await, it’s pausing its execution until the awaited operation (like sleep(Duration::from_secs(2))) is finished. Here's the important part:
+- Task Context Switch: When a task is awaiting, it does not block the thread it is running on. Instead, the task is suspended and the thread becomes available to run other tasks.
+- Thread Pool: Even though all tasks are managed within the runtime, multiple tasks may be scheduled to run on a pool of threads. If a task is paused while awaiting, the runtime can execute another task on that same thread.
+- No "Blocking": The thread isn't being "held up" or "blocked" by the awaiting task, which is the key idea. The thread is available to process other tasks that are ready to run. This is very different from traditional multi-threading, where tasks block their threads while waiting.
+
+**Concurrency, Not Parallelism:**
+- While tasks are running concurrently, they are not running in parallel unless the runtime is configured with multiple threads and multiple tasks need to be executed simultaneously.
+- The key concept here is that while tasks are waiting (e.g., on await), the runtime will switch between tasks, allowing other tasks to proceed without blocking. This is how I/O-bound tasks (like waiting for a web request) can be efficient, as they don't block the whole system.
+- The tasks will share threads and only use new threads as necessary, allowing concurrency without requiring a large number of OS threads.
+
 
 ### Change Value of an Array
 
@@ -1378,8 +1398,11 @@ Smart pointers, on the other hand, are data structures that act like a pointer b
 A smart pointer is a data structure that not only acts like a pointer but also has additional metadata and capabilities. Smart pointers manage the lifecycle of the object they point to through automated reference counting, ownership rules, and other mechanisms. Rust's standard library provides several types of smart pointers, including `Box`, `Rc`, and `Arc`.
 
 - `Box<T>`: Used for heap allocation. It provides ownership for the data it points to and deallocates the data when the Box goes out of scope.#
-- `Rc<T>`: A reference-counted smart pointer for single-threaded scenarios where multiple ownership is required. `Rc` stands for Reference Counted.
-- `Arc<T>`: An atomically reference-counted smart pointer suitable for multi-threaded scenarios where multiple ownership is required. `Arc` stands for Atomic Reference Counted.
+- `Rc<T>`: A reference-counted smart pointer for single-threaded scenarios where multiple ownership is required. `Rc` stands for Reference Counted. It’s used when you need shared ownership but don’t require interior mutability. It’s immutable by default.
+- `RefCell<T>` (Interior Mutability): Allows mutable borrowing at runtime, even if the `RefCell<T>` itself is immutable. It enforces borrowing rules dynamically (at runtime), unlike &mut T which enforces them at compile time.
+  - `Rc<RefCell<T>>` is a common pattern where `Rc<T>` provides shared ownership, and `RefCell<T>` allows interior mutability.
+- `Arc<T>`: An atomically reference-counted smart pointer suitable for multi-threaded scenarios where multiple ownership across threads is required. `Arc` stands for Atomic Reference Counted.
+- `Mutex` is used to ensure that only one thread can mutate the data at a time. It basically locks it for one thread so no other threads can change that value while it's locked.
 
 **Dynamic Dispatch with dyn Error**
 The `dyn Error` syntax in Rust is used to create trait objects. A trait object is a way of achieving dynamic dispatch in Rust, allowing you to call methods on types that implement a particular trait without knowing the exact type at compile time.
@@ -1449,6 +1472,22 @@ To accomplish message-sending concurrency, Rust's standard library provides an i
 You can imagine a channel in programming as being like a directional channel of water, such as a stream or a river. If you put something like a rubber duck into a river, it will travel downstream to the end of the waterway.
 
 A channel has two halves: a transmitter and a receiver. The transmitter half is the upstream location where you put rubber ducks into the river, and the receiver half is where the rubber duck ends up downstream. One part of your code calls methods on the transmitter with the data you want to send, and another part checks the receiving end for arriving messages. A channel is said to be closed if either the transmitter or receiver half is dropped.
+
+## `thread::spawn` and `tokio::spawn`
+
+**thread::spawn (Standard Threads):**
+- Usage: Directly spawns a new OS thread.
+- Threading: Each call to thread::spawn creates a separate operating system (OS) thread.
+- Blocking: OS threads are heavyweight, which means they come with the cost of thread management and context switching.
+- Performance: More threads result in higher overhead due to the OS's need to manage them (especially for large numbers of threads).
+- Concurrency: Works well for CPU-bound tasks that can run in parallel, but may be inefficient for tasks that don’t need full threads, like I/O-bound tasks.
+
+**tokio::spawn (Async Task on Tokio Runtime)**
+- Usage: Spawns an asynchronous task that runs on Tokio's runtime, which can use a thread pool.
+- Threading: By default, Tokio runs tasks on a thread pool, and tasks are typically scheduled on threads as needed. Tasks are not bound to specific threads.
+- Blocking: Tasks spawned via tokio::spawn are lightweight async tasks that run cooperatively (concurrently) rather than using full OS threads. Async tasks yield control when they are awaiting I/O, making efficient use of a single or a small number of threads.
+- Performance: Much more efficient for I/O-bound tasks (e.g., waiting on network requests, file I/O), as tasks don’t block the thread while waiting. Tasks are "farmed out" to a small number of threads and run until they need to await something, at which point another task can run.
+- Concurrency: Works well for I/O-bound tasks and can handle many tasks concurrently on a small number of threads without significant overhead.
 
 ## Diesel
 
