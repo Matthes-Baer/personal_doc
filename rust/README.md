@@ -296,7 +296,7 @@ use std::collections::HashMap;
 
 macro_rules! hashmap_with_tuple {
     ($(($key: expr, $value: expr)), +) => {{
-        let mut map: HashMap<_, _> = std::collections::HashMap::new();
+        let mut map: HashMap<_, _> = HashMap::new();
 
         $( map.insert($key, $value); )+
 
@@ -307,7 +307,7 @@ macro_rules! hashmap_with_tuple {
 
 macro_rules! hashmap_with_token_tree_syntax {
     ($($key: expr => $value: expr), +) => {{
-        let mut map: HashMap<_, _> = std::collections::HashMap::new();
+        let mut map: HashMap<_, _> = HashMap::new();
 
         $( map.insert($key, $value); )+
 
