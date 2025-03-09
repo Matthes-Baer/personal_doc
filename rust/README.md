@@ -226,8 +226,8 @@ To make custom macros available in other files, you have to export them:
 macro_rules! my_macro {...}
 ```
 
-
 When creating a custom macro, you have to use macro captures:
+
 - item: Captures any Rust item, such as functions, structs, enums, traits, impl blocks, etc.
 - block: Captures a code block (enclosed in {}).
 - stmt: Captures a statement, which can be followed by ; or =>.
@@ -259,6 +259,7 @@ macro_rules! parse_input {
 ```
 
 You may also make use of repetition specifiers:
+
 - `*` match zero or more repetitions
 - `+` match one or more repetitions
 - `?` match zero or one repetition
@@ -271,7 +272,7 @@ macro_rules! my_vec {
       // Create the vector
       let mut temp_vec = Vec::new();
 
-      // Push one or more elements (given through $x) to the vector 
+      // Push one or more elements (given through $x) to the vector
       // Using it like "$(...)+" basically serves as a loop for all the values from $x (repetition block)
      $(
       temp_vec.push($x);
@@ -280,12 +281,50 @@ macro_rules! my_vec {
       // Return the vector
       temp_vec
     }
-  } 
+  }
 }
 ```
 
 Those were just declarative macros, there are also [procedural macros](https://www.udemy.com/course/autogpt-gpt4-code-writing-ai/learn/lecture/38205574#overview) which get way more advanced.
 
+#### custom hashmap! declarative macro
+
+This creates a declarative hashmap! macro which can be used to shorthand create a hashmap with initial values
+
+```rs
+use std::collections::HashMap;
+
+macro_rules! hashmap_with_tuple {
+    ($(($key: expr, $value: expr)), +) => {{
+        let mut map: HashMap<_, _> = std::collections::HashMap::new();
+
+        $( map.insert($key, $value); )+
+
+        map
+        }
+    };
+}
+
+macro_rules! hashmap_with_token_tree_syntax {
+    ($($key: expr => $value: expr), +) => {{
+        let mut map: HashMap<_, _> = std::collections::HashMap::new();
+
+        $( map.insert($key, $value); )+
+
+        map
+        }
+    };
+}
+
+fn main() {
+    let hashmap_with_tuple_test = hashmap_with_tuple!((1, "one"), (2, "two"));
+    let hashmap_with_token_tree_syntax_test =
+        hashmap_with_token_tree_syntax!(1 => "one", 2 => "two");
+
+    dbg!(hashmap_with_tuple_test);
+    dbg!(hashmap_with_token_tree_syntax_test);
+}
+```
 
 ### Async API Call with tokio, reqwest, and serde_json
 
@@ -328,6 +367,7 @@ mod tests {
 ```
 
 You could also have handled the errors like this (for cases with alternative error types):
+
 ```rs
 
 ...
@@ -345,6 +385,7 @@ let json_response: serde_json::Value = response
 You could also have used `expect()`, `expect_err()`, or even `unwrap()` etc.
 
 ### Number Literals
+
 ```rs
 println!("Big number is {}", 98_222_000);
 println!("Hex is {}", 0xff);
@@ -354,6 +395,7 @@ println!("Bytes 'A' is {}", b'A');
 ```
 
 ### Raw - String Literal
+
 ```rs
 let text: &str = r#"{"message": "Rust is awesome"}"#
 ```
@@ -997,7 +1039,7 @@ async fn main() {
         .map(|i| {
             let permit = sem.clone().acquire_owned();
             tokio::spawn(async move {
-                let _permit = permit.await.unwrap(); 
+                let _permit = permit.await.unwrap();
                 handle_request(i).await;
             })
         })
@@ -1020,25 +1062,28 @@ async fn handle_request(id: usize) {
 - **Out-of-Order Completion**: Since tasks are concurrent, some may take longer than others, leading to a completion order that doesn’t necessarily match the order in which requests were received.
 
 **Semaphore (tokio::sync::Semaphore):**
+
 - The Semaphore::new(max_concurrent_tasks) limits the number of concurrent tasks that can run at the same time. In your case, it's set to max_concurrent_tasks = 10, so no more than 10 tasks can run concurrently.
 - Each task acquires a permit from the semaphore before it can start. When a task finishes (or awaits something like sleep), it releases the permit, allowing another task to acquire it and run.
 
 **Task Execution:**
+
 - tokio::spawn schedules the tasks to run asynchronously, but the tasks don't necessarily run on different threads at once. Instead, the tasks are executed on a limited number of threads from the Tokio runtime's thread pool.
 - Tokio uses a single or small number of threads (depending on the runtime configuration) to handle many tasks. So, it may start with 10 tasks running concurrently (on separate threads or on the same thread, depending on how the runtime schedules them).
 - When a task hits await, such as sleep(Duration::from_secs(2)).await;, it yields the thread back to the runtime (meaning, it does not occupy the thread anymore) so that another task can run in the meantime, even though the task is not finished. The same thread can then be reused by other tasks.
 
 **What's Happening When a Task Hits await?**
 When a task calls .await, it’s pausing its execution until the awaited operation (like sleep(Duration::from_secs(2))) is finished. Here's the important part:
+
 - Task Context Switch: When a task is awaiting, it does not block the thread it is running on. Instead, the task is suspended and the thread becomes available to run other tasks.
 - Thread Pool: Even though all tasks are managed within the runtime, multiple tasks may be scheduled to run on a pool of threads. If a task is paused while awaiting, the runtime can execute another task on that same thread.
 - No "Blocking": The thread isn't being "held up" or "blocked" by the awaiting task, which is the key idea. The thread is available to process other tasks that are ready to run. This is very different from traditional multi-threading, where tasks block their threads while waiting.
 
 **Concurrency, Not Parallelism:**
+
 - While tasks are running concurrently, they are not running in parallel unless the runtime is configured with multiple threads and multiple tasks need to be executed simultaneously.
 - The key concept here is that while tasks are waiting (e.g., on await), the runtime will switch between tasks, allowing other tasks to proceed without blocking. This is how I/O-bound tasks (like waiting for a web request) can be efficient, as they don't block the whole system.
 - The tasks will share threads and only use new threads as necessary, allowing concurrency without requiring a large number of OS threads.
-
 
 ### Change Value of an Array
 
@@ -1188,10 +1233,10 @@ When your code calls a function, the values passed into the function (including,
 Keeping track of what parts of code are using what data on the heap, minimizing the amount of duplicate data on the heap, and cleaning up unused data on the heap so you don’t run out of space are all problems that ownership addresses. Once you understand ownership, you won’t need to think about the stack and the heap very often, but knowing that the main purpose of ownership is to manage heap data can help explain why it works the way it does.
 
 Besides the Stack and the Heap, there is also the Static Memory (RODATA), for example. References to string literals (&str) or other constant data are stored in static (read-only) memory.
+
 ```rs
 let s: &str = "hello";  // Stored in RODATA, s is a reference to it
 ```
-
 
 ### Example
 
@@ -1476,6 +1521,7 @@ A channel has two halves: a transmitter and a receiver. The transmitter half is 
 ## `thread::spawn` and `tokio::spawn`
 
 **thread::spawn (Standard Threads):**
+
 - Usage: Directly spawns a new OS thread.
 - Threading: Each call to thread::spawn creates a separate operating system (OS) thread.
 - Blocking: OS threads are heavyweight, which means they come with the cost of thread management and context switching.
@@ -1483,6 +1529,7 @@ A channel has two halves: a transmitter and a receiver. The transmitter half is 
 - Concurrency: Works well for CPU-bound tasks that can run in parallel, but may be inefficient for tasks that don’t need full threads, like I/O-bound tasks.
 
 **tokio::spawn (Async Task on Tokio Runtime)**
+
 - Usage: Spawns an asynchronous task that runs on Tokio's runtime, which can use a thread pool.
 - Threading: By default, Tokio runs tasks on a thread pool, and tasks are typically scheduled on threads as needed. Tasks are not bound to specific threads.
 - Blocking: Tasks spawned via tokio::spawn are lightweight async tasks that run cooperatively (concurrently) rather than using full OS threads. Async tasks yield control when they are awaiting I/O, making efficient use of a single or a small number of threads.
