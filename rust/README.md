@@ -1689,3 +1689,22 @@ fn get_animal() -> Box<dyn Animal> {
 | Polymorphism | Supports dynamic dispatch | Supports dynamic dispatch  |
 | Mutability   | Requires `&mut dyn`       | Can own a mutable object   |
 | Use Case     | Temporary or shared usage | Long-lived or transferable |
+
+## Borrowing Rules
+
+1. **Ownership Rules**
+   Each value in Rust has one owner.
+   When the owner goes out of scope, the value is dropped.
+   Ownership can be moved but not copied (unless the type implements Copy).
+2. **Borrowing Rules**
+   You can have one mutable reference (&mut T) or any number of immutable references (&T), but not both at the same time.
+   References must always be valid (no use-after-free).
+3. **Mutable Borrowing (&mut T)**
+   Only one &mut T reference to a value is allowed at a time.
+   The mutable reference must not exist while immutable references (&T) exist.
+4. **Immutable Borrowing (&T)**
+   Multiple &T references are allowed as long as no &mut T exists.
+5. **Lifetimes and Borrowing**
+   A reference must not outlive the data it points to.
+   Rust prevents dangling references (e.g., returning a reference to a local variable).
+   These rules ensure safe memory access without a garbage collector.
