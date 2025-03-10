@@ -216,6 +216,87 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code Examples
 
+### Custom Error Handling in Actix-web
+
+```rs
+
+// Cargo.toml
+[dependencies]
+actix-web = "4.0"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+...
+
+
+use actix_web::{ResponseError, HttpResponse};
+use thiserror::Error;
+use serde_json::json;
+
+#[derive(Debug, Error)]
+pub enum ApiError {
+    #[error("Invalid email format")]
+    InvalidEmail,
+
+    #[error("Missing required field: {0}")]
+    MissingField(String),
+}
+
+...
+
+
+/// To convert the error into an HTTP response, we implement the ResponseError trait. The error_response method defines how Actix should handle the error when it is returned in a route handler. The "ResponseError" trait with the "error_response" method is automatically detected for actix-web and will use it automatically on elements that implement this trait
+/// Actix-web automatically detects and calls the error_response() method from the ResponseError trait when an error is returned from a route handler.
+/// When you return Err(ApiError::InvalidEmail), Actix-web automatically converts it into an HTTP response by calling the error_response() method you defined in the ResponseError implementation. */
+/// This behavior is expected and built into Actix-web for error handling.
+impl ResponseError for ApiError {
+    fn error_response(&self) -> HttpResponse {
+        match *self {
+            ApiError::InvalidEmail => {
+                HttpResponse::BadRequest().json(json!({ "error": "Invalid email format" }))
+            }
+            ApiError::MissingField(ref field) => {
+                HttpResponse::BadRequest().json(json!({ "error": format!("Missing field: {}", field) }))
+            }
+        }
+    }
+}
+
+...
+
+#[derive(serde::Deserialize)]
+struct UserInput {
+    email: String,
+}
+
+
+fn validate_input(input: &UserInput) -> Result<(), ApiError> {
+    if input.email.trim().is_empty() {
+        return Err(ApiError::MissingField("email".to_string()));
+    }
+    if !input.email.contains('@') {
+        return Err(ApiError::InvalidEmail);
+    }
+    Ok(())
+}
+
+async fn create_user(input: web::Json<UserInput>) -> Result<HttpResponse, ApiError> {
+    /// Using `?` to propagate errors
+    /// If this fails, the function returns early with the error; if no fail occurs, it just goes on
+    /// This is basically the cleaner alternative for a "match" statement where you would check for "Err" or "Ok" and return early if an "Err" is detected
+    validate_input(&input)?;
+    Ok(HttpResponse::Ok().json(json!({ "message": "User created successfully" })))
+}
+```
+
+There are more actix-web traits which are automatically used to simplify response generation, extracting data, and middleware handling:
+
+- [Responder](https://docs.rs/actix-web/latest/actix_web/trait.Responder.html) - Automatically converts return values into HTTP responses.
+- [FromRequest](https://docs.rs/actix-web/latest/actix_web/trait.FromRequest.html) - Automatically extracts request data into handler parameters.
+- [ResponseError](https://mozilla-services.github.io/merino/rustdoc/actix_web/error/trait.ResponseError.html) - see example above
+- https://docs.rs/actix-web/latest/actix_web/index.html#traits
+
 ### Creating custom declarative macros
 
 To make custom macros available in other files, you have to export them:
