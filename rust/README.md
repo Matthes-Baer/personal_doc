@@ -130,7 +130,7 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - cloned() (Iterator)
 - cycle() (Iterator)
 
-## Useful Crates
+## Useful Crates (`Cargo.toml`)
 
 - actix-web = "4.6.0"
 - anyhow = "1.0.86"
@@ -143,6 +143,8 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - tokio_schedule = "0.3.1"
 - env_logger = "0.11.3"
 - log = "0.4.21"
+- async-trait = "0.1.68"
+- actix-cors = "0.6.4"
 
 ## Important Attributes
 
