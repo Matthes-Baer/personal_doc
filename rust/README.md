@@ -218,6 +218,19 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
 ## Code Examples
 
+### into_inner()
+
+The `into_inner()` will basically extract the inner part of the `web::Json<Task>` type that would be `Task`.
+
+```rs
+async fn create_task(app_state: web::Data<AppState>, task: web::Json<Task>) -> impl Responder {
+  let mut db = app_state.db.lock().unwrap();
+  db.insert(task.into_inner());
+  let _ = db.save_to_file();
+  HttpResponse::Ok().finish()
+}
+```
+
 ### Custom Error Handling in Actix-web
 
 ```rs
