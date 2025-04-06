@@ -146,6 +146,10 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - async-trait = "0.1.68"
 - actix-cors = "0.6.4"
 
+Also:
+
+- [r2d2 (see features of diesel above)](https://crates.io/crates/r2d2)
+
 ## Important Attributes
 
 - #[derive(...)]: Automatically generates trait implementations for types (e.g., Debug, Clone, PartialEq).
