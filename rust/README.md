@@ -222,6 +222,25 @@ Also:
 
 ## Code Examples
 
+### GET fetch with custom headers with reqwest
+
+```rs
+use reqwest; // 0.10.0
+use tokio; // 0.2.6
+
+#[tokio::main]
+async fn main() -> Result<(), reqwest::Error> {
+    let client = reqwest::Client::new();
+    let res = client
+        .get("https://www.rust-lang.org")
+        .header("X-My-Custom-Header", "foo")
+        .send()
+        .await?;
+
+    Ok(())
+}
+```
+
 ### into_inner()
 
 The `into_inner()` will basically extract the inner part of the `web::Json<Task>` type that would be `Task`.
