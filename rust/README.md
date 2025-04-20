@@ -222,6 +222,29 @@ Also:
 
 ## Code Examples
 
+### for<'a>
+
+_What does for<'a> mean?_
+It makes the function generic over all lifetimes 'a. In other words, the function must be able to accept a reference with any lifetime, not just a specific one.
+
+This shows up when you want to pass functions as parameters (or define function pointers) that are generic over lifetimes.
+
+```rs
+fn always_hello(_: &str) -> &'static str {
+    "hello"
+}
+
+fn call_it(f: for<'a> fn(&'a str) -> &'static str) {
+    println!("{}", f("whatever"));
+}
+
+fn main() {
+    call_it(always_hello);
+}
+```
+
+If you didn't use for<'a>, then the function pointer would expect a single, specific lifetime, which could restrict what kind of functions you can pass in.
+
 ### GET fetch with custom headers with reqwest
 
 ```rs
