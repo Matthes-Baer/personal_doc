@@ -222,6 +222,30 @@ Also:
 
 ## Code Examples
 
+### Deserialization
+
+```rs
+use serde::{Deserialize};
+use serde_json;
+
+#[derive(Debug, Deserialize)]
+struct Person {
+    name: String,
+    age: u8,
+}
+
+fn main() {
+    let data = r#"{ "name": "Alice", "age": 30 }"#; // raw string literal - It lets you write strings without needing to escape backslashes or quotes, which is especially useful for things like JSON, regex patterns, file paths, etc.
+
+    let person: Person = serde_json::from_str(data).unwrap();
+
+    println!("{:?}", person);
+}
+
+// Output:
+// Person { name: "Alice", age: 30 }
+```
+
 ### for<'a>
 
 _What does for<'a> mean?_
