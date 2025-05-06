@@ -22,6 +22,16 @@ On the other hand, Rust and C programs use slightly less memory than Go programs
 
 ## Code Examples
 
+### Multiple Parameters With Same Type
+
+When multiple arguments are of the same type, and are next to each other in the function signature, the type only needs to be declared after the last argument.
+
+```go
+func addToDatabase(hp, damage int, name string) {
+  // ?
+}
+```
+
 ### Same Line Declarations
 ```go
 averageOpenRate, displayMessage := .23, "is the average open rate of your messages"
