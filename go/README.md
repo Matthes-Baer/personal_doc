@@ -22,6 +22,18 @@ On the other hand, Rust and C programs use slightly less memory than Go programs
 
 ## Code Examples
 
+### Return multiple values and get multiple values from a function
+
+```go
+func getPoint() (x int, y int) {
+  return 3, 4
+}
+
+// you can also ignore values; this is not just a convention but a real language feature that completely discards the value
+x, _ := getPoint()
+```
+
+
 ### Multiple Parameters With Same Type
 
 When multiple arguments are of the same type, and are next to each other in the function signature, the type only needs to be declared after the last argument.
