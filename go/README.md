@@ -5,6 +5,7 @@
 
 ## General Information
 
+- Go follows a field after field memory layout for structs. By having a poorly designed order of fields like having a `uint8` type before a `uint16` type - this would lead to Go "align" the `uint16` field, effectively creating some padding (wasted space) to make up for the size difference between the two types; this helps with execution speed but you will have increased memory usage compared with having the proper order of first the `uint16` and then the `uint8` type - [boot.dev lesson on this](https://www.boot.dev/lessons/84de8a08-1f02-47fd-b0a9-cab314162722)
 - Summary of What "Not Object-Oriented" Means in Go:
   - No classes: Instead, you have structs and methods.
   - No inheritance: You use composition (embedding structs) to combine behaviors.
@@ -77,6 +78,8 @@ type truck struct {
 - Unlike nested structs, an embedded struct's fields are accessed at the top level like normal fields.
 - Like nested structs, you assign the promoted fields with the embedded struct in a composite literal.
 
+With the embedded struct type from above, you still create the struct like this (nested car, not on the same level as truck):
+
 ```go
 lanesTruck := truck{
   bedSize: 10,
@@ -90,7 +93,16 @@ fmt.Println(lanesTruck.brand) // Toyota
 fmt.Println(lanesTruck.model) // Camry
 ```
 
-In the example above you can see that both brand and model are accessible from the top-level, while the nested equivalent to this object would require you to access these fields via a nested car struct: lanesTruck.car.brand or lanesTruck.car.model.
+In the example above you can see that both brand and model are accessible from the top-level, while the nested equivalent to this object would require you to access these fields via a nested car struct: lanesTruck.car.brand or lanesTruck.car.model. If you want to have it nested, you would have to create the struct type like this:
+
+```go
+type truck struct {
+  car car
+  bedSize int
+}
+```
+
+Thus, `car car` (this would be nested) instead of just `car` (this would be embedded).
 
 
 ### Anonymous Structs
