@@ -28,7 +28,22 @@ On the other hand, Rust and C programs use slightly less memory than Go programs
 - `fmt.Sprintf()` - Returns the formatted string (does automatically end with a newline (\n))
 
 
-## Code Examples (lot of examples from boot.dev)
+## Code Examples (lots of examples from boot.dev)
+
+### Interfaces
+
+Interfaces are abstract types that define behavior via method signatures, structs on the other hand are concrete data types used to group related fields.
+
+```go
+type shape interface {
+  area() float64
+  perimeter() float64
+}
+
+func printShapeData(s shape) {
+	fmt.Printf("Area: %v - Perimeter: %v\n", s.area(), s.perimeter())
+}
+```
 
 ### Struct Methods
 
