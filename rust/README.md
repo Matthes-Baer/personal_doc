@@ -145,6 +145,9 @@ Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 - log = "0.4.21"
 - async-trait = "0.1.68"
 - actix-cors = "0.6.4"
+- tonic (Rust gRPC client/server framework - Handles gRPC communication, HTTP/2, protobuf encoding/decoding; required for gRPC calls including Arrow Flight)
+- arrow (Apache Arrow data structures & utilities - Manipulates Arrow in-memory columnar data (schema, arrays, serialization, etc.))
+- arrow-flight (Protocol definitions and client/server code for Apache Arrow Flight over gRPC - Builds on tonic; defines RPC methods for efficient Arrow data transport)
 
 Also:
 
