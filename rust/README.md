@@ -42,93 +42,160 @@ This section covers information about the programming language Rust.
 
 Only types with the `PartialOrd` AND `Copy` traits are allowed for this function
 
-## Useful Methods
+## Useful Methods (not exhaustive)
 
-### String Methods
+### 📚 Vec<T> (Vector)
 
-- len() (String, &str)
-- chars() (String, &str)
-- bytes() (String, &str)
-- is_empty() (String, &str)
-- contains() (String, &str)
-- starts_with() (String, &str)
-- ends_with() (String, &str)
-- split() (String, &str)
-- trim() (String, &str)
-- to_lowercase() (String, &str)
-- to_uppercase() (String, &str)
+| Method                   | Description                             |
+|--------------------------|-----------------------------------------|
+| `.len()`                 | Get number of elements                  |
+| `.is_empty()`            | Check if empty                          |
+| `.push(value)`           | Append element                          |
+| `.pop()`                 | Remove and return last element          |
+| `.insert(index, value)`  | Insert at index                         |
+| `.remove(index)`         | Remove at index                         |
+| `.clear()`               | Remove all elements                     |
+| `.get(index)`            | Safe indexing → `Option<&T>`            |
+| `[index]`                | Direct indexing (panics if out-of-bounds) |
+| `.contains(&val)`        | Check if value exists                   |
+| `.sort()` / `.sort_by()` | Sort in-place                           |
+| `.reverse()`             | Reverse in-place                        |
+| `.truncate(n)`           | Keep only first `n` elements            |
+| `.retain(f)`             | Keep elements matching condition        |
+| `.resize(n, val)`        | Resize with default value               |
+| `.extend(iter)`          | Append elements from another iterator   |
+| `.split_at(index)`       | Split into two slices                   |
+| `.clone()`               | Deep copy                               |
+| `.iter()`                | Immutable iterator                      |
+| `.iter_mut()`            | Mutable iterator                        |
+| `.into_iter()`           | Consuming iterator                      |
 
-### Vector Methods
-
-- len() (Vec)
-- is_empty() (Vec)
-- push() (Vec)
-- pop() (Vec)
-- contains() (Vec)
-- iter() (Vec)
-- extend() (Vec)
-- drain() (Vec) - returns an iterator over the range of removed elements of the original vector
-- sort() (Vec)
-- sort_by() (Vec)
-- sort_by_key() (Vec)
-- map() (Vec, Iter)
-- filter() (Vec, Iter)
-- collect() (Vec, Iter)
-- find() (Vec, Iter)
-- fold() (Vec, Iter)
-- for_each() (Vec, Iter)
-- any() (Vec, Iter)
-- all() (Vec, Iter)
-- take() (Vec, Iter)
-- skip() (Vec, Iter)
-- enumerate() (Vec, Iter)
-- zip() (Vec, Iter)
 - Vec::with_capacity() - minimize memory re-allocations by specifiying a specific capacitiy of the vector at the start (the capacity on the Stack is larger than the actual current vector length; If the vector length would exceed the capacity, a re-allocation occurs (a new pointer is assigned in the Stack which points to different location on the Heap compared to the original used pointer) (such re-allocations can be minimized by specifiying a capacity by yourself instead of letting it increase on its own)) -> helpful for situations where you have information on how many elements a vector will hold in the future.
 
-### HashMap Methods
 
-- insert() (HashMap)
-- get() (HashMap)
-- contains_key() (HashMap)
-- remove() (HashMap)
-- keys() (HashMap)
-- values() (HashMap)
-- iter() (HashMap)
-- iter_mut() (HashMap)
+### 🧵 String and &str
 
-### Result and Option Methods
+#### 🔤 Shared Methods
 
-- unwrap() (Option, Result)
-- unwrap_or() (Option, Result)
-- is_some() (Option)
-- is_ok() (Result)
-- is_err() (Result)
-- map() (Option, Result)
-- map_err() (Result)
-- and_then() (Option, Result)
-- or_else() (Option, Result)
-- ok() (Result)
-- err() (Result)
-- as_ref() (Option, Result)
+| Method                   | Description                             |
+|--------------------------|-----------------------------------------|
+| `.len()`                 | Length in bytes                         |
+| `.is_empty()`            | Check if empty                          |
+| `.chars()`               | Iterator over characters                |
+| `.bytes()`               | Iterator over bytes                     |
+| `.split(delim)`          | Split by delimiter                      |
+| `.split_whitespace()`    | Split by whitespace                     |
+| `.trim()`                | Remove surrounding whitespace           |
+| `.replace(from, to)`     | Replace substrings                      |
+| `.contains(substr)`      | Check if contains substring             |
+| `.starts_with()`         | Check prefix                            |
+| `.ends_with()`           | Check suffix                            |
+| `.find()`, `.rfind()`    | Find index of match                     |
+| `.to_lowercase()`        | Lowercase version                       |
+| `.to_uppercase()`        | Uppercase version                       |
 
-### Iterator Methods
+#### 🧵 String-only
 
-- next() (Iterator)
-- map() (Iterator)
-- filter() (Iterator)
-- collect() (Iterator)
-- find() (Iterator)
-- fold() (Iterator)
-- for_each() (Iterator)
-- any() (Iterator)
-- all() (Iterator)
-- take() (Iterator)
-- skip() (Iterator)
-- enumerate() (Iterator) - returns iterator of tuples with each tuple containing a reference to the index and a reference to the value
-- zip() (Iterator)
-- flat_map() (Iterator)
-- cloned() (Iterator)
-- cycle() (Iterator)
+| Method                   | Description                             |
+|--------------------------|-----------------------------------------|
+| `.push(char)`            | Append character                        |
+| `.push_str(&str)`        | Append string slice                     |
+| `.clear()`               | Clear the string                        |
+| `.as_str()`              | Convert to `&str`                       |
+| `.into_bytes()`          | Convert to `Vec<u8>`                    |
+| `.capacity()`, `.reserve()` | Manage memory                        |
+
+
+### 🔠 char
+
+| Method                   | Description                             |
+|--------------------------|-----------------------------------------|
+| `.is_alphabetic()`       | Is letter                               |
+| `.is_numeric()`          | Is digit                                |
+| `.is_alphanumeric()`     | Is letter or digit                      |
+| `.is_whitespace()`       | Is space/tab/newline                    |
+| `.to_digit(radix)`       | Convert to number (base)                |
+| `.to_uppercase()`        | Convert to uppercase                    |
+| `.to_lowercase()`        | Convert to lowercase                    |
+
+
+### 🔢 Numbers (i32, u32, usize, f64, etc.)
+
+| Method                   | Description                             |
+|--------------------------|-----------------------------------------|
+| `.abs()`                 | Absolute value                          |
+| `.pow(exp)`              | Power                                   |
+| `.sqrt()` (f64 only)     | Square root                             |
+| `.max(other)`            | Max of two                              |
+| `.min(other)`            | Min of two                              |
+| `.clamp(min, max)`       | Clamp within range                      |
+| `.is_nan()`              | Check if NaN                            |
+| `.is_infinite()`         | Check if infinite                       |
+| `.to_string()`           | Convert to string                       |
+| `.checked_add()`, etc.   | Overflow-safe math                      |
+
+
+### 🗺️ HashMap<K, V>
+
+| Method                                | Description                                      |
+|--------------------------------------|-------------------------------------------------|
+| `HashMap::new()`                     | Create an empty HashMap                          |
+| `.insert(key, val)`                  | Add or overwrite an entry                        |
+| `.get(&key)`                        | Get value by key → `Option<&V>`                  |
+| `.get_mut(&key)`                    | Get mutable reference to value                   |
+| `.remove(&key)`                     | Remove an entry                                  |
+| `.contains_key(&key)`               | Check if key exists                              |
+| `.entry(key).or_insert(val)`        | Insert if key doesn't exist                      |
+| `.entry(key).or_insert_with(func)`  | Lazily insert with function                      |
+| `.len()`                            | Number of key-value pairs                        |
+| `.is_empty()`                      | Check if empty                                   |
+| `.clear()`                         | Remove all entries                               |
+| `.clone()`                         | Deep copy of the map                             |
+| `.iter()`                         | Iterate as `(&K, &V)`                            |
+| `.iter_mut()`                     | Mutable iteration as `(&K, &mut V)`              |
+| `.into_iter()`                    | Consume map → `(K, V)`                            |
+| `.keys()`                        | Iterator over keys                               |
+| `.values()`                      | Iterator over values                             |
+| `.values_mut()`                  | Mutable iterator over values                     |
+| `.retain(|k, v| cond)`           | Retain only matching entries                     |
+| `.extend(iter)`                  | Add entries from another iterable                |
+| `.capacity()`                    | Current allocation capacity                      |
+| `.with_capacity(n)`              | Create with pre-allocated capacity               |
+| `.shrink_to_fit()`               | Shrink capacity to fit size                      |
+| `.drain()`                      | Remove and iterate all elements                  |
+| `.default()`                    | Create empty map with `Default`                  |
+
+
+### 🔁 Iteration
+
+| Method               | Description                                  |
+|----------------------|----------------------------------------------|
+| `.next()`            | Return the next element                       |
+| `.collect()`         | Gather items into a collection (Vec, HashMap, etc.) |
+| `.map(f)`            | Transform each element using closure `f`    |
+| `.filter(f)`         | Keep elements where closure `f` returns true|
+| `.filter_map(f)`     | Filter and map in one step                    |
+| `.fold(init, f)`     | Reduce elements to a single value             |
+| `.sum()`             | Sum all elements (requires `Sum` trait)       |
+| `.product()`         | Multiply all elements                          |
+| `.enumerate()`       | Yield `(index, element)` pairs                 |
+| `.zip(other)`        | Combine with another iterator                  |
+| `.chain(other)`      | Append another iterator                        |
+| `.take(n)`           | Take first `n` elements                        |
+| `.skip(n)`           | Skip first `n` elements                        |
+| `.rev()`             | Reverse iterator (if supported)                |
+| `.count()`           | Count number of elements                       |
+| `.find(f)`           | Find first element matching predicate `f`    |
+| `.any(f)`            | Check if any element matches predicate `f`   |
+| `.all(f)`            | Check if all elements match predicate `f`    |
+| `.position(f)`       | Get index of first match for predicate `f`   |
+| `.inspect(f)`        | Run closure `f` on each element for debugging |
+| `.flatten()`         | Flatten nested iterators                       |
+| `.copied()`          | Copy elements (for references)                 |
+| `.cloned()`          | Clone elements (for references)                |
+
+
+
 
 ## Useful Crates (`Cargo.toml`)
 
@@ -224,6 +291,23 @@ Also:
   - Rust's Deref Coercion is a feature that automatically converts a reference from one type to another when needed, as long as the first type implements the Deref trait.
 
 ## Code Examples
+
+### `.zip()` Method
+
+`.zip()` pairs up elements from both iterators into tuples.
+
+```rust
+fn main() {
+    let numbers = vec![1, 2, 3];
+    let letters = vec!['a', 'b', 'c'];
+
+    // Zip the two iterators together
+    let zipped: Vec<(i32, char)> = numbers.iter().zip(letters.iter()).map(|(&n, &l)| (n, l)).collect();
+
+    println!("{:?}", zipped);
+    // Output: [(1, 'a'), (2, 'b'), (3, 'c')]
+}
+```
 
 ### Deserialization
 
@@ -1447,7 +1531,10 @@ In both C++ and Rust, pointers allow you to reference data from either memory re
 
 - You have more safe abstractions over pointers. Rust uses references (&T) and smart pointers like Box, Rc, and Arc, which manage memory more safely.
 
-- Rust's ownership and borrowing system prevents many pointer-related issues by enforcing strict rules at compile time (like preventing dangling pointers).
+- Rust's ownership and borrowing system prevents many pointer-related issues by enforcing strict rules at compile time (like preventing dangling pointers). Ownership means who is responsible for cleaning up (dropping) a value. When you have a variable like let x = 5;, x owns that value. &mut is a mutable reference, a temporary borrow of the owner’s value. It does not own the data; it just has permission to modify it while the borrow lasts. The owner still exists somewhere, and Rust enforces that:
+  - There is exactly one mutable reference (&mut) OR
+  - Any number of immutable references (&)
+  - But never both at the same time.
 
 - Null pointers are largely avoided in Rust because Rust doesn’t allow null references. Instead, you use the Option<T> type, where None can represent the absence of a value, avoiding the risk of null pointer dereferencing.
 
@@ -1572,7 +1659,7 @@ v.push(6);
 println!("The first element is: {first}");
 ```
 
-The code look like it should work: why should a reference to the first element care about changes at the end of the vector? This error is due to the way vectors work: because vectors put the values next to each other in memory, adding a new element onto the end of the vector might require allocating new memory and copying the old elements to the new space, if there isn’t enough room to put all the elements next to each other where the vector is currently stored. In that case, the reference to the first element would be pointing to deallocated memory. The borrowing rules prevent programs from ending up in that situation.
+The code looks like it should work: why should a reference to the first element care about changes at the end of the vector? This error is due to the way vectors work: because vectors put the values next to each other in memory, adding a new element onto the end of the vector might require allocating new memory and copying the old elements to the new space, if there isn’t enough room to put all the elements next to each other where the vector is currently stored. In that case, the reference to the first element would be pointing to deallocated memory. The borrowing rules prevent programs from ending up in that situation.
 
 ## The `Copy` Trait
 
