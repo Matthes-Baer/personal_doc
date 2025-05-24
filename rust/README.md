@@ -292,6 +292,30 @@ Also:
 
 ## Code Examples
 
+### Converting Types
+
+Instead of just casting like `x as usize` with x being of type `i32` before, you may want to use `try_into()` to have a proper type conversion:
+
+```rs
+use std::convert::TryInto;
+
+fn main() {
+    let x: i32 = 42;
+
+    // Try to convert i32 to usize safely
+    let y: usize = match x.try_into() {
+        Ok(val) => val,
+        Err(_) => {
+            println!("Cannot convert negative or out-of-range value");
+            return;
+        }
+    };
+
+    println!("Converted value: {}", y);
+}
+```
+
+
 ### `.zip()` Method
 
 `.zip()` pairs up elements from both iterators into tuples.
