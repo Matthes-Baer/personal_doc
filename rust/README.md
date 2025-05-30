@@ -289,6 +289,22 @@ Also:
 - `cargo` is Rust's package manager with functionality like `cargo build --release`, `cargo fmt`, `cargo update`, and many more.
 - Rust oftentimes dereferences under the hood (Deref Coercion), so that you don't have to explicitely use the `*` character (when printing, for example). In other cases where you have like a mutable reference to some value and try to change that value with the reference, you would have to dereference the reference in order actually be able to change the value (this will by the way change the underlying value, effectively also changing the corresponding reference's value).
   - Rust's Deref Coercion is a feature that automatically converts a reference from one type to another when needed, as long as the first type implements the Deref trait.
+- HashSet (In JavaScript, you would use a Set):
+  - Unordered
+  - Fastest for insert, remove, and lookup (average-case O(1))
+  - Uses a hash function
+  - Order is not guaranteed
+  - Ensures deduplicating (removing duplicates)
+  - Use when: you need fast set operations and don’t care about order.
+  - You can pass a vector with duplicates to a HashSet type like `let set: HashSet<_> = v.into_iter().collect();` to deduplicate the vector and create a HashSet from it.
+- BTreeSet:
+  - Ordered (sorted)
+  - Slower than HashSet (O(log n) operations)
+  - Backed by a B-tree
+  - Iteration is in sorted order
+  - Ensures deduplicating (removing duplicates)
+  - Use when: you need the elements in order (e.g. for sorted output).
+
 
 ## Code Examples
 
