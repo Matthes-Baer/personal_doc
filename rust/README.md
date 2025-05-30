@@ -308,6 +308,34 @@ Also:
 
 ## Code Examples
 
+### Dereferencing via pattern matching or manually dereferencing
+
+`vowels.iter()` gives you an iterator over &char (references to chars).
+
+_1. version (pattern matching):_
+
+```rs
+if vowels.iter().any(|&v| s.starts_with(v))
+```
+
+- |&v| pattern-matches and dereferences each &char into a char.
+- v is of type char inside the closure.
+-> This is destructuring the reference directly in the closure parameter - via pattern matching.
+
+_2. version (manual dereferencing):_
+
+```rs
+if vowels.iter().any(|v| s.starts_with(*v))
+```
+
+- v is of type &char (reference to a char).
+- *v dereferences the &char into a char before passing it to starts_with.
+-> This is manual dereferencing inside the closure body.
+
+_Which one should you use?_
+Both are correct and idiomatic. Use whichever is clearer to you. For beginners, *v may feel more explicit, while |&v| is more concise and idiomatic once you're comfortable with Rust's pattern matching.
+
+
 ### Converting Types
 
 Instead of just casting like `x as usize` with x being of type `i32` before, you may want to use `try_into()` to have a proper type conversion:
