@@ -308,6 +308,25 @@ Also:
 
 ## Code Examples
 
+### Find Closest
+
+```rs
+use std::cmp::Ordering;
+use std::u32;
+
+impl Solution {
+    pub fn find_closest(x: i32, y: i32, z: i32) -> i32 {
+        let a = x.abs_diff(z);
+        let b = y.abs_diff(z);
+        match u32::cmp(&a, &b) {
+            Ordering::Less => 1,
+            Ordering::Equal => 0,
+            Ordering::Greater => 2,
+        }
+    }
+}
+```
+
 ### Dereferencing via pattern matching or manually dereferencing
 
 `vowels.iter()` gives you an iterator over &char (references to chars).
