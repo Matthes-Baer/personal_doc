@@ -308,6 +308,23 @@ Also:
 
 ## Code Examples
 
+### Extend Vectors
+
+```rs
+    for (x_idx, x_val) in digits.iter().enumerate() {
+        let second_values = &digits[x_idx + 1..];
+
+        // Start with one value and then add more values to the end from a slice
+        let mut forward = vec![*x_val];
+        forward.extend_from_slice(second_values);
+
+        // Similar as above, but reversed and with "extend()" instead of "extend_from_slice()"
+        let mut reversed = vec![*x_val];
+        reversed.extend(second_values.iter().rev());
+    }
+```
+
+
 ### Find Closest
 
 ```rs
