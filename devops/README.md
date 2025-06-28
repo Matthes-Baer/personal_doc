@@ -69,6 +69,10 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 - When using Docker Desktop with pgadmin, you have to use `host.docker.internal` for the host name if you want to connect to a local postgres docker container
 
+- In Docker Desktop you can assign user/roles for a postgres server, which can be the owner of some database in that server. These user/roles can then have different passwords and permissions.
+
+- Connection string for some postgres database: `postgres://<username>:<password>@<postgres_server>:5432/<database_name>?sslmode=verify-full` - The `verify-full` helps to make sure that the owner (the user) can access the database, even if the user has no permissions to access the server itself. This is for ssl connections, so you need to have the certificate files in the right place. The `sslmode` can also be set to `require`, which is less strict, but still requires a valid certificate. This is useful for pgadmin, for example, with heidiSQL, you don't have to set the `sslmode` to `require` or `verify-full`, as it will work without it.
+
 - Using the Docker Desktop Export Volume feature:
   1. Export a volume in a file
   2. Create a new volume and overwrite the new volume by importing the exported volume
