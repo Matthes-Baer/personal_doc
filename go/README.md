@@ -1,7 +1,8 @@
 # Go
 
-## Courses
+## Useful Links
 - https://www.boot.dev/lessons/224252be-adc9-452f-8ed0-0b305b25d0cb
+- https://prateeksurana.me/blog/guide-to-go-for-javascript-developers/?utm_source=tldrwebdev
 
 ## General Information
 
