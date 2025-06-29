@@ -55,6 +55,18 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 - View the docker compose logs: `docker-compose logs -f`
 
+### Dockerfile commands
+
+- `FROM` - Base image to build from -> `FROM node:20-alpine`
+- `WORKDIR` - Set working directory -> `WORKDIR /app`
+- `COPY` - Copy files into the image -> `COPY . .`
+- `RUN` - Run command at build time -> `RUN npm install`
+- `CMD` - Default command to run at container start -> `CMD ["node", "index.js"]`
+- `ENTRYPOINT` - Like `CMD` but less overridable -> `ENTRYPOINT ["npm"]`
+- `EXPOSE` - Document the port your app uses `EXPOSE 3000`
+- `ENV` - Set environment variables -> `ENV NODE_ENV=production`
+- `ARG` - Build-time variable -> `ARG NODE_VERSION=20`
+- `LABEL` - Add metadata -> `LABEL maintainer="someone@example.com"`
 
 ### General Docker Information
 
@@ -100,7 +112,41 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 ### Helpful Kubernetes Commands
 
-- ...
+#### 📦 Work with Deployments / Pods
+- Create or update resources from YAML: `kubectl apply -f <file>.yaml`
+- Create a deployment quickly: `kubectl create deployment <name> --image=<image>`
+- List all pods: `kubectl get pods`
+- List all deployments: `kubectl get deployments`
+- Detailed info about a specific pod: `kubectl describe pod <pod-name>`
+- Delete a pod: `kubectl delete pod <pod-name>`
+- Restart a deployment: `kubectl rollout restart deployment <name>`
+
+#### 📡 Access & Logs
+- View logs of a pod: `kubectl logs <pod-name>`
+- Stream logs (like `tail -f`): `kubectl logs <pod-name> -f`
+- Open a shell inside a pod: `kubectl exec -it <pod-name> -- /bin/sh`
+- Forward port from pod to local machine: `kubectl port-forward <pod-name> 8080:80`
+- Expose a deployment as a service: `kubectl expose deployment <name> --type=LoadBalancer --port=80`
+
+#### 🔍 Cluster Info & Debugging
+- List nodes in the cluster: `kubectl get nodes`
+- Get cluster endpoint info: `kubectl cluster-info`
+- Show full deployment details: `kubectl describe deployment <name>`
+- Show all resources in the namespace: `kubectl get all`
+- View recent cluster events (errors, etc.): `kubectl get events`
+
+#### 📂 Namespaces & Contexts
+- List all namespaces: `kubectl get namespaces`
+- Show available kube contexts: `kubectl config get-contexts`
+- Switch context (e.g. dev → prod): `kubectl config use-context <name>`
+- Show active context: `kubectl config current-context`
+- Work in a specific namespace: `kubectl -n <namespace> get pods`
+
+#### 📁 Working with YAMLs
+- See schema/help for a resource: `kubectl explain deployment`
+- View deployment YAML: `kubectl get deployment <name> -o yaml`
+- Delete resources defined in a file: `kubectl delete -f <file>.yaml`
+
 
 ### General Kubernetes Information
 
