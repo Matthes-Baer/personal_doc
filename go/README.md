@@ -29,7 +29,7 @@ On the other hand, Rust and C programs use slightly less memory than Go programs
 - `fmt.Sprintf()` - Returns the formatted string (does automatically end with a newline (\n))
 
 
-## Code Examples (lots of examples from boot.dev)
+## Code Examples
 
 ### Interfaces
 
@@ -253,17 +253,6 @@ Depending on whether the GetUsername function errored.
 
 Defer is a great way to make sure that something happens before a function exits, even if there are multiple return statements, a common occurrence in Go.
 
-
-### Early Return
-
-```go
-func divide(dividend, divisor int) (int, error) {
-	if divisor == 0 {
-		return 0, errors.New("can't divide by zero")
-	}
-	return dividend/divisor, nil
-}
-```
 
 ### Named Return Values / Naked Returns
 
