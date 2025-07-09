@@ -219,7 +219,7 @@ SELECT * FROM users
 WHERE name LIKE '%lise'; -- Ends with 'lise'
 ```
 
-```
+```sql
 SELECT * FROM users
 WHERE LOWER(name) LIKE 'elise%'; -- case-insensitive search, starting with 'elise' / use `ILIKE` in PostgreSQL
 ```
