@@ -5,6 +5,7 @@ This section covers information about the programming language Rust.
 ## Useful Links
 - [Learn Basic SQL](https://www.youtube.com/watch?v=kbKty5ZVKMY)
 
+
 ## General Information
 - SQL (Structured Query Language) is used to communicate with relational databases like MySQL, PostgreSQL, SQL Server, SQLite, Oracle, etc.
 - SQL is case-insensitive (SELECT = select), but it's common practice to write keywords in uppercase for readability.
@@ -12,8 +13,11 @@ This section covers information about the programming language Rust.
 - Use indexes for performance (on columns used in `JOIN`, `WHERE`, `ORDER BY`).
 - Prefer parameterized queries to avoid SQL injection (especially in applications).
 - Always back up your data before running large `UPDATE` or `DELETE`.
+- SQL string functions are usually 1-indexed, meaning: The first character in a string is position 1, not 0.
+  - `SELECT SUBSTRING('OpenAI', 1, 2);  -- Output: 'Op'`
 
-## Important SQL Commands/Clauses
+
+## Important SQL Commands/Clauses/Expressions
 
 - `SELECT` - Retrieve data from a database
 - `INSERT` - Add new data to a database
@@ -38,6 +42,39 @@ This section covers information about the programming language Rust.
 - `LIKE` - Search for a specified pattern in a column
 - `BETWEEN` - Allows filtering of records within a range
 - `IS NULL` - Check for NULL values in a column
+- `CASE` - SQL's way of handling conditional logic, similar to `if-else` statements in programming languages
+
+
+## Functions
+- `LEFT(string, number)` - Returns the leftmost number of characters from a string
+  - `SELECT LEFT('OpenAI', 4);  -- Output: 'Open'`
+- `RIGHT(string, number)` - Returns the rightmost number of characters from a string
+  - `SELECT RIGHT('OpenAI', 2);  -- Output: 'AI'`
+- `RTRIM` - Removes trailing spaces from a string
+  - `SELECT RTRIM('OpenAI   ');  -- Output: 'OpenAI'`
+- `LTRIM` - Removes leading spaces from a string
+ - `SELECT LTRIM('   OpenAI');  -- Output: 'OpenAI'`
+- `LPAD(string, length, pad_string)` - Left-pads a string with a specified character to a certain length
+  - `SELECT LPAD('OpenAI', 10, '*');  -- Output: '****OpenAI'`
+- `RPAD(string, length, pad_string)` - Right-pads a string with a specified character to a certain length
+  - `SELECT RPAD('AI', 5, '*');  -- Output: 'AI***'`
+- `SUBSTRING(string, start, length)` - Extracts a substring
+  - `SELECT SUBSTRING('OpenAI', 2, 3);  -- Output: 'pen'`
+- `TRIM([LEADING | TRAILING | BOTH] trim_character FROM string)` - Removes characters (default is spaces) from a string
+  - `SELECT TRIM(BOTH 'x' FROM 'xxxOpenAIxxx');  -- Output: 'OpenAI'`
+- `CONCAT(string1, string2, ...)` - Joins multiple strings into one
+  - `SELECT CONCAT('Open', 'AI');  -- Output: 'OpenAI'`
+- `REPLACE(string, from_substring, to_substring)` - Replaces occurrences of a substring in a string with another substring
+  - `SELECT REPLACE('OpenAI GPT', 'OpenAI', 'ChatGPT');  -- Output: 'ChatGPT GPT'`
+- `LENGTH(string)` - Returns the number of characters (or bytes, depending on SQL dialect) in a string. In some databases (like MySQL), `LENGTH()` returns the number of bytes, and `CHAR_LENGTH()` or `CHARACTER_LENGTH()` returns the number of characters, especially important for multibyte characters like emojis or accented characters.
+  - `SELECT LENGTH('OpenAI');  -- Output: 6`
+- `LOCATE(substring, string [, start]) (MySQL)` or `POSITION(substring IN string) (ANSI SQL)` - Returns the position (1-based index) of the first occurrence of a substring in a string. If the substring is not found, it returns 0.
+  - `SELECT LOCATE('AI', 'OpenAI');  -- Output: 5`
+  - `SELECT POSITION(' ' IN 'Hello World');  -- Output: 6`
+- `UPPER(string)` - Converts a string to uppercase
+  - `SELECT UPPER('OpenAI');  -- Output: 'OPENAI'`
+- `LOWER(string)` - Converts a string to lowercase
+  - `SELECT LOWER('OpenAI');  -- Output: 'openai'`
 
 
 ## Code Examples
@@ -228,3 +265,21 @@ WHERE LOWER(name) LIKE 'elise%'; -- case-insensitive search, starting with 'elis
 SELECT * FROM users
 WHERE name LIKE 'T_some'; -- Finds names like 'T_some', where '_' matches any single character (using % would match any number of characters)
 ```
+
+### CASE Statement
+
+Suppose you have a students table with a score column and want to assign grades:
+
+```sql
+SELECT name, score,
+    CASE
+        WHEN score >= 90 THEN 'A'
+        WHEN score >= 80 THEN 'B'
+        WHEN score >= 70 THEN 'C'
+        ELSE 'F'
+    END AS grade
+FROM students;
+```
+
+The first `WHEN` that evaluates to `TRUE` is used.
+`ELSE` is optional but recommended for clarity and completeness.
