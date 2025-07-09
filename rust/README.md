@@ -2,7 +2,7 @@
 
 This section covers information about the programming language Rust.
 
-## Useful Rust Related Links
+## Useful Links
 
 - [Most Important Information](https://doc.rust-lang.org/book/title-page.html)
 - [Vectors under the hood (on the Stack (capacity, length, pointer) - potential re-allocation; on the Heap)](https://www.udemy.com/course/master-the-rust-programming-language/learn/lecture/44274774#overview)
