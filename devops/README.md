@@ -2,57 +2,38 @@
 
 This section includes information for Docker, Kubernetes, and other DevOps-related topics.
 
+
 ## Docker
+
+### Useful Docker Links
+- ...
 
 ### Helpful Docker Commands
 
 - Enter a mariadb shell (with Docker Desktop you already have the shell accessible): `docker exec -it container_name -u root -p`
-
 - Build an image with a set variable by adding `ARG SOME_VAR` and then afterwards you can use it like `RUN npm config set -- //npm.fontawesome.com/:_authToken="${SOME_VAR}"` (within the Dockerfile) if you run a command like: `docker buildx build --build-arg SOME_VAR=123123 -t my_application .`
-
 - Create a custom volume (to be able to name it): `docker volume create named_volume`
-
 - Stop a Container: `docker stop container_name_or_id`
-
 - Remove a Container: `docker rm container_name_or_id`
-
 - Run a mariaDB container with a specific name and volume: `docker run --name my-mariadb-container -p 3306:3306 -v <volume_name>:/var/lib/mysql -e MARIADB_ROOT_PASSWORD=my_secret_password -d mariadb` (potentially add `--bind-address=0.0.0
-
 - Run a Postgres container with a specific name and volume (user is `postgres` by default / when connecting via HeidiSQL not every library works for connecting): `docker run --name my_postgres_container -p 5432:5432 -v <volume_name>:/var/lib/postgresql/data -e POSTGRES_PASSWORD=my_secret_password -d postgres`
   what paths you need to use.
-
 - Overview of docker disk usage: `docker system df`
-
 - View all docker images on the machine: `docker images`
-
 - Build a docker image (in the same directory as the application): `docker buildx build -t IMAGE_NAME:TAG .`
-
 - View all current running and stopped processes: `docker ps -a`
-
 - Start a container with .env file in project (Port to reach it:Port the application was exposed to through dockerfile): `docker run -p 3000:5000 --env-file .env APP_NAME:latest`
-
 - Remove a docker image: `docker rmi IMAGE_NAME:TAG`
-
 - Stop a container: `docker stop CONTAINER_NAME_OR_ID`
-
 - Remove a stopped container: `docker rm CONTAINER_NAME_OR_ID`
-
 - Delete all non-used and hanging images: `docker image prune -a`
-
 - Delete the builder cache: `docker builder prune`
-
 - Delete the volumes: `docker volume prune`
-
 - Delete stopped containers: `docker container prune`
-
 - View the layers of the corresponding docker image: `docker history IMAGE_NAME:TAG`
-
 - Run the docker-compose.yml file: `docker-compose up`
-
 - Stop the docker compose applications: `docker-compose down`
-
 - Rebuild the containers from the docker compose: `docker-compose up --build`
-
 - View the docker compose logs: `docker-compose logs -f`
 
 ### Dockerfile commands
@@ -107,8 +88,128 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 - Docker Desktop enables the use of docker within Windows (so it doesn't have to be done through wsl anymore)
 
+### Docker Code Examples
+
+#### Example Dockerfile
+
+```dockerfile
+# ----------- Stage 1: Build ------------
+FROM node:20-alpine AS builder
+
+# Set environment variables
+ENV NODE_ENV=production \
+    APP_HOME=/usr/src/app
+
+# Create app directory
+WORKDIR $APP_HOME
+
+# Install dependencies separately to cache them
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy app source code
+COPY . .
+
+# Optional: Run tests or linters
+# RUN npm run test
+
+# Build assets (for frontend apps)
+# RUN npm run build
+
+# ----------- Stage 2: Production Image ------------
+FROM node:20-alpine
+
+# Set environment variables
+ENV NODE_ENV=production \
+    APP_HOME=/usr/src/app \
+    PORT=3000
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Set working directory
+WORKDIR $APP_HOME
+
+# Copy only necessary files from builder
+COPY --from=builder $APP_HOME .
+
+# Change ownership
+RUN chown -R appuser:appgroup $APP_HOME
+
+# Use non-root user
+USER appuser
+
+# Expose the application port
+EXPOSE $PORT
+
+# Healthcheck (adjust as needed)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:$PORT/health || exit 1
+
+# Start the application
+CMD ["node", "index.js"]
+```
+
+#### Example Docker Compose File
+
+```yaml
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: myapp
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://user:password@db:5432/mydatabase
+    volumes:
+      - .:/usr/src/app:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    container_name: mydb
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+volumes:
+  db_data:
+
+networks:
+  backend:
+```
+
 
 ## Kubernetes
+
+### Useful Kubernetes Links
+- [Kubernetes Tutorial](https://www.youtube.com/watch?v=2T86xAtR6Fo)
+
 
 ### Helpful Kubernetes Commands
 
@@ -152,6 +253,13 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 - Kubernetes is a container orchestration platform that manages groups of containers, often created using Docker. It handles tasks like scaling, distribution, and connectivity between containers, making it easier to manage large-scale containerized applications and their infrastructure. For instance, while you can set up Docker on a single server and route traffic to a lot of instances, or deploying multiple services that dynamically scale based on load, becomes challenging. Kubernetes addresses these complexities. Its command-line tool, `kubectl`, enables you to interact with Kubernetes clusters by communicating with the Kubernetes API server.
 
+- Cluster: A Kubernetes Cluster is the entire system that includes a Control Plane (brains of the system) and multiple worker nodes (where apps run). You interact with the cluster to deploy and manage containerized applications.
+- Control Plane: The Control Plane manages the entire Kubernetes cluster. It makes decisions about Scheduling, Scaling, Health checks, and Responding to events. Key Control Plane components include `kube-apiserver` (The main API. All tools & users talk to the cluster through this), `etcd` (Key-value store that holds all cluster data (like a database)), `kube-scheduler` (Decides which node a new Pod should run on), `kube-controller-manager` (Runs controllers that monitor cluster state and make corrections (e.g., replacing failed Pods)), `cloud-controller-manager` (Integrates with cloud providers (if used)). These usually run on Control Plane Nodes.
+- Control Plane Node: A Control Plane Node is a VM or machine that runs the Control Plane components. In production, you may have multiple for high availability.
+- Data Plane: This is where your actual applications run. Worker nodes are part of the Data Plane. Each Worker Node runs `kubelet` (Talks to the control plane. Makes sure containers run as expected), `kube-proxy` (Manages networking and load-balancing on the node), and container runtime (like Docker, which runs the containers).
+- Worker Node: A Worker Node is a machine (VM or physical) that is part of the cluster and runs the containers via Pods. The control plane schedules Pods to run on these nodes.
+- Pod: A Pod is the smallest deployable unit in Kubernetes. A Pod can have 1 or more containers (usually 1). All containers in a Pod share IP address, storage, and network namespace. You don’t run containers directly in Kubernetes — you run Pods.
 
-
-
+- Container Runtime Interface (CRI): The Container Runtime Interface (CRI) enables Kubernetes to communicate with different container runtimes in a standardized way. The kubelet, which runs on every node, uses CRI to manage the lifecycle of containers—starting, stopping, and monitoring them. CRI uses gRPC as its protocol and abstracts the underlying container runtime, which allows Kubernetes to support multiple runtimes without being tightly coupled to any specific one. Common CRI-compatible runtimes include containerd (now the default in many Kubernetes setups), CRI-O, and previously Docker, which required a CRI shim (now deprecated). This interface ensures Kubernetes can be flexible and future-proof in how it runs containers.
+- Container Network Interface (CNI): The Container Network Interface (CNI) provides Kubernetes with a standardized way to manage networking for Pods. Every time a Pod is created, Kubernetes uses a CNI plugin to set up its network: this includes creating a network namespace, assigning an IP address, and configuring routes so that Pods can communicate with each other and external services. CNI plugins are pluggable and you can choose different implementations based on your needs. Popular CNI plugins include Calico (with advanced network policy support), Flannel (simpler overlay networking), Cilium (based on eBPF with enhanced security and visibility), and Weave Net. CNI ensures Kubernetes can run in any network environment—from on-premises data centers to cloud platforms—while maintaining consistent Pod-to-Pod communication and enforcing network policies.
+- Container Storage Interface (CSI): The Container Storage Interface (CSI) standardizes how Kubernetes interacts with storage systems to provision, attach, and mount volumes for Pods. Instead of building custom logic for each storage backend, Kubernetes relies on CSI drivers that know how to communicate with specific storage platforms. When a user defines a PersistentVolumeClaim (PVC), Kubernetes uses the CSI driver to dynamically provision storage, or bind to an existing volume, then mount it to the target node and Pod. This allows Kubernetes to support a wide range of storage backends such as AWS EBS, Google Persistent Disk, Ceph, NFS, or iSCSI, whether they are block or file-based systems. CSI makes Kubernetes storage highly modular and extensible, simplifying the addition of new storage types without changing core Kubernetes code.
