@@ -308,6 +308,73 @@ Also:
 
 ## Code Examples
 
+### Sort with Priority Mapping and Tiebreaker (Double Sorting)
+
+```rs
+fn main() {
+    let mut data = vec![
+        ("Zeta".to_string(), "pharmacy".to_string()),
+        ("Alpha".to_string(), "grocery".to_string()),
+        ("Echo".to_string(), "electronics".to_string()),
+        ("Delta".to_string(), "electronics".to_string()),
+        ("Beta".to_string(), "restaurant".to_string()),
+    ];
+
+    let priority = |line: &str| -> usize {
+        match line {
+            "electronics" => 0,
+            "grocery" => 1,
+            "pharmacy" => 2,
+            "restaurant" => 3,
+            _ => usize::MAX,
+        }
+    };
+
+    data.sort_by(|a, b| {
+        let pri_cmp = priority(&a.1).cmp(&priority(&b.1));
+        if pri_cmp == std::cmp::Ordering::Equal {
+            a.0.cmp(&b.0) // tiebreaker: sort by first field lexicographically
+        } else {
+            pri_cmp
+        }
+    });
+
+    for (code, line) in &data {
+        println!("{} - {}", code, line);
+    }
+}
+
+...
+
+Delta - electronics
+Echo - electronics
+Alpha - grocery
+Zeta - pharmacy
+Beta - restaurant
+```
+
+_What the `cmp` does:_
+
+`let pri_cmp = priority(&a.1).cmp(&priority(&b.1));`
+
+This uses the cmp method from Rust's Ord trait, which compares two values and returns one of:
+- Ordering::Less
+- Ordering::Equal
+- Ordering::Greater
+
+```rs
+priority("electronics") == 0
+priority("restaurant")  == 3
+
+...
+
+0.cmp(&3) // = Ordering::Less
+```
+
+_This means:_
+electronics < restaurant - so, `a.1` will come before `b.1` in the sorted list. `a` is considered "smaller" than `b`.
+
+If you would reverse the compare (`3.cmp(&0) = Ordering::Greater`): restaurant > electronics - restaurant also comes after electronics in sort order.
 
 ### [Two Sum](https://leetcode.com/problems/two-sum/description/)
 
