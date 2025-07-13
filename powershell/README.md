@@ -10,6 +10,8 @@ This section covers information about PowerShell.
 - It's best practice to use uppercase letters for each word in a PowerShell command, e.g., `Get-Process` instead of `get-process`.
 - When using `Get-Help`, for example, you will see information about syntax, parameters, and more. When you see something like `[[-Name] <string[]>]` in the syntax section, it means that the `-Name` parameter is optional (thus the `[]` around `-Name`) and can accept multiple string values. When you see something like `[-DependentServices]` it means that this is a switch parameter, which does not require a value. If you use it, it will be set to `$true`, otherwise it will be `$false`. In the parameters section of the `Get-Help` cmdlet output, you can find more information about what to pass in for all the parameters.
 - There are common parameters supported by most cmdlets, such as `-Verbose`, `-Debug`, `-ErrorAction` - [More Information](https://learn.microsoft.com/de-de/powershell/module/microsoft.powershell.core/about/about_commonparameters?view=powershell-7.5)
+- File ending for PowerShell scripts is `.ps1`, for modules it is `.psm1`, and for module manifest files it is `.psd1`.
+- Arrays are not optimized for large datasets (like size > 100) because they have a fixed size (see code example below), so if you need to work with large datasets or need dynamic storage, consider using `System.Collections.Generic.List` or `System.Collections.ArrayList` instead.
 
 
 ## Some Cmdlets
@@ -63,4 +65,46 @@ Find all commands that have 'service' in their name:
 
 ```powershell
 Get-Command -noun service
+```
+
+### Declare and Initialize a Variable
+
+```powershell
+$testVariable = "Hello, World!"
+$anotherTestVariable = Get-Date
+
+$testVariable
+```
+
+With the `$testVariable` in the end of a script, the value will be printed to the console.
+
+### Set Strict Mode On/Off
+
+Set it on:
+
+```powershell
+Set-StrictMode -Version Latest
+```
+
+With the strict mode enabled, PowerShell will enforce stricter rules for variable declaration and usage, which can help catch errors early in your scripts. Let's say you try to use a variable that has not been declared, it will throw an error. Also trying to access an item in an array that does not exist will throw an error (out of bounce) with the strict mode enabled.
+
+Set it off:
+
+```powershell
+Set-StrictMode -Off
+```
+
+### Basic Arrays
+
+Arrays have a fixed size, so if you need to work with large datasets, consider using `System.Collections.Generic.List` or `System.Collections.ArrayList` instead.
+
+```powershell
+# Declare and initialize an array
+$myArray = @("Item1", "Item2", "Item3")
+
+# Add some item to the array (it's fixed size, so `Add` method won't work)
+$myArray += "Item4"
+
+# Remove an item from the array (array is still fixed size, so `RemoveAt` won't work)
+$myArray = $myArray -ne "Item2"
 ```
