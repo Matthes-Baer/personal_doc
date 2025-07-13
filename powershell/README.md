@@ -50,6 +50,8 @@ This section covers information about PowerShell.
 - `Get-Alias` / `gal` - Lists aliases or resolves one
 - `Get-Member` / `gm` - Shows properties/methods of objects
 
+- `Measure-Command` - Measures the time it takes to run a script or command
+
 
 ## Code Examples
 
@@ -94,6 +96,14 @@ Set it off:
 Set-StrictMode -Off
 ```
 
+### Measure Execution Time of a Command
+
+```powershell
+$testArrayList = New-Object System.Collections.ArrayList
+
+Measure-Command -Expression { $testArrayList.AddRange(@(0..10000)) }
+```
+
 ### Basic Arrays
 
 Arrays have a fixed size, so if you need to work with large datasets, consider using `System.Collections.Generic.List` or `System.Collections.ArrayList` instead.
@@ -107,4 +117,23 @@ $myArray += "Item4"
 
 # Remove an item from the array (array is still fixed size, so `RemoveAt` won't work)
 $myArray = $myArray -ne "Item2"
+```
+
+### ArrayList
+
+Basically dynamic arrays, so you can add and remove items without worrying about the size.
+
+```powershell
+# Create a new ArrayList
+$myArrayList = New-Object System.Collections.ArrayList
+
+# Add items to the ArrayList without logging output (the index would be logged to console)
+$myArrayList.Add("Item1") | Out-Null
+
+# Remove an item from the ArrayList without logging output
+# Alternatively, you can use `RemoveAt` to remove by index or use `RemoveRange` to remove multiple items
+$myArrayList.Remove("Item1") | Out-Null
+
+# Add multiple items at once without logging output
+$myArrayList.AddRange(@("Item2", "Item3", "Item4")) | Out-Null
 ```
