@@ -15,6 +15,7 @@ This section covers information about PowerShell.
 - Arrays are not optimized for large datasets (like size > 100) because they have a fixed size (see code example below), so if you need to work with large datasets or need dynamic storage, consider using `System.Collections.Generic.List` or `System.Collections.ArrayList` instead.
 - To log a variable to the console, you can simply put the variable name at the end of a script or use `Write-Output` or `echo`. However, `Write-Host` is not recommended for scripts as it writes directly to the console and does not return output to the pipeline.
 - `$PROFILE` is a special variable that contains the path to the current user's PowerShell profile script, which runs every time you start PowerShell. You can use it to set up your environment, like adding custom module paths or aliases.
+- To reset the default Microsoft Powershell path: `%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe`
 
 
 ## Some Cmdlets
@@ -54,6 +55,42 @@ This section covers information about PowerShell.
 - `Get-Member` / `gm` - Shows properties/methods of objects
 
 - `Measure-Command` - Measures the time it takes to run a script or command
+
+
+## Some PowerShell Commands
+
+- Open the PowerShell profile file from a PowerShell terminal: `explorer $PROFILE`
+- Create a new file path: `New-Item -ItemType File -Path "filename.txt"`
+- Create a new file with directory path and name: `New-Item -Path "c:\temp" -Name "test01.txt" -ItemType File -Force`
+- Remove directory folder: `Remove-Item $env:LOCALAPPDATA\nvim\.git -Recurse -Force`
+- Find the path of some file: `Get-ChildItem -Path C:\ -Recurse -Filter "de.utf-8.spl" -ErrorAction SilentlyContinue`
+- Set an environment variable locally for the current terminal session in PowerShell: `$env:ENV_NAME = "0"`
+- Make a web request, to download some file, for example: `Invoke-WebRequest -Uri "https://ftp.nluug.nl/vim/runtime/spell/de.utf-8.spl" -OutFile "$env:LOCALAPPDATA\nvim\spell\de.utf-8.spl"`
+  - The `LOCALAPPDATA` env is special and exists by default. It's a process-level environment variable, meaning it is not stored permanently in the registry like PATH. Instead, Windows dynamically sets it for each user session. It points to `C:\Users\YourUsername\AppData\Local`
+- Find all processes running on a specific port (`a` for showing all active connections and listening ports / `n` for displaying addresses and port numbers in numerical form (instead of resolving host names) / `o` for showing the process ID (PID) associated with each connection): `netstat -ano | findstr :PORT`
+- Kill a process with specific PID: `taskkill /PID <PID> /F`
+- Based on my configs: `CTRL + R` for back-i-search (reverse incremental search mode, which lets you search backward through your command history)
+- Based on my configs: `Tab` for auto-completion in current work directory (also works with git branches)
+- List all available commands in PowerShell: `Get-Command`
+- Show all running processes in PowerShell: `Get-Process`
+- Show all installed services in PowerShell: `Get-Service`
+- Get detailed information about a specific service in PowerShell: `Get-Help <cmdlet> -Full`
+- Allow scripts to run in PowerShell (if you get an error about execution policy): `Set-ExecutionPolicy RemoteSigned` (or `Unrestricted` if you want to allow all scripts)
+- Show PowerShell version: `$PSVersionTable`
+- Show PowerShell path: `$PSHOME`
+- Show PowerShell profile path: `$PROFILE`
+- Show content of file: `Get-Content file.txt`
+- Find big files: `Get-ChildItem -Recurse -File | Where-Object { $_.Length -gt 10MB }`
+- Measure runtime: `Measure-Command { <command> }`
+- Start background job: `Start-Job { Get-EventLog System }`
+- See if it's still running or already finished: `Get-Job`
+- Once the job is in the Completed state: `Receive-Job -Id <JobId>`
+- You can run Receive-Job multiple times only if you use -Keep. Otherwise, the data is cleared after the first read: `Receive-Job -Id <JobId> -Keep`
+- Remove a job to clean up: `Remove-Job -Id <JobId>`
+- Remove all jobs: `Get-Job | Remove-Job`
+- Wait for a job to be done: `Wait-Job -Id <JobId>`
+- Adjust/Create the Powershell profile: `notepad $PROFILE` - add `. path_to_script` in there to make the powershell script globally available in all sessions
+
 
 
 ## Code Examples
