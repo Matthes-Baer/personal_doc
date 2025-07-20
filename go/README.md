@@ -58,7 +58,19 @@
 - Reads until newline: `fmt.Scanln(&inputVar)`
 - Parses formatted string into variables: `fmt.Sscanf("Age: 30", "Age: %d", &age)`
 - Go syntax representation (structs, slices): `fmt.Printf("%#v\n", someVar)`
--  Prints the type of variable: `fmt.Printf("%T\n", someVar)`
+- Prints the type of variable: `fmt.Printf("%T\n", someVar)`
+
+- Append elements to a slice: `slice = append(slice, newElement)`
+- Append one slice to another: `slice = append(slice, slice2...)`
+- Get length of a slice (current number of elements): `length := len(slice)`
+- Get capacity of a slice (maximum number of elements it can hold without reallocating): `capacity := cap(slice)`
+- Make slice with predefined length and capacity (length = 3, capacity = 8): `slice := make([]int, 3, 8)`
+- Make a map with predefined length: `myMap := make(map[string]int)`
+- Copy a slice (creating a new slice with its own underlying array and copying the elements from another slice into it - instead of only referencing to the same data): `copy(copySlice, original)`
+- Cut/Remove element (manual way): `slice = append(slice[:index], slice[index+1:]...)`
+- Clear slice (zero length, same capacity): `slice = slice[:0]`
+
+- Delete a value from a map (by reference, so not return value): `delete(myMap, "key")`
 
 ## Code Examples
 
@@ -405,6 +417,7 @@ if length := getLength(message); length < 1 {
 ### Switch
 
 The switch statement in Go is a cleaner way to write multiple if-else conditions (similar to other programming languages).
+Have in mind that the `break` statement is not required in Go switch statements, as each case automatically breaks unless you use the `fallthrough` keyword
 
 ```go
 package main
@@ -460,5 +473,254 @@ func main() {
     default:
         fmt.Println("Other")
     }
+}
+```
+
+### Error Handling
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+// Function that returns an error
+func divide(a, b float64) (float64, error) {
+	if b == 0 {
+		return 0, errors.New("cannot divide by zero")
+	}
+	return a / b, nil
+}
+
+func main() {
+	// Example 1: successful division
+	result, err := divide(10, 2)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Result:", result)
+	}
+
+	// Example 2: division by zero triggers error
+	result, err = divide(10, 0)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Result:", result)
+	}
+}
+```
+
+
+### Arrays
+
+Arrays are contiguous blocks of memory that store a fixed-size sequence of elements of the same type. They are useful when you know the size of the collection at compile time and want to ensure that the data is stored in a contiguous block for performance reasons.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    var arr [3]int = [3]int{1, 2, 3}
+    fmt.Println("Array:", arr)
+    fmt.Println("First element:", arr[0])
+    arr[1] = 20
+    fmt.Println("Modified array:", arr)
+
+    // Slices (dynamic size, backed by arrays - slices are basically arrays with additional functionality)
+    // Slices wrap arrays to give a more general, powerful, and convenient interface to sequences of data
+    slice := []int{10, 20, 30}
+    fmt.Println("Slice:", slice)
+    slice = append(slice, 40) // append adds elements
+    fmt.Println("Appended Slice:", slice)
+    fmt.Println("Slice length:", len(slice))
+    fmt.Println("Slice portion:", slice[1:3]) // slicing
+}
+```
+
+### Maps
+
+Maps are built-in data types in Go that store key-value pairs. They are similar to dictionaries in Python or objects in JavaScript, allowing you to associate values with unique keys for fast retrieval.
+
+If you try to get the value of a key that does not exist in the map, it will return the zero/default value for the value type (e.g., `0` for `int`, `""` for `string`, etc.). You can also check if a key exists in the map by using the two-value assignment form. The two-value assignment form returns the value and a boolean indicating whether the key exists in the map. This is useful to avoid confusion when accessing values that may not be present.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    myMap := map[string]int{
+        "apple":  5,
+        "banana": 3,
+    }
+    fmt.Println("Map:", myMap)
+    myMap["orange"] = 7 // add new key-value
+    fmt.Println("Map after adding orange:", myMap)
+    fmt.Println("Value for apple:", myMap["apple"])
+
+    // Check if key exists
+    // This is the two-value assignment form
+    val, exists := myMap["pear"]
+    fmt.Println("Value for pear:", val, "Exists?", exists)
+}
+```
+
+### Loops
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    // For loop (standard)
+    fmt.Println("For loop (0 to 4):")
+    for i := 0; i < 5; i++ {
+        fmt.Println(i)
+    }
+
+    // For loop over slice
+    fmt.Println("Loop over slice:")
+    for index, value := range slice {
+        fmt.Printf("Index %d = %d\n", index, value)
+    }
+
+    // For loop over map
+    fmt.Println("Loop over map:")
+    for key, value := range myMap {
+        fmt.Printf("Key: %s, Value: %d\n", key, value)
+    }
+
+    // Infinite loop (with break)
+    count := 0
+    for {
+        count++
+        if count > 3 {
+            break
+        }
+        fmt.Println("Infinite loop count:", count)
+    }
+}
+```
+
+### Strings
+
+Strings in Go are immutable sequences of bytes, typically used to represent text. They are encoded in UTF-8, which allows them to handle a wide range of characters from different languages. Strings can be manipulated using various functions from the `strings` package, such as checking for substrings, converting case, splitting, and replacing parts of the string.
+
+When using `range` on a string, it iterates over the string's runes (Unicode code points), allowing you to correctly handle multi-byte characters. This is important because some characters may be represented by more than one byte in UTF-8 encoding. However, have in mind, that it will skip indexes of multi-byte characters, so if you need to access the byte index, you should convert the string to a rune slice or byte slice first.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	str := "Hello, 世界"
+	fmt.Println("String:", str)
+	fmt.Println("Length in bytes:", len(str)) // counts bytes, not runes
+	fmt.Println("Contains 'Hello':", strings.Contains(str, "Hello"))
+	fmt.Println("To Upper:", strings.ToUpper(str))
+	fmt.Println("Split:", strings.Split(str, ","))
+	fmt.Println("Replace:", strings.ReplaceAll(str, "Hello", "Hi"))
+
+	// strings.Builder - Efficient string concatenation
+  // Use this instead of manually concatenating strings with `+`, especially in loops or when building large strings since this would create a new string each time, leading to performance issues.
+	var builder strings.Builder
+
+	builder.WriteString("Hello")
+	builder.WriteString(", ")
+	builder.WriteString("world!")
+	finalString := builder.String()
+
+	fmt.Println("Using strings.Builder:", finalString)
+
+	// You can also write bytes or runes
+	builder.Reset() // clears the builder
+	builder.WriteRune('👍')
+	builder.WriteByte('!')
+	fmt.Println("Builder with rune and byte:", builder.String())
+
+	// strings.Join - joining slice of strings
+	words := []string{"Go", "is", "fast"}
+	joined := strings.Join(words, " ")
+	fmt.Println("Joined string:", joined)
+
+	// strings.Repeat - repeat string multiple times
+	repeated := strings.Repeat("Na", 4) + " Batman!"
+	fmt.Println("Repeated string:", repeated)
+
+	// strings.Fields - split by whitespace
+	text := "Go is awesome"
+	parts := strings.Fields(text)
+	fmt.Println("Fields (split by space):", parts)
+
+	// strings.Trim - removing unwanted characters
+	raw := "###clean me###"
+	cleaned := strings.Trim(raw, "#")
+	fmt.Println("Trimmed string:", cleaned)
+
+	// strconv package for string ↔ number conversion
+	// If you're handling numbers in strings:
+	// strconv.Itoa(int) → string
+	// strconv.Atoi(string) → int
+}
+```
+
+### Runes
+
+Runes are Go's way of handling Unicode characters. A rune is an alias for `int32`, and it represents a single Unicode code point. This is particularly useful for working with strings that contain non-ASCII characters, as it allows you to correctly handle characters that may be represented by multiple bytes in UTF-8 encoding.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	runes := []rune(str) // converts string to runes
+	fmt.Println("Number of runes (characters):", len(runes))
+	for i, r := range runes {
+		fmt.Printf("Rune %d: %c (Unicode: %U)\n", i, r, r)
+	}
+
+	// Example of modifying string via runes (since strings are immutable)
+	// e.g., change 'H' to 'J'
+	mutable := []rune(str)
+	mutable[0] = 'J'
+	newStr := string(mutable)
+	fmt.Println("Modified string:", newStr)
+```
+
+### Bytes
+
+Bytes in Go are a slice of bytes, which is a sequence of raw binary data. They are often used for low-level data manipulation, file I/O, and network communication. Unlike strings, bytes can be modified, making them suitable for scenarios where you need to manipulate binary data directly.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	bytes := []byte(str) // converts string to bytes
+	fmt.Println("Bytes slice:", bytes)
+	fmt.Printf("First byte: %d\n", bytes[0])
+
+	// Converting bytes back to string
+	backToString := string(bytes)
+	fmt.Println("Back to string:", backToString)
 }
 ```
