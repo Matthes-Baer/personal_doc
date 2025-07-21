@@ -78,56 +78,65 @@
 
 Interfaces are abstract types that define behavior via method signatures, structs on the other hand are concrete data types used to group related fields.
 
+At compile time, the Go compiler checks the methods of a type (e.g., Circle or Rectangle) and determines automatically whether it satisfies an interface. If all the methods of the interface are implemented by the type — it is compatible.
+This is called structural typing (based on method structure), unlike Java/C#/C++ which use nominal typing (explicit declarations like implements). TypeScript uses structural typing as well.
+
 ```go
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 // Define an interface
 type Shape interface {
-    Area() float64
-    Perimeter() float64
+	Area() float64
+	Perimeter() float64
 }
 
-// Define a struct - Rectangle
-type Rectangle struct {
-    Width, Height float64
-}
-
-// Implement the Shape interface for Rectangle
-func (r Rectangle) Area() float64 {
-    return r.Width * r.Height
-}
-
-func (r Rectangle) Perimeter() float64 {
-    return 2 * (r.Width + r.Height)
-}
-
-// Define another struct - Circle
+// Define a struct: Circle
 type Circle struct {
-    Radius float64
+	Radius float64
 }
 
-// Implement the Shape interface for Circle
+// Implement Shape interface for Circle
 func (c Circle) Area() float64 {
-    return 3.1415 * c.Radius * c.Radius
+	return math.Pi * c.Radius * c.Radius
 }
 
 func (c Circle) Perimeter() float64 {
-    return 2 * 3.1415 * c.Radius
+	return 2 * math.Pi * c.Radius
 }
 
-// Main function
+// Define another struct: Rectangle
+type Rectangle struct {
+	Width, Height float64
+}
+
+// Implement Shape interface for Rectangle
+func (r Rectangle) Area() float64 {
+	return r.Width * r.Height
+}
+
+func (r Rectangle) Perimeter() float64 {
+	return 2 * (r.Width + r.Height)
+}
+
+func printShapeInfo(s Shape) {
+	fmt.Printf("Area: %.2f\n", s.Area())
+	fmt.Printf("Perimeter: %.2f\n", s.Perimeter())
+}
+
 func main() {
-    var s Shape
+	c := Circle{Radius: 5}
+	r := Rectangle{Width: 4, Height: 6}
 
-    s = Rectangle{Width: 10, Height: 5}
-    fmt.Println("Rectangle Area:", s.Area())
-    fmt.Println("Rectangle Perimeter:", s.Perimeter())
+	fmt.Println("Circle:")
+	printShapeInfo(c) // Compiler checks: does Circle have Area() and Perimeter()?
 
-    s = Circle{Radius: 7}
-    fmt.Println("Circle Area:", s.Area())
-    fmt.Println("Circle Perimeter:", s.Perimeter())
+	fmt.Println("\nRectangle:")
+	printShapeInfo(r) // Compiler checks: does Rectangle have Area() and Perimeter()?
 }
 ```
 
