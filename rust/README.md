@@ -1878,7 +1878,7 @@ Registers are the fastest type of memory available in a computer architecture. B
 
 Normally, accessing an array would require bounds checks at runtime to prevent out-of-bounds errors, which can be a source of significant overhead, especially in loops. Rust is capable of ensuring memory safety at compile time through its ownership and types system, along with its borrowing rules. In cases where the compiler can definitively determine that all accesses are within valid bounds, it can safely eliminate these runtime checks.
 
-## General Explanation of Smart Pointers
+## General Explanation of Pointers
 
 Source and more information: https://doc.rust-lang.org/book/ch15-00-smart-pointers.html
 
@@ -1890,12 +1890,13 @@ Smart pointers, on the other hand, are data structures that act like a pointer b
 
 A smart pointer is a data structure that not only acts like a pointer but also has additional metadata and capabilities. Smart pointers manage the lifecycle of the object they point to through automated reference counting, ownership rules, and other mechanisms. Rust's standard library provides several types of smart pointers, including `Box`, `Rc`, and `Arc`.
 
-- `Box<T>`: Used for heap allocation. It provides ownership for the data it points to and deallocates the data when the Box goes out of scope.#
+- `Box<T>`: Used for heap allocation. It provides ownership for the data it points to and deallocates the data when the Box goes out of scope.
 - `Rc<T>`: A reference-counted smart pointer for single-threaded scenarios where multiple ownership is required. `Rc` stands for Reference Counted. It’s used when you need shared ownership but don’t require interior mutability. It’s immutable by default.
 - `RefCell<T>` (Interior Mutability): Allows mutable borrowing at runtime, even if the `RefCell<T>` itself is immutable. It enforces borrowing rules dynamically (at runtime), unlike &mut T which enforces them at compile time.
   - `Rc<RefCell<T>>` is a common pattern where `Rc<T>` provides shared ownership, and `RefCell<T>` allows interior mutability.
-- `Arc<T>`: An atomically reference-counted smart pointer suitable for multi-threaded scenarios where multiple ownership across threads is required. `Arc` stands for Atomic Reference Counted.
+- `Arc<T>`: An atomically reference-counted smart pointer. It is designed for sharing immutable data across threads safely. By itself, `Arc<T>` is not mutable in the sense that it does not allow you to modify the inner `T` directly. This is because multiple threads could hold a reference at once, so Rust prevents direct mutation to guarantee thread safety.
 - `Mutex` is used to ensure that only one thread can mutate the data at a time. It basically locks it for one thread so no other threads can change that value while it's locked.
+  - For shared mutability: `Arc<Mutex<T>>` allows safe, synchronized mutable access or `Arc<RwLock<T>>` allows multiple readers or one writer at a time.
 
 **Dynamic Dispatch with dyn Error**
 The `dyn Error` syntax in Rust is used to create trait objects. A trait object is a way of achieving dynamic dispatch in Rust, allowing you to call methods on types that implement a particular trait without knowing the exact type at compile time.

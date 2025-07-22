@@ -8,6 +8,12 @@
 
 ## General Information
 
+- In Go, when you pass a variable to a function by value (which is the default), the function receives a copy of that variable, not the original.
+
+- Go has a garbage collector. Go automatically manages memory by tracking object lifetimes and reclaiming memory when values are no longer reachable, eliminating the need for manual memory management (like malloc and free in C). Go’s garbage collector is optimized for low-latency and is especially tuned for server workloads. This is one of Go’s key selling points—it provides concurrency and memory safety without the programmer worrying about freeing memory manually.
+
+- In Go, a pointer holds the memory address/location of a variable rather than the actual value. You create a pointer by using the `&` operator to get the address of a variable (e.g. `p := &x`), and you access or modify the value at that address using the `*` operator, known as dereferencing (e.g., `*p = 10` changes the value of `x` through `p`). Go has no pointer arithmetic like C or C++ (addition or subtraction directly on pointers), which helps avoid common memory bugs. Pointers in Go are useful for modifying values in functions (since function arguments are passed by value by default), optimizing performance by avoiding unnecessary copying, and working with complex data structures like linked lists or trees. The zero value of a pointer is `nil`, and dereferencing a nil pointer causes a runtime panic.
+
 - Go is a Statically Typed Language: This means that the type of a variable is known at compile time, and you must declare the type of a variable when you create it. This is different from dynamically typed languages like JavaScript, where types are determined at runtime.
 
 - Go is a Strongly Typed Language: This means that you cannot perform operations on variables of different types without explicitly converting them. For example, you cannot add a string and an integer together without converting one of them to the other's type.
@@ -732,4 +738,105 @@ func main() {
 	backToString := string(bytes)
 	fmt.Println("Back to string:", backToString)
 }
+```
+
+### Pointers
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    x := 10           // Declare an integer variable
+    p := &x           // Create a pointer to x
+
+    fmt.Println("x =", x)
+    fmt.Println("p =", p)          // p holds the address of x
+    fmt.Println("*p =", *p)        // *p dereferences p to get the value of x
+
+    *p = 20                        // Change the value of x through the pointer
+    fmt.Println("x after *p = 20:", x)
+}
+
+// Output:
+// x = 10
+// p = 0xc000014090  // (example address, will vary)
+// *p = 10
+// x after *p = 20: 20
+```
+
+- `x` is a regular integer.
+- `p := &x` stores the memory address of `x` in `p`.
+- `*p` accesses the value at the address `p` points to.
+- Changing `*p` updates `x` because they refer to the same memory location.
+
+
+_### Pointers in Functions:_
+
+```go
+package main
+
+import "fmt"
+
+// Function using pointer - avoids copying large data
+func increment(val *int) {
+    *val += 1
+}
+
+func main() {
+    number := 100
+    increment(&number) // Pass address (pointer), no copy
+    fmt.Println("Incremented:", number)
+}
+
+
+// Without the pointer, it would look like this:
+func increment(val int) int {
+    return val + 1
+}
+
+func main() {
+    number := 100
+
+    // In Go, when you pass a variable to a function by value (which is the default), the function receives a copy of that variable, not the original.
+    // It creates a copy of number - val inside the function is a separate copy of the integer value. 
+    // Modifying val does not affect number unless you return and reassign it.
+    number = increment(number) 
+
+    fmt.Println("Incremented:", number)
+}
+```
+
+_Why it’s more efficient compared to not using pointers_:
+Passing by pointer (*int) avoids copying data, which is especially beneficial with large structs or arrays. The function operates directly on the original value using its memory address, saving memory and processing time compared to making a full copy. This becomes important for large structs or arrays, where copying would be inefficient. Using pointers allows you to modify the original data without the overhead of copying it, leading to better performance and reduced memory usage.
+
+
+### Slices Contain a Pointer to an Underlying Array
+
+```go
+var slice = []int32{1, 2, 3}
+var sliceCopy = slice
+sliceCopy[2] = 4
+fmt.Println(slice)
+fmt.Println(sliceCopy)
+
+// Output:
+// [1 2 4]
+// [1 2 4]
+```
+
+- You create a slice with values `[1, 2, 3]`.
+- Then you assign `sliceCopy = slice`, which copies the slice header, not the underlying array. Both slice and sliceCopy point to the same backing array in memory.
+- When you do `sliceCopy[2] = 4`, you modify the third element of the underlying array.
+- As a result, both slice and sliceCopy reflect the change, and when you print both, you get `[1 2 4]`
+
+Thus:
+- In Go, slices contain a pointer to an underlying array, a length, and a capacity.
+- Assigning one slice to another copies the slice header, not the data, so both variables reference the same data.
+- To make an independent copy (deep copy), you need to allocate a new slice and copy the values, e.g.:
+
+```go
+sliceCopy := make([]int32, len(slice))
+copy(sliceCopy, slice)
 ```
