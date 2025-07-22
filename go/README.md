@@ -772,7 +772,7 @@ func main() {
 - Changing `*p` updates `x` because they refer to the same memory location.
 
 
-_### Pointers in Functions:_
+_Pointers in Functions:_
 
 ```go
 package main
