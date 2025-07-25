@@ -93,8 +93,7 @@ This section covers information about PowerShell.
 - Make a web request, to download some file, for example: `Invoke-WebRequest -Uri "https://ftp.nluug.nl/vim/runtime/spell/de.utf-8.spl" -OutFile "$env:LOCALAPPDATA\nvim\spell\de.utf-8.spl"`
   - The `LOCALAPPDATA` env is special and exists by default. It's a process-level environment variable, meaning it is not stored permanently in the registry like PATH. Instead, Windows dynamically sets it for each user session. It points to `C:\Users\YourUsername\AppData\Local`
 - Find all processes running on a specific port (`a` for showing all active connections and listening ports / `n` for displaying addresses and port numbers in numerical form (instead of resolving host names) / `o` for showing the process ID (PID) associated with each connection): `netstat -ano | findstr :PORT`
-- Kill a process with specific PID: `taskkill /PID <PID> /F`
-- Based on my configs: `CTRL + R` for back-i-search (reverse incremental search mode, which lets you search backward through your command history)
+- Kill a process with specific PID: `taskkill /PID <PID> /F` Based on my configs: `CTRL + R` for back-i-search (reverse incremental search mode, which lets you search backward through your command history)
 - Based on my configs: `Tab` for auto-completion in current work directory (also works with git branches)
 - List all available commands in PowerShell: `Get-Command`
 - Show all running processes in PowerShell: `Get-Process`
