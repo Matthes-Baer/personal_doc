@@ -2,11 +2,14 @@
 
 ## Useful Links
 - [Install Go](https://go.dev/doc/install)
-- [Learn Go Fast: Full Tutorial](https://www.youtube.com/watch?v=8uiZC0l4Ajw)
+- [Go Project Structure/Layout](https://github.com/golang-standards/project-layout)
+- [Learn Go Fast: Full Tutorial (including building an API project example)](https://www.youtube.com/watch?v=8uiZC0l4Ajw)
 - [Boot Dev Tutorial](https://www.boot.dev/lessons/224252be-adc9-452f-8ed0-0b305b25d0cb)
 - [Learn Go as JavaScript Developer](https://prateeksurana.me/blog/guide-to-go-for-javascript-developers/?utm_source=tldrwebdev)
 
 ## General Information
+
+- When a function is uppercase in Go, it means that other modules can access it (public). If it is lowercase, it is private to the package/module.
 
 - Goroutines are lightweight threads managed by the Go runtime, used to perform concurrent (not necessary via parallel execution (see explanation below)) tasks. When you prefix a function call with the `go` keyword, it runs that function asynchronously as a goroutine, allowing the rest of your program to continue executing without waiting for that function to finish. For example, `go doSomething()` launches `doSomething` in the background. Goroutines are much more memory-efficient than traditional threads, allowing you to run thousands or even millions concurrently. Under the hood, Go uses a scheduler to multiplex many goroutines onto a smaller number of OS threads, optimizing performance and resource usage. The scheduler handles when goroutines should run, pause, or resume, abstracting away the complexity of thread management. Because goroutines share memory space, communication and synchronization between them is often done using channels, a built-in feature of Go that allows safe data exchange between goroutines. This fits Go’s philosophy of "do not communicate by sharing memory; share memory by communicating."
   - Concurrency in goroutines means structuring your program so multiple tasks can make progress independently, often by switching between them efficiently on a single or few OS threads. Parallelism, on the other hand, means running multiple goroutines truly simultaneously on multiple CPU cores at the same time. So concurrency is about managing multiple tasks logically, while parallelism is about physically executing them simultaneously.
@@ -906,6 +909,10 @@ In short:
 
 Channels help avoid race conditions and make concurrent programs easier to reason about.
 
+#### `select`
+
+In Go, the select statement is like a switch, but for channels. It lets a goroutine wait on multiple channel operations — like sending or receiving — and will execute one case that’s ready. If multiple are ready, one is chosen at random. If none are ready, it blocks (unless there's a default case).
+
 ```go
 package main
 
@@ -926,26 +933,107 @@ func easyExample() {
     fmt.Println("Easy example received:", msg)
 }
 
-// Advanced example: using a buffered channel with multiple goroutines and closing the channel
+// Advanced example: using a buffered channel with multiple goroutines, select, and closing the channel
 func advancedExample() {
-    ch := make(chan int, 3)        // Create a buffered channel with capacity 3
+    ch := make(chan int, 3)      // Buffered channel
+    done := make(chan struct{}) // Channel to signal shutdown
 
-    // Producer: send multiple values into the channel
+    // Producer: send values into the channel with select
     go func() {
-        defer close(ch) // Close channel to signal no more values will be sent
-
-        for i := 1; i <= 5; i++ {
-            fmt.Println("Sending:", i)
-            ch <- i               // Send i into the channel; blocks if buffer full
+        defer close(ch)
+        for i := 1; i <= 10; i++ {
+            select {
+            case ch <- i:
+                fmt.Println("Producer sent:", i)
+                time.Sleep(200 * time.Millisecond) // Simulate some delay
+            case <-done:
+                fmt.Println("Producer received done signal. Stopping.")
+                return
+            }
         }
     }()
 
-    // Consumer: receive values from the channel until it is closed
-    for val := range ch {
-        fmt.Println("Received:", val)
-        time.Sleep(500 * time.Millisecond)  // Simulate processing delay
-    }
+    // Explanation of the select above:
+    // The producer wants to send i into the channel ch.
+    // But before it just blindly sends, it waits using select:
+    // If the channel has space, it sends the value and continues.
+    // If the done channel has been closed (from the consumer), it stops early.
 
-    fmt.Println("Advanced example done, channel closed")
+    // Consumer: reads from channel and optionally signals done
+    go func() {
+        timeout := time.After(2 * time.Second) // Set timeout for example
+
+        for {
+            select {
+            case val, ok := <-ch:
+                if !ok {
+                    fmt.Println("Consumer: channel closed.")
+                    return
+                }
+                fmt.Println("Consumer received:", val)
+                time.Sleep(300 * time.Millisecond) // Simulate processing
+            case <-timeout:
+                fmt.Println("Consumer timed out. Sending done signal.")
+                close(done)
+                return
+            }
+        }
+    }()
+
+    // Explanation of the select above:
+    // The consumer is waiting to receive from the ch channel.
+    // But at the same time, it’s also waiting for a timeout (2 seconds) using time.After.
+    // The select waits for whichever happens first:
+    // A value arrives on ch: It processes it.
+    // The timeout fires: It prints a message, signals the producer to stop (close(done)), and exits.
+
+    // Give enough time for goroutines to complete
+    time.Sleep(4 * time.Second)
+    fmt.Println("Advanced example with select done.")
+}
+```
+
+### Generics
+
+```go
+package main
+
+import (
+    "fmt"
+)
+
+// Filter returns a new slice containing only the elements that match the predicate.
+func Filter[T any](input []T, predicate func(T) bool) []T {
+    var result []T
+    for _, val := range input {
+        if predicate(val) {
+            result = append(result, val)
+        }
+    }
+    return result
+}
+
+// Map transforms a slice of type T to a slice of type R using a mapper function.
+func Map[T any, R any](input []T, mapper func(T) R) []R {
+    result := make([]R, len(input))
+    for i, val := range input {
+        result[i] = mapper(val)
+    }
+    return result
+}
+
+func main() {
+    // Example 1: Filter even numbers from a slice of ints
+    nums := []int{1, 2, 3, 4, 5, 6}
+    evens := Filter(nums, func(n int) bool {
+        return n%2 == 0
+    })
+    fmt.Println("Even numbers:", evens) // [2 4 6]
+
+    // Example 2: Map ints to strings
+    words := Map(nums, func(n int) string {
+        return fmt.Sprintf("Number-%d", n)
+    })
+    fmt.Println("Mapped strings:", words) // ["Number-1", "Number-2", ...]
 }
 ```
