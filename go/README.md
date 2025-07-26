@@ -12,6 +12,8 @@
   - Concurrency in goroutines means structuring your program so multiple tasks can make progress independently, often by switching between them efficiently on a single or few OS threads. Parallelism, on the other hand, means running multiple goroutines truly simultaneously on multiple CPU cores at the same time. So concurrency is about managing multiple tasks logically, while parallelism is about physically executing them simultaneously.
   - Whether Goroutines run in parallel depends on the Go runtime and how many CPU cores are available and utilized—if you have multiple cores and set `GOMAXPROCS` accordingly (By default, since Go 1.5, `GOMAXPROCS` is set to the number of logical CPUs detected (usually matches `$env:NUMBER_OF_PROCESSORS`)), goroutines can run in parallel across those cores. So, goroutines enable concurrency always, but parallelism only happens when the runtime schedules them on multiple OS threads running on multiple cores.
 
+- Channels in Go are a way for goroutines to communicate and synchronize by sending and receiving typed data. Think of a channel as a pipe: one goroutine sends data into it, and another receives data out of it, using the `<-` operator. This lets you safely share information between concurrent tasks without explicit locking. Channels can be unbuffered, where sending blocks until the receiver is ready, or buffered, allowing sending to proceed up to a set capacity before blocking. This blocking behavior makes channels useful for coordinating work and ensuring goroutines stay in sync. You can also close channels to indicate no more data will be sent, allowing receivers to detect completion. In short, channels provide a simple, safe, and elegant way to handle communication between goroutines, making concurrent programming in Go easier to reason about -> they 1. hold data, 2. are thread safe, 3. listen for data
+
 - In Go, when you pass a variable to a function by value (which is the default), the function receives a copy of that variable, not the original.
 
 - Go has a garbage collector. Go automatically manages memory by tracking object lifetimes and reclaiming memory when values are no longer reachable, eliminating the need for manual memory management (like malloc and free in C). Go’s garbage collector is optimized for low-latency and is especially tuned for server workloads. This is one of Go’s key selling points—it provides concurrency and memory safety without the programmer worrying about freeing memory manually.
@@ -25,8 +27,6 @@
 - Go code is compiled into machine code, which makes it fast and efficient. This is different from interpreted languages like JavaScript, where the code is executed line by line at runtime.
 
 - Go has fast compilation times, which means that you can quickly build and run your code without waiting for long periods.
-
-- Go has built in concurrency support, which allows you to write programs that can run multiple tasks simultaneously. This is achieved through goroutines and channels, which are lightweight threads and communication mechanisms in Go.
 
 - In Go there are modules and packages. A module is a collection of related Go packages, and a package is a collection of Go source files that are compiled together. Modules are used to manage dependencies and versioning in Go projects.
 
@@ -843,4 +843,109 @@ Thus:
 ```go
 sliceCopy := make([]int32, len(slice))
 copy(sliceCopy, slice)
+```
+
+### Goroutines
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+// Mutex to protect shared access to results slice
+var m sync.Mutex
+
+// WaitGroup to wait for all goroutines to finish
+var wg sync.WaitGroup
+
+// Simulated database data
+var dbData = []string{"id1", "id2", "id3", "id4", "id5"}
+
+// Shared slice to store results
+var results = []string{}
+
+func main() {
+    start := time.Now() // Record start time
+
+    for i := 0; i < len(dbData); i++ {
+        wg.Add(1)              // Increment WaitGroup counter
+        go dbCall(i)           // Launch goroutine for each db call
+    }
+
+    wg.Wait()                 // Wait for all goroutines to finish
+    fmt.Printf("Total execution time: %v\n", time.Since(start))
+    fmt.Printf("The results are %v\n", results)
+}
+
+func dbCall(i int) {
+    defer wg.Done()                        // Mark this goroutine as done on exit
+    time.Sleep(2 * time.Second)            // Simulate delay for DB call
+
+    m.Lock()                              // Lock mutex before modifying shared data
+    results = append(results, dbData[i])  // Append result safely
+    m.Unlock()                            // Unlock mutex
+}
+```
+
+Besides `sync.Mutex`, there is also `sync.RWMutex`. This allows you to have multiple readers or a single writer at a time. It is useful when you have many read operations and few write operations, as it allows concurrent reads while still ensuring exclusive access for writes. When the `RLock()` is run, it looks up if a full lock (`Lock()`) is still in place, and if so, it waits until the lock is released. If no full lock is in place, it allows multiple readers to access the data concurrently. When a writer calls `Lock()`, it blocks all readers until the write operation is complete. This ensures that the reader only sees data, that is consistent and not being modified by a writer at the same time.
+
+
+### Channels
+
+Use goroutines without channels when you want to run tasks concurrently but don’t need to share data or coordinate between them. For example, fire-and-forget background jobs where the tasks don’t depend on each other or don’t need to communicate results back.
+
+You need channels when your goroutines must communicate, synchronize, or share data safely. Channels let you pass values between goroutines and coordinate their execution without explicit locks. For instance, if one goroutine produces data and another consumes it, or if you want to wait for a goroutine’s result before continuing, channels are the clean, idiomatic way to do that in Go.
+
+In short:
+- Use goroutines alone for independent parallelism without communication.
+- Use channels when goroutines need to talk, coordinate, or pass data safely.
+
+Channels help avoid race conditions and make concurrent programs easier to reason about.
+
+```go
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+// Base example: simple send and receive using an unbuffered channel
+func easyExample() {
+    ch := make(chan string)        // Create an unbuffered channel of strings
+
+    go func() {
+        ch <- "hello from goroutine"  // Send a message into the channel
+    }()
+
+    msg := <-ch                    // Receive the message from the channel (blocks until message arrives)
+    fmt.Println("Easy example received:", msg)
+}
+
+// Advanced example: using a buffered channel with multiple goroutines and closing the channel
+func advancedExample() {
+    ch := make(chan int, 3)        // Create a buffered channel with capacity 3
+
+    // Producer: send multiple values into the channel
+    go func() {
+        defer close(ch) // Close channel to signal no more values will be sent
+
+        for i := 1; i <= 5; i++ {
+            fmt.Println("Sending:", i)
+            ch <- i               // Send i into the channel; blocks if buffer full
+        }
+    }()
+
+    // Consumer: receive values from the channel until it is closed
+    for val := range ch {
+        fmt.Println("Received:", val)
+        time.Sleep(500 * time.Millisecond)  // Simulate processing delay
+    }
+
+    fmt.Println("Advanced example done, channel closed")
+}
 ```

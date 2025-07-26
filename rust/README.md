@@ -308,6 +308,55 @@ Also:
 
 ## Code Examples
 
+### Arc, Mutex, Concurrency
+
+```rs
+use std::sync::{Arc, Mutex};
+use std::thread;
+use std::time::{Duration, Instant};
+
+fn main() {
+    // Simulated database data
+    let db_data = vec!["id1", "id2", "id3", "id4", "id5"];
+
+    // Shared vector wrapped in Arc (atomic reference count) and Mutex for safe access across threads
+    let results = Arc::new(Mutex::new(Vec::new()));
+
+    let start = Instant::now(); // Start timer
+
+    // Vector to hold thread handles so we can join later
+    let mut handles = vec![];
+
+    for i in 0..db_data.len() {
+        let results = Arc::clone(&results); // Clone Arc pointer for each thread
+        let data = db_data[i];               // Copy current data
+
+        // Spawn a new thread to simulate DB call
+        let handle = thread::spawn(move || {
+            thread::sleep(Duration::from_secs(2)); // Simulate delay
+
+            // Lock the mutex to get mutable access to results
+            let mut res = results.lock().unwrap();
+            res.push(data); // Append result safely
+        });
+
+        handles.push(handle);
+    }
+
+    // Wait for all threads to finish
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    // Print total execution time
+    println!("Total execution time: {:?}", start.elapsed());
+
+    // Lock results to print them
+    let res = results.lock().unwrap();
+    println!("The results are: {:?}", *res);
+}
+```
+
 ### Sort with Priority Mapping and Tiebreaker (Double Sorting)
 
 ```rs
