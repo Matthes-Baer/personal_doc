@@ -260,6 +260,10 @@ networks:
 
 ### General Kubernetes Information
 
+- Ingress is a Kubernetes resource that manages external access to services within a cluster, typically HTTP. It provides a way to define rules for routing traffic to different services based on the request's host and path. Ingress controllers implement these rules, allowing you to expose multiple services under a single IP address or domain name. This is particularly useful for managing web applications, as it simplifies routing and can provide features like SSL termination, load balancing, and URL rewriting.
+
+- GatewayAPI is a set of Kubernetes APIs that extend the Ingress functionality, providing more advanced traffic management capabilities. It allows for greater flexibility in defining how traffic is routed to services, including support for multiple protocols (HTTP, TCP, UDP), richer routing rules, and better integration with service meshes. GatewayAPI aims to standardize how traffic management is handled across different Kubernetes environments, making it easier to implement complex routing scenarios and policies. It's not to be confused with API Gateway, which is a separate service that provides a way to manage APIs in a Kubernetes cluster.
+
 - Kubernetes is a container orchestration platform that manages groups of containers, often created using Docker. It handles tasks like scaling, distribution, and connectivity between containers, making it easier to manage large-scale containerized applications and their infrastructure. For instance, while you can set up Docker on a single server and route traffic to a lot of instances, or deploying multiple services that dynamically scale based on load, becomes challenging. Kubernetes addresses these complexities. Its command-line tool, `kubectl`, enables you to interact with Kubernetes clusters by communicating with the Kubernetes API server.
 
 - Cluster: A Kubernetes Cluster is the entire system that includes a Control Plane (brains of the system) and multiple worker nodes (where apps run). You interact with the cluster to deploy and manage containerized applications.
