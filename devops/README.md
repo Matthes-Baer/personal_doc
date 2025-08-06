@@ -280,3 +280,184 @@ networks:
 - Container Storage Interface (CSI): The Container Storage Interface (CSI) standardizes how Kubernetes interacts with storage systems to provision, attach, and mount volumes for Pods. Instead of building custom logic for each storage backend, Kubernetes relies on CSI drivers that know how to communicate with specific storage platforms. When a user defines a PersistentVolumeClaim (PVC), Kubernetes uses the CSI driver to dynamically provision storage, or bind to an existing volume, then mount it to the target node and Pod. This allows Kubernetes to support a wide range of storage backends such as AWS EBS, Google Persistent Disk, Ceph, NFS, or iSCSI, whether they are block or file-based systems. CSI makes Kubernetes storage highly modular and extensible, simplifying the addition of new storage types without changing core Kubernetes code.
 
 - containerd and CRI-O are both popular container runtimes used by Kubernetes to manage containers. containerd is a general-purpose runtime originally from Docker, now a CNCF project, and is widely used across cloud platforms. CRI-O, on the other hand, is a lightweight runtime built specifically for Kubernetes, focusing on simplicity and security. While containerd offers broader flexibility, CRI-O is tightly integrated with Kubernetes and often used in Red Hat-based systems like OpenShift.
+
+### Kubernetes Code Examples
+
+#### Helm
+
+- Directory structure:
+```yaml
+myapp/
+├── Chart.yaml
+├── values.yaml
+└── templates/
+    ├── deployment.yaml
+    ├── service.yaml
+    ├── secret.yaml
+    └── redis-deployment.yaml
+```
+
+- Chart.yaml:
+
+```yaml
+apiVersion: v2
+name: myapp
+description: A complex web app with optional Redis
+version: 1.0.0
+appVersion: "2.1.0"
+```
+
+- values.yaml:
+
+```yaml
+replicaCount: 3
+
+image:
+  repository: myregistry/myapp
+  tag: "2.1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+env:
+  - name: ENVIRONMENT
+    value: "production"
+  - name: LOG_LEVEL
+    value: "debug"
+
+secretEnv:
+  enabled: true
+  values:
+    DB_PASSWORD: "supersecure"
+
+redis:
+  enabled: true
+  image: redis:6.2-alpine
+```
+
+
+- templates/deployment.yaml:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}
+  labels:
+    app: {{ include "myapp.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "myapp.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "myapp.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+          env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- if .Values.secretEnv.enabled }}
+            {{- range $key, $val := .Values.secretEnv.values }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "myapp.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+```
+
+- templates/secret.yaml:
+
+```yaml
+{{- if .Values.secretEnv.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "myapp.fullname" . }}
+type: Opaque
+data:
+  {{- range $key, $val := .Values.secretEnv.values }}
+  {{ $key }}: {{ $val | b64enc }}
+  {{- end }}
+{{- end }}
+```
+
+- templates/redis-deployment.yaml:
+
+```yaml
+{{- if .Values.redis.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: {{ .Values.redis.image }}
+          ports:
+            - containerPort: 6379
+{{- end }}
+```
+
+- templates/service.yaml: 
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "myapp.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "myapp.name" . }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 80
+```
+
+- templates/_helpers.tpl:
+
+```yaml
+{{- define "myapp.name" -}}
+{{ .Chart.Name }}
+{{- end }}
+
+{{- define "myapp.fullname" -}}
+{{ printf "%s-%s" .Release.Name .Chart.Name }}
+{{- end }}
+```
+
+Then: 
+
+```sh
+helm lint myapp/
+helm install myapp ./myapp --dry-run --debug
+```
+
+General install command:
+
+```sh
+helm install myapp ./myapp
+```
