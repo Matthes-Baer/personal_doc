@@ -218,6 +218,7 @@ networks:
 
 ### Useful Kubernetes Links
 - [Kubernetes Tutorial](https://www.youtube.com/watch?v=2T86xAtR6Fo)
+- [A visual guide on troubleshooting Kubernetes deployments](https://learnkube.com/troubleshooting-deployments)
 
 
 ### Helpful Kubernetes Commands
