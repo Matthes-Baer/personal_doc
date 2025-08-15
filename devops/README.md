@@ -55,7 +55,7 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 ### General Docker Information
 
 - Provide envs for build process in dockerfile (for example, if you have envs in your `.npmrc` file to install fontawesome): `--mount=type=secret,id=auto-devops-build-secrets,mode=0500,uid=1000,gid=1000 . /run/secrets/auto-devops-build-secrets`
-  - Afterwards, you may use this to build e.g.: `docker buildx build --secret id=auto-devops-build-secrets,src=C:\Users\<user>\AppData\repositories\auto-devops-build-secrets -t <tag>:latest`
+  - Afterwards, you may use this to build e.g.: `docker buildx build --secret id=auto-devops-build-secrets,src=C:\Users\<user>\AppData\repositories\auto-devops-build-secrets -t <image_name>:<tag> .`
   - In the file you can store your envs like you would do with a `.env` file.
   - This is basically the same process GitLab would use -> they also have a file prepared with the secrets, which is then provided with such a line in the dockerfile
   
