@@ -5,6 +5,8 @@ It covers both TypeScript and JavaScript.
 
 ## General Information
 
+- `Promise.allSettled` is generally better than manually looping through asynchronous tasks when you want to run them in parallel and collect both successful and failed results. It provides a clean, structured way to handle each outcome without writing custom logic, and it's much faster than sequentially awaiting each promise in a loop. Manual looping is only better if you need sequential execution or dependencies between operations.
+
 - In TypeScript, `undefined` means a variable has been declared but not assigned a value (or a property is missing), while `null` is an explicit assignment that represents "no value" or intentional emptiness; both are primitive values but behave differently in checks. By contrast, `unknown` is a type, not a value — it’s a safer counterpart to `any` that means "the type is not known yet," so you must narrow it (with type guards or assertions) before using it. In short: `undefined` = uninitialized/missing, `null` = explicitly empty, and `unknown` = a type that forces type safety until clarified.
 
 - Enums are just a union of string literal values under the hood ("create" | "delete" | "..."). Thus, you can use `Exclude` on it (not `Omit` - this is for objects) and you may also use enums as types (like `AccessOperation` as operation's type and then e.g. use `AccessOperation.CREATE` to check for specific used values in the function's body).
