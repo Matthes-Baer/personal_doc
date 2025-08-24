@@ -20,3 +20,17 @@ It covers both TypeScript and JavaScript.
 
 - The values of objects (arrays, objects, functions, etc.) are passed as reference to the object when passing them as arguments to a function, but the reference itself is passed by value. That means inside the function you can modify the object's properties, and those changes will reflect outside the function - `let data = { count: 100 }; ... modify(data); ... // the original "data" was modified afterwards`
 
+
+## Code Examples
+
+### Tanstack Table: globalFilterFn
+
+```ts
+const globalFilterFn: FilterFn<Data> = (row, _, filterValue) => {
+  if (!filterValue) return true // No filter applied
+
+  // then do some matching with the help of the tableColumns (loop through them, get the value of each row's column with getValue and the table columns' id (you get that from the table column in the loop) and then compare the filterValue with the rowValue and if they match, we want to show the row (if not, it's filtered out) -> if at lest one column of a row matches, we want to show the whole row (use `some` to loop through tableColumns and then return this condition in the end with other conditions if needed))
+  // Use table.setGlobalFilter for manually setting the global filter, you can pass whatever in there (doesn't just need to be a string for global search term, you can pass an object in there, too (but you will need a custom globalFilterFn))
+  // Have in mind to check if the columns have proper values assigned with the accessFn (or called similarly), this needs to match, what you are trying to filter, any values in cell won't be recognized for filtering)
+}
+```
