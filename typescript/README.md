@@ -38,3 +38,33 @@ const globalFilterFn: FilterFn<Data> = (row, _, filterValue) => {
   // Have in mind to check if the columns have proper values assigned with the accessFn (or called similarly), this needs to match, what you are trying to filter, any values in cell won't be recognized for filtering)
 }
 ```
+
+### Example seed script in Payload CMS
+```ts
+import payloadConfig from '@/payload.config'
+import { getPayload } from 'payload'
+import { seedWebsites } from './websites/seedWebsites'
+
+/**
+ * This is a base seed script that will get the application's payload setup and use it for any seed scripts
+ * This script is setup so you can run it directly via 'payload run ./seed.ts'
+ * The 'payload run' is special to Payload CMS and helps setting up the option to use getPayload
+ * 
+ * In the package.json you can add '"seed": "payload run ./src/path_to_seeder/seed.ts"' to run this script
+ * It will run this file where it sees that the seed function is invoked, get the payload setup and run the seedEntitiesScript
+ * In the onInit in the payload.config.ts you would not add this script, but a different base script where you get payload as argument or call seedEntitiesScript and other seeder scripts directly in there
+ */
+async function seed() {
+  try {
+    const payload = await getPayload({ config: payloadConfig })
+
+    await seedEntitiesScript(payload)
+  } catch {
+    process.exit(1)
+  }
+
+  process.exit(0)
+}
+
+await seed()
+```
