@@ -9,6 +9,19 @@
 
 ## General Information
 
+
+- Use `"go.formatTool": "goimports"` in your VS Code settings to make the Go formatting work (pick the formatter, you want to use). `"editor.defaultFormatter": "golang.go"` within the `"[go]"` section might also be needed if not already added. `"go.toolsManagement.autoUpdate": true` is also part of my VS Code settings.
+
+- In Go, the `cmd/` directory is commonly used to hold entry points for executables. When you run a command like `go build ./cmd`, Go compiles everything inside that folder belonging to the same package (usually package main). All `.go` files in the same package are treated as one unit, so you can split logic across multiple files, but only one `main()` function is allowed. The result is a single binary placed in the specified output path.
+Go automatically resolves dependencies: if your cmd package imports other local packages (e.g., `internal/models`, `internal/helpers`), Go will also compile those. You don’t need to build them separately; they’re pulled in transitively as needed. The special `internal/ folder` ensures encapsulation — its packages can only be imported by code within the same module or subdirectories, preventing outside modules from depending on your internal logic.
+You use the `pkg/` directory in Go when you want to expose code that is safe and intended for use by other applications or modules outside your project. Unlike `internal/`, which restricts visibility, anything placed in `pkg/` is publicly importable, making it a good place for shared libraries, utilities, or reusable components that might be valuable beyond your own project. In practice, `pkg/` is optional — some teams prefer putting all code under `internal/` to enforce strict boundaries — but if you anticipate that parts of your code could be reused by others (or even across your own projects), `pkg/` is the conventional home.
+This structure encourages a clean separation: keep most of your logic inside `internal/` or `pkg/`, while `cmd/` contains minimal startup code that wires things together. That way, you can create multiple executables in the same project (e.g., `cmd/server`, `cmd/cli`) that share internal code.
+In summary, `go build ./cmd` builds a single executable by compiling all files in that folder under package `main` along with all imported dependencies. The `internal/` folder is automatically included when imported, but it cannot be used externally. A typical Go project keeps executable entry points small and maintains reusable code in `internal/` or `pkg/`. This convention keeps projects modular, maintainable, and consistent with Go’s philosophy.
+
+- In Go, project structure and package organization are more opinionated than in languages like Python or JavaScript. Commonly, projects use an `internal` folder for code that should not be imported outside the module, a `cmd` folder for executable entry points, and a models or similar package for shared data structures. Imports are always resolved relative to the module base path defined in go.mod, so you import using the full module path, not relative file paths. For example, if your module is `github.com/user/project`, you might import models as `github.com/user/project/internal/models`.
+Go does not support wildcard imports like `import * as ...` in JavaScript or `from ... import *` in Python. Every imported package must have a unique name (usually derived from the folder name), and you use that name as a prefix when calling functions, types, or variables from the package. To simplify code or avoid naming collisions, Go allows aliases for imports, e.g., `import m "github.com/user/project/internal/models"`, letting you write `m.Result` instead of `models.Result`.
+Finally, Go’s visibility rules are simple: identifiers (functions, types, constants, variables) are exported only if they start with an uppercase letter. Anything starting with a lowercase letter is private to the package. This convention replaces access modifiers like public or private in other languages, and helps maintain encapsulation within packages while keeping the API surface clean.
+
 - When you create a file and rename it shortly after, it may happen that VS Code tells you that it doesn't know the new name, yet, and compares it with the previous file name (like "abc" and "abC"). In such a case you won't get any editing support (like syntax highlighting, auto-completion, etc.). To fix this, run `go clean -cache -modcache -i -r`, then refresh the window (or restart VS Code completely).
 
 - In Go, pointers allow you to reference a value without copying it, which is useful for efficiency and for modifying the original value. Normally, when you have a pointer to a value, you would use the `*` operator to dereference it and access the underlying value. For example, if p is a `*Person`, writing `*p` gives you the Person value itself. However, Go has a convenience feature: when you call a method on a pointer, the language automatically dereferences it if needed. This means you can write `p.Method()` even if Method is defined on the value type rather than the pointer type. Go handles the dereferencing behind the scenes, so you rarely need to manually use `*selection` when calling methods — making code simpler and easier to read.
@@ -1041,5 +1054,153 @@ func main() {
         return fmt.Sprintf("Number-%d", n)
     })
     fmt.Println("Mapped strings:", words) // ["Number-1", "Number-2", ...]
+}
+```
+
+### colly & goquery
+
+*Colly*: Colly is a fast and easy-to-use scraping framework for Go. It handles HTTP requests, concurrency, and URL visiting automatically. You define “collectors” for pages, attach callbacks for HTML elements (OnHTML), and Colly manages fetching, retries, and rate-limiting. It’s ideal for scraping static websites where JavaScript rendering isn’t required.
+
+*GoQuery*: GoQuery is a Go library that implements jQuery-like syntax for DOM traversal and manipulation. You can select elements (Find), iterate over them (Each), and inspect child nodes (Contents) or attributes. While GoQuery doesn’t fetch pages itself, it pairs perfectly with Colly or the standard library’s HTTP client for parsing HTML.
+
+When JavaScript is required:
+*Chromedp*: Chromedp is a headless Chrome/Chromium controller for Go. Unlike Colly, it can render JavaScript-heavy websites, simulate user interactions, click buttons, and extract dynamic content. It’s more powerful but also heavier and slower than Colly, making it suitable for pages that require a real browser context.
+
+In short: Colly = fast scraping of static pages, GoQuery = DOM parsing and manipulation, Chromedp = full browser automation for dynamic content.
+
+_colly & goquery:_
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"strings"
+	"sync"
+
+	"github.com/gocolly/colly"
+	"github.com/PuerkitoBio/goquery"
+)
+
+type Result struct {
+	Link    string
+	Title   string
+	Content string
+}
+
+func ScrapeExample(baseURL string, mu *sync.Mutex, wg *sync.WaitGroup, seen map[string]struct{}, resultsChan chan<- Result) {
+	listURL := baseURL + "/articles"
+
+	// List page collector
+	cList := colly.NewCollector()
+
+	// Detail page collector
+	cDetail := colly.NewCollector()
+
+  	// Apply polite limits
+	cDetail.Limit(&colly.LimitRule{
+		DomainGlob:  "*example.com*",
+		Parallelism: 2,                       // at most 2 requests at the same time
+		RandomDelay: 1000 * time.Millisecond, // add a delay between requests
+	})
+
+
+	// Handle detail pages
+	cDetail.OnHTML("div.article-content", func(e *colly.HTMLElement) {
+		link := e.Request.URL.String()
+		contentSelection := e.DOM
+
+		title := strings.TrimSpace(contentSelection.Find("h1").Text())
+
+		// Example: iterate over <p> using Contents() and NodeName
+		var combinedText []string
+		contentSelection.Contents().Each(func(i int, s *goquery.Selection) {
+			nodeName := goquery.NodeName(s)
+			text := strings.TrimSpace(s.Text())
+			if text != "" {
+				combinedText = append(combinedText, fmt.Sprintf("[%s] %s", nodeName, text))
+			}
+		})
+
+		key := link
+		mu.Lock()
+		if _, exists := seen[key]; exists {
+			mu.Unlock()
+			return
+		}
+		seen[key] = struct{}{}
+		mu.Unlock()
+
+		resultsChan <- Result{
+			Link:    link,
+			Title:   title,
+			Content: strings.Join(combinedText, "\n"),
+		}
+	})
+
+	// Handle list page
+	cList.OnHTML("div.article-listing h2.title a", func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+		wg.Add(1)
+		go func(link string) {
+			defer wg.Done()
+			if err := cDetail.Visit(link); err != nil {
+				log.Printf("Failed to visit detail page: %s", err)
+			}
+		}(link)
+	})
+
+	if err := cList.Visit(listURL); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func main() {
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	seen := make(map[string]struct{})
+	results := make(chan Result, 10)
+
+	go func() {
+		for r := range results {
+			fmt.Printf("Title: %s\nLink: %s\nContent:\n%s\n\n", r.Title, r.Link, r.Content)
+		}
+	}()
+
+	ScrapeExample("https://example.com", &mu, &wg, seen, results)
+	wg.Wait()
+	close(results)
+}
+```
+
+_With chromedp:_
+```go
+package helper
+
+import (
+	"context"
+	"time"
+
+	"github.com/chromedp/chromedp"
+)
+
+// Use chromedp to open a website and wait for it's html to load in before returning it
+// Use "doc, err := goquery.NewDocumentFromReader(strings.NewReader(finalHTML))" to parse it into a goquery reader (to use Find and other methods on it)
+func GetFinalHTML(link string) (string, error) {
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
+
+	var html string
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(link),
+		chromedp.Sleep(2*time.Second), // wait for JS
+		chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+	)
+
+	if err != nil {
+		return "", err
+	}
+
+	return html, nil
 }
 ```
