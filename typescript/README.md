@@ -70,3 +70,35 @@ async function seed() {
 
 await seed()
 ```
+
+### Custom Error with Type-Safety
+
+```ts
+import { APIError, CollectionSlug, GeneratedTypes } from 'payload'
+
+type Collections = GeneratedTypes['collections']
+type Resource = CollectionSlug
+
+export class NotFoundError<R extends Resource, K extends keyof Collections[R]> extends APIError {
+  resource: R
+  findWith: { key: K; value: Collections[R][K] }
+
+  constructor(
+    resource: R,
+    findWith: { key: K; value: Collections[R][K] },
+    meta?: Record<string, unknown>,
+  ) {
+    super(
+      `document of '${resource}' with ${String(findWith.key)} '${String(findWith.value)}' not found`,
+      404,
+      {
+        resource,
+        findWith,
+        ...meta,
+      },
+    )
+    this.resource = resource
+    this.findWith = findWith
+  }
+}
+```
