@@ -35,9 +35,12 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 - Delete stopped containers: `docker container prune`
 - View the layers of the corresponding docker image: `docker history IMAGE_NAME:TAG`
 - Run the docker-compose.yml file: `docker-compose up`
+- Build the image mentioned in the docker-compose file and start the docker-compose immediately afterwards: `docker-compose up --build`
 - Stop the docker compose applications: `docker-compose down`
 - Rebuild the containers from the docker compose: `docker-compose up --build`
 - View the docker compose logs: `docker-compose logs -f`
+- Remove all stopped containers, unused networks, dangling images (images not tagged or referenced by any container), build cache: `docker system prune -a` (optionally also add `--volumes` | `-a` stands for `all`) -> to actually reclaim disk space, you have to close docker desktop/shutdown the corresponding wsl distribution (`docker-desktop`)
+
 
 ### Dockerfile commands
 
@@ -53,6 +56,14 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 - `LABEL` - Add metadata -> `LABEL maintainer="someone@example.com"`
 
 ### General Docker Information
+
+- Old Docker images can contain security vulnerabilities in both the operating system and the software they include. For example, an outdated Alpine or Debian base might have known flaws in libraries like OpenSSL or glibc, while older Node.js versions or preinstalled npm packages may have unpatched security issues. Even though containers are isolated, these vulnerabilities can still be exploited, potentially compromising the container or, in some misconfigured cases, the host system. Regularly updating images and scanning them with tools like docker scan, Trivy, or Snyk helps reduce these risks.
+
+- In Docker, images like node:22 refer to a base Node.js image using the latest patch version of Node 22.x. Variants like alpine and slim indicate the underlying Linux distribution and size/footprint.
+Alpine is a very small, security-focused Linux distribution (~5 MB) that uses the musl libc and BusyBox utilities. Its main advantage is minimal size, which makes images smaller and faster to download, but some software may require extra libraries or tweaks to run properly because musl libc differs slightly from the standard glibc used on most Linux distributions.
+Slim images are Debian-based but stripped of unnecessary packages to reduce size (~20–30 MB smaller than full Debian images). They retain glibc, so most Node.js modules and binaries work out of the box without extra tweaks. In general, use alpine if you want the smallest image and are okay handling occasional library issues, and slim if you prefer compatibility and ease of use over minimal size. Other variants include buster, bullseye, or full Debian/Ubuntu images, which prioritize compatibility over image size.
+
+- Docker stages are completely independent from each other. When copying or installing something in one stage, other following stages don't also have the files copied or installed.
 
 - Provide envs for build process in dockerfile (for example, if you have envs in your `.npmrc` file to install fontawesome): `--mount=type=secret,id=auto-devops-build-secrets,mode=0500,uid=1000,gid=1000 . /run/secrets/auto-devops-build-secrets`
   - Afterwards, you may use this to build e.g.: `docker buildx build --secret id=auto-devops-build-secrets,src=C:\Users\<user>\AppData\repositories\auto-devops-build-secrets -t <image_name>:<tag> .`
@@ -213,6 +224,52 @@ networks:
   backend:
 ```
 
+#### `chown`, `chmod`, `UID/GID`
+
+```yaml
+FROM node:22-alpine
+
+# -----------------------------
+# 1️⃣ Create a system user and group
+# -----------------------------
+# UID=1001, GID=1001 for consistency across builds
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 appuser
+
+# -----------------------------
+# 2️⃣ Create directories for app
+# -----------------------------
+RUN mkdir -p /app/data /app/logs
+
+# -----------------------------
+# 3️⃣ Set ownership so 'appuser' can write
+# -----------------------------
+# -R = recursive (all files/folders inside /app)
+RUN chown -R appuser:nodejs /app
+
+# -----------------------------
+# 4️⃣ Copy source code and set ownership during copy
+# -----------------------------
+# Ensures files are already owned by the unprivileged user
+COPY --chown=appuser:nodejs ./src /app/src
+
+# -----------------------------
+# 5️⃣ Make Go scraper executable
+# -----------------------------
+# chmod 755 = owner rwx, group rx, others rx
+RUN chmod +x /app/src/bin/cmd
+
+# -----------------------------
+# 6️⃣ Switch to unprivileged user
+# -----------------------------
+USER appuser
+
+# -----------------------------
+# 7️⃣ Set working directory and default command
+# -----------------------------
+WORKDIR /app
+CMD ["node", "server.js"]
+```
 
 ## Kubernetes
 
@@ -470,3 +527,5 @@ General install command:
 ```sh
 helm install myapp ./myapp
 ```
+
+
