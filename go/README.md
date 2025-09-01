@@ -1204,3 +1204,11 @@ func GetFinalHTML(link string) (string, error) {
 	return html, nil
 }
 ```
+
+### Initial Statement in if block
+```go
+// something is not exposed to the parent scope
+if something := getSomething(name); something < 3 {
+    fmt.Println("name is invalid")
+}
+```
