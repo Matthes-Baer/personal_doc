@@ -5,6 +5,8 @@ It covers both TypeScript and JavaScript.
 
 ## General Information
 
+- `document.cookie = ${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}` -> This line of code will not overwrite all cookies; it only creates or updates the cookie with the name `SIDEBAR_COOKIE_NAME` for the current domain and specified path (`/` in this case, meaning site-wide). Other cookies remain untouched, since `document.cookie` doesn’t replace the whole cookie store — it just adds or updates the one you specify. If a cookie with the same name, path, and domain already exists, it will be overwritten; otherwise, a new one is created.
+
 - In TypeScript, __brand (or similar naming like _brand or brand) is a common pattern for branding types — a way to create nominal types in a structurally typed system. By default, TypeScript only checks the shape of a type (structural typing), so two types with the same structure are interchangeable. Adding a private or fake property like __brand: "UserId" to a type (often via an intersection) makes it unique, so even if it’s just a string underneath, UserId won’t be assignable to a plain string or to another branded type like OrderId. The __brand field doesn’t exist at runtime (it’s never assigned), but it helps the compiler enforce stricter type distinctions.
   - `type PositiveNumber = number & { __brand: 'PositiveNumber' };`
 
