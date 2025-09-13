@@ -84,7 +84,7 @@ This section covers information about PowerShell.
 
 ## Some PowerShell Commands
 
-- Check whether some package is included in the package json file of your project/s (helpful when checking if a specific version of a package is installed in all your projects): `Get-ChildItem -Path . -Filter package-lock.json -Recurse | Select-String -Pattern "<package-name>@1.0.0"`
+- Check whether some package is included in the package json file of your project/s (helpful when checking if a specific version of a package is installed in all your projects) - use this command in a parent directory with all your projects as subdirectories: `Get-ChildItem -Path . -Filter pnpm-lock.yaml -Recurse | Select-String -Pattern "<package-name>@1.0.0"`
 - Open the PowerShell profile file from a PowerShell terminal: `explorer $PROFILE`
 - Create a new file path: `New-Item -ItemType File -Path "filename.txt"`
 - Create a new file with directory path and name: `New-Item -Path "c:\temp" -Name "test01.txt" -ItemType File -Force`

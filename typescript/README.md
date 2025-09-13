@@ -5,6 +5,9 @@ It covers both TypeScript and JavaScript.
 
 ## General Information
 
+- In TypeScript, __brand (or similar naming like _brand or brand) is a common pattern for branding types — a way to create nominal types in a structurally typed system. By default, TypeScript only checks the shape of a type (structural typing), so two types with the same structure are interchangeable. Adding a private or fake property like __brand: "UserId" to a type (often via an intersection) makes it unique, so even if it’s just a string underneath, UserId won’t be assignable to a plain string or to another branded type like OrderId. The __brand field doesn’t exist at runtime (it’s never assigned), but it helps the compiler enforce stricter type distinctions.
+  - `type PositiveNumber = number & { __brand: 'PositiveNumber' };`
+
 - The `toISOString()` method in JavaScript returns a string representation of a date in ISO 8601 format, which is based on UTC (Coordinated Universal Time).
 
 - `Promise.allSettled` is generally better than manually looping through asynchronous tasks when you want to run them in parallel and collect both successful and failed results. It provides a clean, structured way to handle each outcome without writing custom logic, and it's much faster than sequentially awaiting each promise in a loop. Manual looping is only better if you need sequential execution or dependencies between operations.

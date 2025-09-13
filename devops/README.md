@@ -528,4 +528,13 @@ General install command:
 helm install myapp ./myapp
 ```
 
+## GitLab
 
+### General GitLab Information
+
+- Within `.gitlab-ci.yml` to have your build envs provided, you have to use (example envs):
+  ```
+  variables:
+    AUTO_DEVOPS_BUILD_IMAGE_FORWARDED_CI_VARIABLES: SENTRY_AUTH_TOKEN,GITLAB_REGISTRY_TOKEN
+  ```
+  This has to be combined with the mounting of the secret file in the Dockerfile and the copy of your `.npmrc` file (see section in General Docker Information).
