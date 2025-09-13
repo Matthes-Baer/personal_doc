@@ -9,6 +9,7 @@
 
 ## General Information
 
+- Interfaces are implemented implicitly, there is no explicit declaration for interfaces with an `implements` keyword or similar.
 
 - Use `"go.formatTool": "goimports"` in your VS Code settings to make the Go formatting work (pick the formatter, you want to use). `"editor.defaultFormatter": "golang.go"` within the `"[go]"` section might also be needed if not already added. `"go.toolsManagement.autoUpdate": true` is also part of my VS Code settings.
 
