@@ -10,6 +10,8 @@
 
 ## General Information
 
+- Go does not have a `while` loop, but you can make use of a `for` loop with just a condition (`for CONDITION { ... }`)
+
 - The built-in error interface defines only one method `Error() string`, which returns the error message. You can create custom error types by defining structs that implement this method. Once implemented, your custom struct can be used just like a regular error (for example, as a function’s return type of `Error`). There is also the `errors` package provided by the Go standard library that you can import to have some helpers when dealing with errors. `fmt.Errorf` can be used to wrap an error with additional context. Don't use panic, use error values for "normal" error handling, and otherwise use `log.Fatal` to print a message and exit the program afterwards.
 
 - Interfaces are implemented implicitly, there is no explicit declaration for interfaces with an `implements` keyword or similar.
@@ -1288,4 +1290,23 @@ for _, a := range animals {
     fmt.Println("Unknown animal")
   }
 }
+```
+
+### Loop Labels
+
+```go
+	Outer: // this is the label you can use in an inner loop, for example
+	for i := 2; i <= max; i++ {
+		if (i % 2 == 0 && i != 2) {
+			continue
+		}
+	
+		for j := 2; j * j <= i; j++ {
+			if i % j == 0 {
+				continue Outer
+			}
+		}
+	
+		fmt.Println(i)
+	}
 ```
