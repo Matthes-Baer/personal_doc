@@ -1213,3 +1213,76 @@ if something := getSomething(name); something < 3 {
     fmt.Println("name is invalid")
 }
 ```
+
+### Type Assertion (https://go.dev/tour/methods/15)
+
+When you write `var a Animal = Dog{}`, the static type of a is Animal (the interface), even though at runtime it holds a Dog; the compiler only knows it’s “some type that implements Animal.” A type assertion like `d, ok := a.(Dog)` is useful because in real programs you often work with interfaces without knowing the concrete type inside (e.g., when processing a list of Animal values that could be Dog, Cat, etc.), so the assertion lets you safely recover the underlying struct if it matches, and ignore or handle it differently if it doesn’t.
+
+```go
+    var i interface{} = "hello"
+
+    // Type assertion
+    // i.(string) tries to extract the underlying string from the interface{}.
+    // The second return value ok is true if the assertion succeeds, false otherwise.
+    s, ok := i.(string)
+    if ok {
+        fmt.Println("String value:", s)
+    } else {
+        fmt.Println("Not a string")
+    }
+
+    // This will fail safely
+    n, ok := i.(int)
+    if ok {
+        fmt.Println("Integer value:", n)
+    } else {
+        fmt.Println("Not an int")
+    }
+```
+
+Another example:
+```go
+// Define an interface
+type Shape interface {
+	Area() float64
+}
+
+// Circle implements Shape
+type Circle struct {
+	Radius float64
+}
+
+func (c Circle) Area() float64 {
+	return math.Pi * c.Radius * c.Radius
+}
+
+...
+
+var s Shape = Circle{Radius: 5}
+
+// Safe type assertion
+circle, ok := s.(Circle)
+if ok {
+  fmt.Println("Circle radius:", circle.Radius)
+  fmt.Println("Circle area:", circle.Area())
+} else {
+  fmt.Println("Not a Circle")
+}
+```
+
+### Type Switch (https://go.dev/tour/methods/16)
+
+```go
+animals := []Animal{Dog{}, Cat{}, Dog{}}
+
+for _, a := range animals {
+  switch v := a.(type) {
+  case Dog:
+    fmt.Println("Dog says:", v.Speak())
+  case Cat:
+    fmt.Println("Cat says:", v.Speak())
+  default:
+    fmt.Println("Unknown animal")
+  }
+}
+```
