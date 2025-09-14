@@ -6,8 +6,11 @@
 - [Learn Go Fast: Full Tutorial (including building an API project example)](https://www.youtube.com/watch?v=8uiZC0l4Ajw)
 - [Boot Dev Tutorial](https://www.boot.dev/lessons/224252be-adc9-452f-8ed0-0b305b25d0cb)
 - [Learn Go as JavaScript Developer](https://prateeksurana.me/blog/guide-to-go-for-javascript-developers/?utm_source=tldrwebdev)
+- [Defer, Panic, And Recover](https://go.dev/blog/defer-panic-and-recover)
 
 ## General Information
+
+- The built-in error interface defines only one method `Error() string`, which returns the error message. You can create custom error types by defining structs that implement this method. Once implemented, your custom struct can be used just like a regular error (for example, as a function’s return type of `Error`). There is also the `errors` package provided by the Go standard library that you can import to have some helpers when dealing with errors. `fmt.Errorf` can be used to wrap an error with additional context. Don't use panic, use error values for "normal" error handling, and otherwise use `log.Fatal` to print a message and exit the program afterwards.
 
 - Interfaces are implemented implicitly, there is no explicit declaration for interfaces with an `implements` keyword or similar.
 
