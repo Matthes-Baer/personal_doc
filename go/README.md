@@ -8,6 +8,25 @@
 - [Learn Go as JavaScript Developer](https://prateeksurana.me/blog/guide-to-go-for-javascript-developers/?utm_source=tldrwebdev)
 - [Defer, Panic, And Recover](https://go.dev/blog/defer-panic-and-recover)
 
+
+## Useful Functions
+- append   -> adds elements to a slice, returns the updated slice
+- cap      -> returns the capacity of a slice, array, or channel
+- close    -> closes a channel, signaling no more values will be sent
+- complex  -> creates a complex number from two floats (real, imaginary)
+- copy     -> copies elements from one slice to another
+- delete   -> removes an element from a map by key
+- imag     -> returns the imaginary part of a complex number
+- len      -> returns the length of a string, slice, array, map, or channel
+- make     -> allocates and initializes slices, maps, or channels
+- new      -> allocates memory for a value, returns a pointer to it
+- panic    -> stops execution and begins panicking
+- print*   -> prints values to stdout (for debugging only, not for production)
+- println* -> like print, but adds a newline (debugging only)
+- real     -> returns the real part of a complex number
+- recover  -> regains control of a panicking goroutine (used in defer)
+
+
 ## General Information
 
 - Go does not have a `while` loop, but you can make use of a `for` loop with just a condition (`for CONDITION { ... }`)
