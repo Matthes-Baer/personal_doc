@@ -7,9 +7,11 @@
 - [Boot Dev Tutorial](https://www.boot.dev/lessons/224252be-adc9-452f-8ed0-0b305b25d0cb)
 - [Learn Go as JavaScript Developer](https://prateeksurana.me/blog/guide-to-go-for-javascript-developers/?utm_source=tldrwebdev)
 - [Defer, Panic, And Recover](https://go.dev/blog/defer-panic-and-recover)
+- [Tricky Slices - append() and capacity](https://www.boot.dev/lessons/f100f470-4a34-4c10-8035-551e1a8e1834)
 
 
 ## Useful Functions
+
 - append   -> adds elements to a slice, returns the updated slice
 - cap      -> returns the capacity of a slice, array, or channel
 - close    -> closes a channel, signaling no more values will be sent
@@ -28,6 +30,8 @@
 
 
 ## General Information
+
+- In Go, you can check the memory address of a variable using the address-of operator `&`. For example, `&x` gives you the memory address where `x` is stored. You can also store this in a pointer variable, and if you dereference it with `*`, you get back the value at that address. Inspecting memory addresses can be useful for understanding whether two variables point to the same underlying data (like when working with slices, maps, or pointers). However, the exact value of the memory address itself isn’t typically meaningful in application code—it’s more of a debugging or low-level optimization tool.
 
 - Go does not have a `while` loop, but you can make use of a `for` loop with just a condition (`for CONDITION { ... }`)
 
