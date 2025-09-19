@@ -30,6 +30,8 @@
 
 
 ## General Information
+- In Go, a map is a built-in data structure that provides an efficient way to associate keys with values, similar to hash tables or dictionaries in other languages. You declare them using the syntax map[KeyType]ValueType. The key type can be any type that is comparable, meaning it supports equality operators (== and !=). This includes basic types like strings, integers, booleans, and pointers, as well as structs and arrays, provided all their fields or elements are also comparable. However, slices, maps, and functions cannot be used as keys because they are not comparable. Values, on the other hand, can be of any type, including slices, maps, or functions.        
+Maps in Go don’t have methods in the object-oriented sense, but they work with several important built-in operations. You can add or update an entry with m[key] = value, retrieve a value with val := m[key], and delete entries using delete(m, key). Accessing a key that doesn’t exist returns the zero value of the value type, so Go provides the “comma ok” idiom: val, ok := m[key]—where ok is a boolean that’s true if the key exists. Iteration is done using for k, v := range m, though the order of iteration is deliberately random. You can get the number of entries with len(m), but there’s no built-in method for checking emptiness aside from comparing len(m) == 0. Maps are reference types, so copying or passing them around doesn’t duplicate the data, only the reference. When having a type like `testMap := map[string]int{}` you can just do like `testMap["name"]++` - you don't have to check if the key exists because due to the `int` value it just starts with it's zero value (for `int` it's `0`)
 
 - In Go, you can check the memory address of a variable using the address-of operator `&`. For example, `&x` gives you the memory address where `x` is stored. You can also store this in a pointer variable, and if you dereference it with `*`, you get back the value at that address. Inspecting memory addresses can be useful for understanding whether two variables point to the same underlying data (like when working with slices, maps, or pointers). However, the exact value of the memory address itself isn’t typically meaningful in application code—it’s more of a debugging or low-level optimization tool.
 
@@ -1332,4 +1334,48 @@ for _, a := range animals {
 	
 		fmt.Println(i)
 	}
+```
+
+### Initialize Types
+```go
+var r rune = 'a'     // rune literal (alias for int32)
+i := 42              // int with short declaration
+f := 3.14            // float64
+s := "hello"         // string
+b := true            // bool
+
+var nums []int                 // nil slice
+nums = []int{1, 2, 3}          // literal initialization
+nums2 := make([]int, 5)        // length 5, filled with zeros
+nums3 := make([]int, 0, 10)    // empty slice, capacity 10
+
+arr := [3]int{1, 2, 3}   // fixed length array
+arr2 := [...]string{"a", "b", "c"} // length inferred
+
+m := make(map[string]int)        // empty map
+m["one"] = 1
+
+m2 := map[rune]string{           // literal initialization
+    'a': "apple",
+    'b': "banana",
+}
+
+ch := make(chan int)     // unbuffered channel
+chBuf := make(chan int, 5) // buffered channel (capacity 5)
+
+type Person struct {
+    Name string
+    Age  int
+}
+
+p := Person{"Alice", 30}          // positional
+p2 := Person{Name: "Bob"}         // named fields
+p3 := &Person{Name: "Charlie"}    // pointer to struct
+
+var ptr *int        // nil pointer
+i := 10
+ptr = &i            // pointer to int
+
+var x interface{}   // nil, empty interface
+x = "hello"         // can hold any type
 ```
