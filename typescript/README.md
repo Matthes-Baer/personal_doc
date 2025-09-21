@@ -107,3 +107,45 @@ export class NotFoundError<R extends Resource, K extends keyof Collections[R]> e
   }
 }
 ```
+
+### Error Handling
+
+Check for axiosError, then normal error, then error as string, then fallback
+
+```ts
+import axios from "axios";
+
+function parseError(err: unknown): { header: string; body: string } {
+  // 1. Axios error
+  if (axios.isAxiosError(err)) {
+    const status = err.response?.status ?? "Unknown status";
+    const message = err.response?.data?.message ?? err.message ?? "No message";
+    return {
+      header: `Axios Error ${status}`,
+      body: message,
+    };
+  }
+
+  // 2. Generic JS Error
+  if (err instanceof Error) {
+    return {
+      header: err.name,
+      body: err.message,
+    };
+  }
+
+  // 3. Plain string error
+  if (typeof err === "string") {
+    return {
+      header: "Error",
+      body: err,
+    };
+  }
+
+  // 4. Fallback
+  return {
+    header: "Unknown Error",
+    body: JSON.stringify(err),
+  };
+}
+```
