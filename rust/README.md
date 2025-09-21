@@ -308,6 +308,32 @@ Also:
 
 ## Code Examples
 
+### Error Handling
+
+```rs
+use std::fs;
+
+fn main() {
+    // Rust uses the Result<T, E> enum, which forces you to handle both success (Ok) and failure (Err):
+    match fs::read_to_string("test.txt") {
+        Ok(data) => println!("File contents: {}", data),
+        Err(e) => eprintln!("Error: {}", e),
+    }
+}
+
+// OR
+
+use std::fs;
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    // Rust enforces handling errors at compile time, and you can use the ? operator to propagate errors more cleanly
+    let data = fs::read_to_string("test.txt")?;
+    println!("File contents: {}", data);
+    Ok(())
+}
+```
+
 ### Arc, Mutex, Concurrency
 
 ```rs

@@ -30,7 +30,8 @@
 
 
 ## General Information
-- In Go, function arguments are passed by value by default, meaning the function works with a copy of the variable, leaving the original unchanged. For example, passing an int to a function won’t modify its value outside the function. To allow functions to update the original variable, Go uses pointers, which pass the variable’s memory address instead of a copy, enabling direct modification of the original data. This pattern is especially useful when working with larger or composite types, like structs, as it avoids unnecessary copying and improves performance. When accessing struct fields through a pointer, Go simplifies the syntax by allowing direct field access with the selector expression (e.g., analytics.MessagesTotal), which is shorthand for (*analytics).MessagesTotal. This makes pointer usage in Go more ergonomic and efficient while keeping code readable. Pointers are dangerous since they can point to nothing. Always check if a pointer is nil before using it to avoid panics (effectively crashing your application).
+- In Go, function arguments are passed by value by default, meaning the function works with a copy of the variable, leaving the original unchanged. For example, passing an int to a function won’t modify its value outside the function. To allow functions to update the original variable, Go uses pointers, which pass the variable’s memory address instead of a copy, enabling direct modification of the original data. This pattern is especially useful when working with larger or composite types, like structs, as it avoids unnecessary copying and improves performance. When accessing struct fields through a pointer, Go simplifies the syntax by allowing direct field access with the selector expression (e.g., analytics.MessagesTotal), which is shorthand for (*analytics).MessagesTotal. This makes pointer usage in Go more ergonomic and efficient while keeping code readable. Pointers are dangerous since they can point to nothing. Always check if a pointer is nil before using it to avoid panics (effectively crashing your application). 
+In Go, all function arguments are passed by value, but the effect differs depending on the type: basic types (ints, floats, bools, strings, structs, arrays) are copied directly, so changes inside a function don’t affect the caller’s copy; in contrast, reference types (slices, maps, channels, functions, interfaces) are passed by value too, but what’s copied is a small descriptor pointing to shared underlying data, so modifications to that data are visible outside the function; if you want structs or arrays to behave this way, you explicitly pass a pointer to them.
 
 - In Go, a map is a built-in data structure that provides an efficient way to associate keys with values, similar to hash tables or dictionaries in other languages. You declare them using the syntax map[KeyType]ValueType. The key type can be any type that is comparable, meaning it supports equality operators (== and !=). This includes basic types like strings, integers, booleans, and pointers, as well as structs and arrays, provided all their fields or elements are also comparable. However, slices, maps, and functions cannot be used as keys because they are not comparable. Values, on the other hand, can be of any type, including slices, maps, or functions.        
 Maps in Go don’t have methods in the object-oriented sense, but they work with several important built-in operations. You can add or update an entry with m[key] = value, retrieve a value with val := m[key], and delete entries using delete(m, key). Accessing a key that doesn’t exist returns the zero value of the value type, so Go provides the “comma ok” idiom: val, ok := m[key]—where ok is a boolean that’s true if the key exists. Iteration is done using for k, v := range m, though the order of iteration is deliberately random. You can get the number of entries with len(m), but there’s no built-in method for checking emptiness aside from comparing len(m) == 0. Maps are reference types, so copying or passing them around doesn’t duplicate the data, only the reference. When having a type like `testMap := map[string]int{}` you can just do like `testMap["name"]++` - you don't have to check if the key exists because due to the `int` value it just starts with it's zero value (for `int` it's `0`)
@@ -57,9 +58,9 @@ Finally, Go’s visibility rules are simple: identifiers (functions, types, cons
 
 - When you create a file and rename it shortly after, it may happen that VS Code tells you that it doesn't know the new name, yet, and compares it with the previous file name (like "abc" and "abC"). In such a case you won't get any editing support (like syntax highlighting, auto-completion, etc.). To fix this, run `go clean -cache -modcache -i -r`, then refresh the window (or restart VS Code completely).
 
-- In Go, pointers allow you to reference a value without copying it, which is useful for efficiency and for modifying the original value. Normally, when you have a pointer to a value, you would use the `*` operator to dereference it and access the underlying value. For example, if p is a `*Person`, writing `*p` gives you the Person value itself. However, Go has a convenience feature: when you call a method on a pointer, the language automatically dereferences it if needed. This means you can write `p.Method()` even if Method is defined on the value type rather than the pointer type. Go handles the dereferencing behind the scenes, so you rarely need to manually use `*selection` when calling methods — making code simpler and easier to read.
+- In Go, pointers allow you to reference a value without copying it, which is useful for efficiency and for modifying the original value. Normally, when you have a pointer to a value, you would use the `*` operator to dereference it and access the underlying value. For example, if p is a `*Person`, writing `*p` gives you the Person value itself. However, Go has a convenience feature: when you call a method on a pointer, the language automatically dereferences it if needed. This means you can write `p.Method()` even if Method is defined on the value type rather than the pointer type. Go handles the dereferencing behind the scenes, so you rarely need to manually use `*selection` when calling methods — making code simpler and easier to read. You use pointers when you want to avoid copying large structs, modify a value in place across function calls or methods, or represent optional values that can be nil; essentially, pointers help you share and mutate data efficiently without duplicating memory.
 
-- Goroutines are not OS threads — they’re lightweight, user-space threads managed by the Go runtime. When you create a goroutine, it doesn’t directly map to a new operating system thread. Instead, the Go scheduler runs many goroutines on a smaller pool of OS threads. The difference is that OS threads are “heavy”: they require a large, fixed stack and are scheduled by the operating system. Goroutines, on the other hand, start with a very small stack (just a few KB) that grows and shrinks as needed. This makes them extremely cheap to create — you can easily run thousands or even millions of goroutines in a single Go program. Behind the scenes, the Go scheduler multiplexes goroutines onto OS threads. If you have multiple CPU cores available, goroutines can be scheduled to run in parallel, but you don’t have to manage that yourself. You just write code using goroutines, and Go takes care of efficiently mapping them to threads. So, goroutines rely on OS threads under the hood for execution, but they are much lighter and more scalable than creating threads directly. That’s why Go is so good at handling high concurrency workloads.
+- Goroutines are not OS threads — they’re lightweight, user-space threads managed by the Go runtime. When you create a goroutine, it doesn’t directly map to a new operating system thread. Instead, the Go scheduler runs many goroutines on a smaller pool of OS threads. The difference is that OS threads are “heavy”: they require a large, fixed stack and are scheduled by the operating system. Goroutines, on the other hand, start with a very small stack (just a few KB) that grows and shrinks as needed. This makes them extremely cheap to create — you can easily run thousands or even millions of goroutines in a single Go program. Behind the scenes, the Go scheduler multiplexes goroutines onto OS threads. If you have multiple CPU cores available, goroutines can be scheduled to run in parallel, but you don’t have to manage that yourself. You just write code using goroutines, and Go takes care of efficiently mapping them to threads. So, goroutines rely on OS threads under the hood for execution, but they are much lighter and more scalable than creating threads directly. That’s why Go is so good at handling high concurrency workloads. You use goroutines with channels when you need safe, concurrent execution where tasks run independently but still communicate or synchronize; channels provide a way to pass data between goroutines without explicit locking, making them ideal for coordinating work, streaming results, or building concurrent pipelines.
 
 - When a function is uppercase in Go, it means that other modules can access it (public). If it is lowercase, it is private to the package/module.
 
@@ -1380,4 +1381,69 @@ ptr = &i            // pointer to int
 
 var x interface{}   // nil, empty interface
 x = "hello"         // can hold any type
+```
+
+### Error Handling
+
+```go
+package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    data, err := os.ReadFile("test.txt")
+
+    // There is no special type for an error, and it's also just a string
+    if err != nil {
+        fmt.Errorf("Error: %w", err)
+        return
+    }
+    fmt.Println("File contents:", string(data))
+}
+```
+
+### iota (enum-like, but still different)
+
+```go
+package main
+
+import (
+    "fmt"
+)
+
+// ----- 1. Define an "enum" using type + const + iota -----
+type Direction int
+
+const (
+    North Direction = iota // iota automatically increments: 0, 1, 2, 3
+    East
+    South
+    West
+)
+
+// ----- 2. Function to "match" enum-like cases -----
+func move(dir Direction) {
+    // Go does not have pattern matching like Rust, so we use switch
+    switch dir {
+    case North:
+        fmt.Println("Moving north")
+    case East:
+        fmt.Println("Moving east")
+    case South:
+        fmt.Println("Moving south")
+    case West:
+        fmt.Println("Moving west")
+    default:
+        // Go enums are just integers, so this default is needed
+        fmt.Println("Unknown direction")
+    }
+}
+
+func main() {
+    move(North) // ✅ Moving north
+    move(Direction(10)) // ⚠️ Out-of-range, handled by default
+}
 ```
