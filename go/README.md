@@ -1447,3 +1447,51 @@ func main() {
     move(Direction(10)) // ⚠️ Out-of-range, handled by default
 }
 ```
+
+### Goroutine with Channel
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+// concurrentNumbers launches a goroutine to produce numbers from 1 to n
+// and collects them into a slice.
+func concurrentNumbers(n int) []int {
+	ch := make(chan int) // create a channel to receive numbers
+	ans := []int{}       // slice to store results
+
+	// Start a goroutine that sends numbers into the channel
+	go func() {
+		for i := 1; i <= n; i++ {
+			ch <- i // send number to channel (blocks if nobody is receiving)
+		}
+		close(ch) // signal "no more values"
+	}()
+
+	// Receive numbers from the channel until it's closed
+	// This loop will block until the goroutine sends something or closes the channel
+  // Waits for values from the channel.
+  // Appends each value to the slice.
+  // Stops automatically when the channel is closed.
+	for num := range ch {
+		ans = append(ans, num)
+	}
+
+	// When the channel is closed, the loop ends and we return the slice
+	return ans
+}
+
+func main() {
+	result := concurrentNumbers(5)
+	fmt.Println(result) // Output: [1 2 3 4 5]
+}
+
+```
+
+- go launches a goroutine (a lightweight thread).
+- ch <- value blocks if no one is ready to receive.
+- for range ch blocks until the channel is closed.
+- close(ch) is essential to signal the receiver to stop looping.
