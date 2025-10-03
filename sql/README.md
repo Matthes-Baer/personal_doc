@@ -283,3 +283,82 @@ FROM students;
 
 The first `WHEN` that evaluates to `TRUE` is used.
 `ELSE` is optional but recommended for clarity and completeness.
+
+### Create a function and trigger in SQL (mariaDB)
+
+`DELIMITER` is necessary within heidiSQL query editor, but when you use it in code with `execute` or `addSql` (within a migration e.g.), you mustn't use `DELIMITER` (at least with MikroORM)
+
+```sql
+-- Create a function
+DELIMITER //
+
+CREATE OR REPLACE FUNCTION abc(a_id VARCHAR(255))
+RETURNS INT
+DETERMINISTIC
+BEGIN
+  DECLARE something INT;
+
+  SELECT COUNT(*) INTO something
+  FROM some_table
+  WHERE id = a_id
+
+  RETURN something
+END //
+
+DELIMITER ;
+
+-- use the function later on:
+SELECT abc("123")
+
+
+-- Use DROP FUNCTION abc to delete a function
+```
+
+```sql
+-- Create a trigger to execute the function
+CREATE OR REPLACE TRIGGER some_trigger
+AFTER UPDATE OF a ON b_table
+FOR EACH ROW
+EXECUTE FUNCTION abc("abc");
+
+-- Use DROP TRIGGER some_trigger to delete a trigger
+```
+
+
+### Add trigger in Nest.js/MikroORM migration manually
+
+The following adds special triggers to BEFORE INSERT and BEFORE UPDATE on a table - this checks on database-level for specific constraints instead of having such checks only on application-level. Currently (03.10.25), MikroORM is not providing a better approach to using triggers besides adding them manually via a manual created migration.
+`NEW` is special and is resolved with the inserted/updated entry during the insert/update process.
+
+```ts
+...
+
+override async up(): Promise<void> {
+  this.addSql(`CREATE OR REPLACE TRIGGER abc_insert
+  BEFORE INSERT ON some_table
+  FOR REACH ROW
+  BEGIN
+    IF EXISTS (... WHERE a.name = NEW.name)
+    THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'already exists'
+    END IF
+  END;`)
+
+  this.addSql(`CREATE OR REPLACE TRIGGER abc_update
+  BEFORE UPDATE ON some_table
+  FOR REACH ROW
+  BEGIN
+    IF EXISTS (... WHERE a.name = NEW.name)
+    THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'already exists'
+    END IF
+  END;`)
+}
+
+override async down(): Promise<void> {
+  this.addSql(`DROP TRIGGER IF EXISTS abc_insert;`)
+  this.addSql(`DROP TRIGGER IF EXISTS abc_update;`)
+}
+```
