@@ -149,3 +149,79 @@ function parseError(err: unknown): { header: string; body: string } {
   };
 }
 ```
+
+### Infinite Query By Tanstack Query With Fetch On Scrolling Down
+
+IntersectionObserver is a native browser API that lets you efficiently detect when an element enters or leaves the visible area of the viewport — or of any scrollable container, such as a modal. It’s designed to replace manual scroll listeners, which fire on every scroll event and can hurt performance. Instead, IntersectionObserver runs asynchronously and only triggers when visibility changes, making it ideal for things like infinite scroll, lazy loading images, or starting animations when elements come into view.
+
+You configure it with options like root (the scroll container to observe within), rootMargin (how far before or after the element enters view to trigger), and threshold (what percentage of visibility to trigger on). For example, you can detect when a “load more” div becomes visible and call fetchNextPage() — and this works just as well inside modals or custom scrollable areas by setting root to that container.
+
+Unlike scroll-based libraries such as Anime.js or GSAP ScrollTrigger, IntersectionObserver doesn’t animate anything by itself, but it’s much simpler and faster for detecting visibility. In most cases — like triggering data fetches, analytics events, lazy loading images or simple fade-ins — it’s all you need, without the overhead of a scroll animation library.
+
+```ts
+interface PropTypes<TData> {
+  infiniteQueryResult: UseInfiniteQueryResult<
+    InfiniteData<PaginatedDocs<TData>>,
+    AxiosError | Error
+  >
+}
+
+// Component responsible for displaying and handling logic for triggering next infinite query fetch on scroll down
+const InfiniteFetchOnScrollContainer = <TData,>({ infiniteQueryResult }: PropTypes<TData>) => {
+  const { t } = useTypedTranslation()
+  const triggerRef = useRef<HTMLDivElement>(null)
+  const { fetchNextPage, hasNextPage, isFetching, isError } = infiniteQueryResult
+
+  useEffect(() => {
+    if (!triggerRef.current) return
+
+    // Find the nearest scrollable ancestor (the modal content) or go with root window
+    const scrollContainer =
+      triggerRef.current.closest(
+        '[data-radix-scroll-area-viewport], [role="dialog"], [data-state="open"]',
+      ) || window
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (entry.isIntersecting && hasNextPage && !isFetching && !isError) {
+          fetchNextPage()
+        }
+      },
+      {
+        root: scrollContainer instanceof Element ? scrollContainer : null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      },
+    )
+
+    observer.observe(triggerRef.current)
+
+    return () => observer.disconnect()
+  }, [fetchNextPage, hasNextPage, isFetching, isError])
+
+  return (
+    <div>
+      {isFetching && (
+        <div className="flex justify-center items-center h-48">
+          <Spinner />
+        </div>
+      )}
+
+      {isError && (
+        <div className="flex justify-center items-center h-16">
+          <h2>{t('nextjs.general.errorOccured')}</h2>
+        </div>
+      )}
+
+      {hasNextPage && !isError && (
+        <div ref={triggerRef} className="flex justify-center items-center h-[300px]">
+          <ArrowDown size={48} className="animate-bounce text-gray-500" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default InfiniteFetchOnScrollContainer
+```
