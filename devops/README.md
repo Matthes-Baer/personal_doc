@@ -3,13 +3,18 @@
 This section includes information for Docker, Kubernetes, and other DevOps-related topics.
 
 ## Useful Link
-- [Chmod Calculator](https://chmod-calculator.com/)
 
+- [Chmod Calculator](https://chmod-calculator.com/)
 
 ## Docker
 
 ### Useful Docker Links
+
 - ...
+
+### Helpful Linux Commands for Docker
+
+- Delete Docker logs without having to restart: `truncate -s 0 /var/lib/docker/containers/**/*-json.log`
 
 ### Helpful Docker Commands
 
@@ -41,7 +46,6 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 - View the docker compose logs: `docker-compose logs -f`
 - Remove all stopped containers, unused networks, dangling images (images not tagged or referenced by any container), build cache: `docker system prune -a` (optionally also add `--volumes` | `-a` stands for `all`) -> to actually reclaim disk space, you have to close docker desktop/shutdown the corresponding wsl distribution (`docker-desktop`)
 
-
 ### Dockerfile commands
 
 - `FROM` - Base image to build from -> `FROM node:20-alpine`
@@ -60,8 +64,8 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 - Old Docker images can contain security vulnerabilities in both the operating system and the software they include. For example, an outdated Alpine or Debian base might have known flaws in libraries like OpenSSL or glibc, while older Node.js versions or preinstalled npm packages may have unpatched security issues. Even though containers are isolated, these vulnerabilities can still be exploited, potentially compromising the container or, in some misconfigured cases, the host system. Regularly updating images and scanning them with tools like docker scan, Trivy, or Snyk helps reduce these risks.
 
 - In Docker, images like node:22 refer to a base Node.js image using the latest patch version of Node 22.x. Variants like alpine and slim indicate the underlying Linux distribution and size/footprint.
-Alpine is a very small, security-focused Linux distribution (~5 MB) that uses the musl libc and BusyBox utilities. Its main advantage is minimal size, which makes images smaller and faster to download, but some software may require extra libraries or tweaks to run properly because musl libc differs slightly from the standard glibc used on most Linux distributions.
-Slim images are Debian-based but stripped of unnecessary packages to reduce size (~20–30 MB smaller than full Debian images). They retain glibc, so most Node.js modules and binaries work out of the box without extra tweaks. In general, use alpine if you want the smallest image and are okay handling occasional library issues, and slim if you prefer compatibility and ease of use over minimal size. Other variants include buster, bullseye, or full Debian/Ubuntu images, which prioritize compatibility over image size.
+  Alpine is a very small, security-focused Linux distribution (~5 MB) that uses the musl libc and BusyBox utilities. Its main advantage is minimal size, which makes images smaller and faster to download, but some software may require extra libraries or tweaks to run properly because musl libc differs slightly from the standard glibc used on most Linux distributions.
+  Slim images are Debian-based but stripped of unnecessary packages to reduce size (~20–30 MB smaller than full Debian images). They retain glibc, so most Node.js modules and binaries work out of the box without extra tweaks. In general, use alpine if you want the smallest image and are okay handling occasional library issues, and slim if you prefer compatibility and ease of use over minimal size. Other variants include buster, bullseye, or full Debian/Ubuntu images, which prioritize compatibility over image size.
 
 - Docker stages are completely independent from each other. When copying or installing something in one stage, other following stages don't also have the files copied or installed.
 
@@ -69,7 +73,6 @@ Slim images are Debian-based but stripped of unnecessary packages to reduce size
   - Afterwards, you may use this to build e.g.: `docker buildx build --secret id=auto-devops-build-secrets,src=C:\Users\<user>\AppData\repositories\auto-devops-build-secrets -t <image_name>:<tag> .`
   - In the file you can store your envs like you would do with a `.env` file.
   - This is basically the same process GitLab would use -> they also have a file prepared with the secrets, which is then provided with such a line in the dockerfile
-  
 
 - When using Docker Desktop, assign a volume like this for mariadb:
   - Host Path`/var/lib/docker/volumes/<volume-name>/_data`
@@ -274,13 +277,14 @@ CMD ["node", "server.js"]
 ## Kubernetes
 
 ### Useful Kubernetes Links
+
 - [Kubernetes Tutorial](https://www.youtube.com/watch?v=2T86xAtR6Fo)
 - [A visual guide on troubleshooting Kubernetes deployments](https://learnkube.com/troubleshooting-deployments)
-
 
 ### Helpful Kubernetes Commands
 
 #### 📦 Work with Deployments / Pods
+
 - Create or update resources from YAML: `kubectl apply -f <file>.yaml`
 - Create a deployment quickly: `kubectl create deployment <name> --image=<image>`
 - List all pods: `kubectl get pods`
@@ -290,6 +294,7 @@ CMD ["node", "server.js"]
 - Restart a deployment: `kubectl rollout restart deployment <name>`
 
 #### 📡 Access & Logs
+
 - View logs of a pod: `kubectl logs <pod-name>`
 - Stream logs (like `tail -f`): `kubectl logs <pod-name> -f`
 - Open a shell inside a pod: `kubectl exec -it <pod-name> -- /bin/sh`
@@ -297,6 +302,7 @@ CMD ["node", "server.js"]
 - Expose a deployment as a service: `kubectl expose deployment <name> --type=LoadBalancer --port=80`
 
 #### 🔍 Cluster Info & Debugging
+
 - List nodes in the cluster: `kubectl get nodes`
 - Get cluster endpoint info: `kubectl cluster-info`
 - Show full deployment details: `kubectl describe deployment <name>`
@@ -304,6 +310,7 @@ CMD ["node", "server.js"]
 - View recent cluster events (errors, etc.): `kubectl get events`
 
 #### 📂 Namespaces & Contexts
+
 - List all namespaces: `kubectl get namespaces`
 - Show available kube contexts: `kubectl config get-contexts`
 - Switch context (e.g. dev → prod): `kubectl config use-context <name>`
@@ -311,20 +318,20 @@ CMD ["node", "server.js"]
 - Work in a specific namespace: `kubectl -n <namespace> get pods`
 
 #### 📁 Working with YAMLs
+
 - See schema/help for a resource: `kubectl explain deployment`
 - View deployment YAML: `kubectl get deployment <name> -o yaml`
 - Delete resources defined in a file: `kubectl delete -f <file>.yaml`
 
-
 ### General Kubernetes Information
 
 - In Kubernetes, a cluster is the fundamental unit of deployment. It consists of multiple nodes, which are the machines that run your workloads. There are two main types of nodes: `control plane nodes` and `worker nodes`. The control plane is responsible for managing the cluster’s state, scheduling workloads, and orchestrating containers. It runs components like the API server, controller manager, and scheduler. Essentially, it acts as the “brain” of the cluster.
-Worker nodes, on the other hand, are the machines where your applications actually run. Each worker node typically corresponds to a single physical or virtual server. These nodes run a container runtime (like Docker or containerd), the kubelet (which communicates with the control plane), and the kube-proxy (which handles networking). On worker nodes, pods — the smallest deployable units in Kubernetes — host one or more containers that execute your application code.
-Containers in Kubernetes are created from images, which are read-only templates containing your application and its dependencies. These images are stored in registries, which can be public (like Docker Hub) or private. When a pod is scheduled, the worker node pulls the required images from the registry to instantiate the containers. This separation allows developers to package applications once and deploy them consistently across different environments.
-Kubernetes’ architecture is designed for scalability and resilience. By decoupling control plane functions from worker nodes, it allows multiple worker nodes to run in parallel, and the cluster can continue functioning even if some nodes fail. This architecture also simplifies updates and management, because workloads are orchestrated declaratively: you describe the desired state, and Kubernetes continuously works to maintain it.
+  Worker nodes, on the other hand, are the machines where your applications actually run. Each worker node typically corresponds to a single physical or virtual server. These nodes run a container runtime (like Docker or containerd), the kubelet (which communicates with the control plane), and the kube-proxy (which handles networking). On worker nodes, pods — the smallest deployable units in Kubernetes — host one or more containers that execute your application code.
+  Containers in Kubernetes are created from images, which are read-only templates containing your application and its dependencies. These images are stored in registries, which can be public (like Docker Hub) or private. When a pod is scheduled, the worker node pulls the required images from the registry to instantiate the containers. This separation allows developers to package applications once and deploy them consistently across different environments.
+  Kubernetes’ architecture is designed for scalability and resilience. By decoupling control plane functions from worker nodes, it allows multiple worker nodes to run in parallel, and the cluster can continue functioning even if some nodes fail. This architecture also simplifies updates and management, because workloads are orchestrated declaratively: you describe the desired state, and Kubernetes continuously works to maintain it.
 
 - GitOps is a modern approach to managing infrastructure and application deployments using Git as the single source of truth. Instead of manually configuring servers or applying ad-hoc changes, teams store their desired state—such as Kubernetes manifests, Terraform files, or Helm charts—in a Git repository. Changes to the system are made by updating the Git repository, and automation tools then reconcile the actual system state with what’s in Git. This gives you version control, audit history, and the ability to roll back to any previous configuration simply by reverting a commit. At its core, GitOps builds on the principles of Infrastructure as Code (IaC) but adds continuous delivery and automated reconciliation. Whenever a change is merged into the main branch, a GitOps operator (like Argo CD or Flux) detects the difference between the declared state in Git and the live state in the environment, and automatically applies the necessary updates. If the live state drifts—due to manual changes or system failures—the operator will reconcile it back to match the Git state, ensuring consistency and reliability. The benefits include better collaboration (since all changes go through pull requests), improved security (since production changes are tightly controlled and traceable), and faster, more reliable deployments. In short, GitOps turns Git into not just a source control system, but the control plane for your entire infrastructure and application lifecycle.
-Before GitOps, teams often stored infrastructure and application configs in Git, but applying them was usually manual or semi-automated—engineers would run tools like Terraform or Ansible from their machines or trigger CI jobs to push changes, and there was no continuous reconciliation to ensure the live system matched the repo. This meant configuration drift could occur if someone made changes directly in production, and the repo acted more like documentation than a true control plane. GitOps changes this by making Git the active source of truth, with automation that continuously watches for changes in the repo and reconciles the live environment to match, eliminating drift and making deployments fully declarative and automated.
+  Before GitOps, teams often stored infrastructure and application configs in Git, but applying them was usually manual or semi-automated—engineers would run tools like Terraform or Ansible from their machines or trigger CI jobs to push changes, and there was no continuous reconciliation to ensure the live system matched the repo. This meant configuration drift could occur if someone made changes directly in production, and the repo acted more like documentation than a true control plane. GitOps changes this by making Git the active source of truth, with automation that continuously watches for changes in the repo and reconciles the live environment to match, eliminating drift and making deployments fully declarative and automated.
 
 - Helm is a package manager for Kubernetes, designed to help developers and operators manage complex applications more easily. Just as tools like apt or yum manage packages on Linux, Helm manages Kubernetes resources using something called charts. A Helm chart is a collection of YAML templates and configuration files that define a set of Kubernetes resources needed to deploy and run an application or service. Helm simplifies the deployment process by allowing users to define reusable templates with configurable values. Instead of manually writing out dozens (or hundreds) of YAML files for each environment, you can define a chart once and customize it for different environments using values files. This makes it much easier to maintain consistency, manage upgrades, rollbacks, and apply best practices across different deployments. In essence, Helm abstracts away much of the complexity of Kubernetes resource management. It's especially valuable in CI/CD pipelines, DevOps workflows, and in environments where teams need to deploy and manage microservices or multi-component applications efficiently and repeatably.
 
@@ -352,15 +359,16 @@ Before GitOps, teams often stored infrastructure and application configs in Git,
 #### Helm
 
 - Directory structure:
+
 ```yaml
 myapp/
 ├── Chart.yaml
 ├── values.yaml
 └── templates/
-    ├── deployment.yaml
-    ├── service.yaml
-    ├── secret.yaml
-    └── redis-deployment.yaml
+├── deployment.yaml
+├── service.yaml
+├── secret.yaml
+└── redis-deployment.yaml
 ```
 
 - Chart.yaml:
@@ -402,7 +410,6 @@ redis:
   enabled: true
   image: redis:6.2-alpine
 ```
-
 
 - templates/deployment.yaml:
 
@@ -487,23 +494,23 @@ spec:
 {{- end }}
 ```
 
-- templates/service.yaml: 
+- templates/service.yaml:
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "myapp.fullname" . }}
+  name: { { include "myapp.fullname" . } }
 spec:
-  type: {{ .Values.service.type }}
+  type: { { .Values.service.type } }
   selector:
-    app: {{ include "myapp.name" . }}
+    app: { { include "myapp.name" . } }
   ports:
-    - port: {{ .Values.service.port }}
+    - port: { { .Values.service.port } }
       targetPort: 80
 ```
 
-- templates/_helpers.tpl:
+- templates/\_helpers.tpl:
 
 ```yaml
 {{- define "myapp.name" -}}
@@ -515,7 +522,7 @@ spec:
 {{- end }}
 ```
 
-Then: 
+Then:
 
 ```sh
 helm lint myapp/
