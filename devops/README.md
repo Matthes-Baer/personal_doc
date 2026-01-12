@@ -12,11 +12,10 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 - ...
 
-### Helpful Linux Commands for Docker
+### Helpful Docker/Docker-related Commands
 
+- Execute into a running container as root: `docker exec -it --user root <container_name_or_id> sh`
 - Delete Docker logs without having to restart: `truncate -s 0 /var/lib/docker/containers/**/*-json.log`
-
-### Helpful Docker Commands
 
 - Enter a mariadb shell (with Docker Desktop you already have the shell accessible): `docker exec -it container_name -u root -p`
 - Build an image with a set variable by adding `ARG SOME_VAR` and then afterwards you can use it like `RUN npm config set -- //npm.fontawesome.com/:_authToken="${SOME_VAR}"` (within the Dockerfile) if you run a command like: `docker buildx build --build-arg SOME_VAR=123123 -t my_application .`
