@@ -1,6 +1,7 @@
 # Go
 
 ## Useful Links
+
 - [Install Go](https://go.dev/doc/install)
 - [Go Project Structure/Layout](https://github.com/golang-standards/project-layout)
 - [Learn Go Fast: Full Tutorial (including building an API project example)](https://www.youtube.com/watch?v=8uiZC0l4Ajw)
@@ -9,40 +10,40 @@
 - [Defer, Panic, And Recover](https://go.dev/blog/defer-panic-and-recover)
 - [Tricky Slices - append() and capacity](https://www.boot.dev/lessons/f100f470-4a34-4c10-8035-551e1a8e1834)
 
-
 ## Useful Functions
 
-- append   -> adds elements to a slice, returns the updated slice
-- cap      -> returns the capacity of a slice, array, or channel
-- close    -> closes a channel, signaling no more values will be sent
-- complex  -> creates a complex number from two floats (real, imaginary)
-- copy     -> copies elements from one slice to another
-- delete   -> removes an element from a map by key
-- imag     -> returns the imaginary part of a complex number
-- len      -> returns the length of a string, slice, array, map, or channel
-- make     -> allocates and initializes slices, maps, or channels
-- new      -> allocates memory for a value, returns a pointer to it
-- panic    -> stops execution and begins panicking
-- print*   -> prints values to stdout (for debugging only, not for production)
-- println* -> like print, but adds a newline (debugging only)
-- real     -> returns the real part of a complex number
-- recover  -> regains control of a panicking goroutine (used in defer)
-
+- append -> adds elements to a slice, returns the updated slice
+- cap -> returns the capacity of a slice, array, or channel
+- close -> closes a channel, signaling no more values will be sent
+- complex -> creates a complex number from two floats (real, imaginary)
+- copy -> copies elements from one slice to another
+- delete -> removes an element from a map by key
+- imag -> returns the imaginary part of a complex number
+- len -> returns the length of a string, slice, array, map, or channel
+- make -> allocates and initializes slices, maps, or channels
+- new -> allocates memory for a value, returns a pointer to it
+- panic -> stops execution and begins panicking
+- print\* -> prints values to stdout (for debugging only, not for production)
+- println\* -> like print, but adds a newline (debugging only)
+- real -> returns the real part of a complex number
+- recover -> regains control of a panicking goroutine (used in defer)
 
 ## General Information
 
+- Go automatically dereferences pointers for method calls.
+
 - In Go, a mutex (short for mutual exclusion) is a synchronization primitive used to protect shared resources from concurrent access by multiple goroutines. When multiple goroutines attempt to read and write to the same variable or data structure without coordination, you risk encountering race conditions — unpredictable behavior that can cause incorrect results, crashes, or data corruption. A sync.Mutex ensures that only one goroutine can access the critical section of code at a time, essentially locking the resource until it’s safe for others to use it.
-You typically use a mutex when you have shared, mutable state that must be accessed across goroutines. For example, if you have a map or counter that’s being updated concurrently, wrapping those updates with mutex.Lock() and mutex.Unlock() ensures safe, serialized access. Without this, Go’s runtime will even detect and flag race conditions if you run your program with the `-race` flag, which is a strong hint that synchronization like a mutex is required.
-However, mutexes come with their own challenges. You need to be careful to always unlock a mutex, even if your function exits early due to an error or panic — otherwise you can cause a deadlock, where no goroutine can proceed because the lock is never released. A common idiom in Go is to `defer mu.Unlock()` immediately after locking, which guarantees it will be released when the function returns. Another pitfall is holding a lock for longer than necessary, which can hurt performance and introduce contention bottlenecks.
-While mutexes are powerful, Go also provides other synchronization primitives such as channels, which are often more idiomatic when goroutines need to communicate rather than share state. The general advice is: prefer channels for communication, but when you must protect shared state, a mutex is the right tool. Understanding when to use a mutex versus restructuring your program to avoid shared mutable state altogether is one of the key design considerations in concurrent Go code.
-Alongside the basic `sync.Mutex`, Go provides `sync.RWMutex`, which adds support for read–write locking. A `RWMutex` lets you distinguish between read locks (`RLock`) and write locks (`Lock`). Multiple goroutines can safely hold `RLock` at the same time, allowing concurrent reads, but only one goroutine can hold a `Lock`, and while it does, no new readers can acquire a `RLock`. This is useful when reads are much more frequent than writes, since it reduces contention by allowing many readers to proceed in parallel while still protecting against race conditions during writes.
-That said, `RWMutex` isn’t always faster than a regular `Mutex`. If your workload involves frequent writes or short-lived operations, the overhead of managing reader/writer locks can outweigh the benefits. You also need to be careful to avoid deadlocks by ensuring locks are always released (`RUnlock` for `RLock`, `Unlock` for `Lock`). As with regular mutexes, deferring the unlock right after acquiring the lock is a good practice to ensure correctness. In short, use `RWMutex` when you have a read-heavy workload and want safe, concurrent access, but otherwise stick to `Mutex` for simplicity.
+  You typically use a mutex when you have shared, mutable state that must be accessed across goroutines. For example, if you have a map or counter that’s being updated concurrently, wrapping those updates with mutex.Lock() and mutex.Unlock() ensures safe, serialized access. Without this, Go’s runtime will even detect and flag race conditions if you run your program with the `-race` flag, which is a strong hint that synchronization like a mutex is required.
+  However, mutexes come with their own challenges. You need to be careful to always unlock a mutex, even if your function exits early due to an error or panic — otherwise you can cause a deadlock, where no goroutine can proceed because the lock is never released. A common idiom in Go is to `defer mu.Unlock()` immediately after locking, which guarantees it will be released when the function returns. Another pitfall is holding a lock for longer than necessary, which can hurt performance and introduce contention bottlenecks.
+  While mutexes are powerful, Go also provides other synchronization primitives such as channels, which are often more idiomatic when goroutines need to communicate rather than share state. The general advice is: prefer channels for communication, but when you must protect shared state, a mutex is the right tool. Understanding when to use a mutex versus restructuring your program to avoid shared mutable state altogether is one of the key design considerations in concurrent Go code.
+  Alongside the basic `sync.Mutex`, Go provides `sync.RWMutex`, which adds support for read–write locking. A `RWMutex` lets you distinguish between read locks (`RLock`) and write locks (`Lock`). Multiple goroutines can safely hold `RLock` at the same time, allowing concurrent reads, but only one goroutine can hold a `Lock`, and while it does, no new readers can acquire a `RLock`. This is useful when reads are much more frequent than writes, since it reduces contention by allowing many readers to proceed in parallel while still protecting against race conditions during writes.
+  That said, `RWMutex` isn’t always faster than a regular `Mutex`. If your workload involves frequent writes or short-lived operations, the overhead of managing reader/writer locks can outweigh the benefits. You also need to be careful to avoid deadlocks by ensuring locks are always released (`RUnlock` for `RLock`, `Unlock` for `Lock`). As with regular mutexes, deferring the unlock right after acquiring the lock is a good practice to ensure correctness. In short, use `RWMutex` when you have a read-heavy workload and want safe, concurrent access, but otherwise stick to `Mutex` for simplicity.
 
-- In Go, function arguments are passed by value by default, meaning the function works with a copy of the variable, leaving the original unchanged. For example, passing an int to a function won’t modify its value outside the function. To allow functions to update the original variable, Go uses pointers, which pass the variable’s memory address instead of a copy, enabling direct modification of the original data. This pattern is especially useful when working with larger or composite types, like structs, as it avoids unnecessary copying and improves performance. When accessing struct fields through a pointer, Go simplifies the syntax by allowing direct field access with the selector expression (e.g., analytics.MessagesTotal), which is shorthand for (*analytics).MessagesTotal. This makes pointer usage in Go more ergonomic and efficient while keeping code readable. Pointers are dangerous since they can point to nothing. Always check if a pointer is nil before using it to avoid panics (effectively crashing your application). 
-In Go, all function arguments are passed by value, but the effect differs depending on the type: basic types (ints, floats, bools, strings, structs, arrays) are copied directly, so changes inside a function don’t affect the caller’s copy; in contrast, reference types (slices, maps, channels, functions, interfaces) are passed by value too, but what’s copied is a small descriptor pointing to shared underlying data, so modifications to that data are visible outside the function; if you want structs or arrays to behave this way, you explicitly pass a pointer to them.
+- In Go, function arguments are passed by value by default, meaning the function works with a copy of the variable, leaving the original unchanged. For example, passing an int to a function won’t modify its value outside the function. To allow functions to update the original variable, Go uses pointers, which pass the variable’s memory address instead of a copy, enabling direct modification of the original data. This pattern is especially useful when working with larger or composite types, like structs, as it avoids unnecessary copying and improves performance. When accessing struct fields through a pointer, Go simplifies the syntax by allowing direct field access with the selector expression (e.g., analytics.MessagesTotal), which is shorthand for (\*analytics).MessagesTotal. This makes pointer usage in Go more ergonomic and efficient while keeping code readable. Pointers are dangerous since they can point to nothing. Always check if a pointer is nil before using it to avoid panics (effectively crashing your application).
+  In Go, all function arguments are passed by value, but the effect differs depending on the type: basic types (ints, floats, bools, strings, structs, arrays) are copied directly, so changes inside a function don’t affect the caller’s copy; in contrast, reference types (slices, maps, channels, functions, interfaces) are passed by value too, but what’s copied is a small descriptor pointing to shared underlying data, so modifications to that data are visible outside the function; if you want structs or arrays to behave this way, you explicitly pass a pointer to them.
 
-- In Go, a map is a built-in data structure that provides an efficient way to associate keys with values, similar to hash tables or dictionaries in other languages. You declare them using the syntax map[KeyType]ValueType. The key type can be any type that is comparable, meaning it supports equality operators (== and !=). This includes basic types like strings, integers, booleans, and pointers, as well as structs and arrays, provided all their fields or elements are also comparable. However, slices, maps, and functions cannot be used as keys because they are not comparable. Values, on the other hand, can be of any type, including slices, maps, or functions.        
-Maps in Go don’t have methods in the object-oriented sense, but they work with several important built-in operations. You can add or update an entry with m[key] = value, retrieve a value with val := m[key], and delete entries using delete(m, key). Accessing a key that doesn’t exist returns the zero value of the value type, so Go provides the “comma ok” idiom: val, ok := m[key]—where ok is a boolean that’s true if the key exists. Iteration is done using for k, v := range m, though the order of iteration is deliberately random. You can get the number of entries with len(m), but there’s no built-in method for checking emptiness aside from comparing len(m) == 0. Maps are reference types, so copying or passing them around doesn’t duplicate the data, only the reference. When having a type like `testMap := map[string]int{}` you can just do like `testMap["name"]++` - you don't have to check if the key exists because due to the `int` value it just starts with it's zero value (for `int` it's `0`)
+- In Go, a map is a built-in data structure that provides an efficient way to associate keys with values, similar to hash tables or dictionaries in other languages. You declare them using the syntax map[KeyType]ValueType. The key type can be any type that is comparable, meaning it supports equality operators (== and !=). This includes basic types like strings, integers, booleans, and pointers, as well as structs and arrays, provided all their fields or elements are also comparable. However, slices, maps, and functions cannot be used as keys because they are not comparable. Values, on the other hand, can be of any type, including slices, maps, or functions.  
+  Maps in Go don’t have methods in the object-oriented sense, but they work with several important built-in operations. You can add or update an entry with m[key] = value, retrieve a value with val := m[key], and delete entries using delete(m, key). Accessing a key that doesn’t exist returns the zero value of the value type, so Go provides the “comma ok” idiom: val, ok := m[key]—where ok is a boolean that’s true if the key exists. Iteration is done using for k, v := range m, though the order of iteration is deliberately random. You can get the number of entries with len(m), but there’s no built-in method for checking emptiness aside from comparing len(m) == 0. Maps are reference types, so copying or passing them around doesn’t duplicate the data, only the reference. When having a type like `testMap := map[string]int{}` you can just do like `testMap["name"]++` - you don't have to check if the key exists because due to the `int` value it just starts with it's zero value (for `int` it's `0`)
 
 - In Go, you can check the memory address of a variable using the address-of operator `&`. For example, `&x` gives you the memory address where `x` is stored. You can also store this in a pointer variable, and if you dereference it with `*`, you get back the value at that address. Inspecting memory addresses can be useful for understanding whether two variables point to the same underlying data (like when working with slices, maps, or pointers). However, the exact value of the memory address itself isn’t typically meaningful in application code—it’s more of a debugging or low-level optimization tool.
 
@@ -55,14 +56,14 @@ Maps in Go don’t have methods in the object-oriented sense, but they work with
 - Use `"go.formatTool": "goimports"` in your VS Code settings to make the Go formatting work (pick the formatter, you want to use). `"editor.defaultFormatter": "golang.go"` within the `"[go]"` section might also be needed if not already added. `"go.toolsManagement.autoUpdate": true` is also part of my VS Code settings.
 
 - In Go, the `cmd/` directory is commonly used to hold entry points for executables. When you run a command like `go build ./cmd`, Go compiles everything inside that folder belonging to the same package (usually package main). All `.go` files in the same package are treated as one unit, so you can split logic across multiple files, but only one `main()` function is allowed. The result is a single binary placed in the specified output path.
-Go automatically resolves dependencies: if your cmd package imports other local packages (e.g., `internal/models`, `internal/helpers`), Go will also compile those. You don’t need to build them separately; they’re pulled in transitively as needed. The special `internal/ folder` ensures encapsulation — its packages can only be imported by code within the same module or subdirectories, preventing outside modules from depending on your internal logic.
-You use the `pkg/` directory in Go when you want to expose code that is safe and intended for use by other applications or modules outside your project. Unlike `internal/`, which restricts visibility, anything placed in `pkg/` is publicly importable, making it a good place for shared libraries, utilities, or reusable components that might be valuable beyond your own project. In practice, `pkg/` is optional — some teams prefer putting all code under `internal/` to enforce strict boundaries — but if you anticipate that parts of your code could be reused by others (or even across your own projects), `pkg/` is the conventional home.
-This structure encourages a clean separation: keep most of your logic inside `internal/` or `pkg/`, while `cmd/` contains minimal startup code that wires things together. That way, you can create multiple executables in the same project (e.g., `cmd/server`, `cmd/cli`) that share internal code.
-In summary, `go build ./cmd` builds a single executable by compiling all files in that folder under package `main` along with all imported dependencies. The `internal/` folder is automatically included when imported, but it cannot be used externally. A typical Go project keeps executable entry points small and maintains reusable code in `internal/` or `pkg/`. This convention keeps projects modular, maintainable, and consistent with Go’s philosophy.
+  Go automatically resolves dependencies: if your cmd package imports other local packages (e.g., `internal/models`, `internal/helpers`), Go will also compile those. You don’t need to build them separately; they’re pulled in transitively as needed. The special `internal/ folder` ensures encapsulation — its packages can only be imported by code within the same module or subdirectories, preventing outside modules from depending on your internal logic.
+  You use the `pkg/` directory in Go when you want to expose code that is safe and intended for use by other applications or modules outside your project. Unlike `internal/`, which restricts visibility, anything placed in `pkg/` is publicly importable, making it a good place for shared libraries, utilities, or reusable components that might be valuable beyond your own project. In practice, `pkg/` is optional — some teams prefer putting all code under `internal/` to enforce strict boundaries — but if you anticipate that parts of your code could be reused by others (or even across your own projects), `pkg/` is the conventional home.
+  This structure encourages a clean separation: keep most of your logic inside `internal/` or `pkg/`, while `cmd/` contains minimal startup code that wires things together. That way, you can create multiple executables in the same project (e.g., `cmd/server`, `cmd/cli`) that share internal code.
+  In summary, `go build ./cmd` builds a single executable by compiling all files in that folder under package `main` along with all imported dependencies. The `internal/` folder is automatically included when imported, but it cannot be used externally. A typical Go project keeps executable entry points small and maintains reusable code in `internal/` or `pkg/`. This convention keeps projects modular, maintainable, and consistent with Go’s philosophy.
 
 - In Go, project structure and package organization are more opinionated than in languages like Python or JavaScript. Commonly, projects use an `internal` folder for code that should not be imported outside the module, a `cmd` folder for executable entry points, and a models or similar package for shared data structures. Imports are always resolved relative to the module base path defined in go.mod, so you import using the full module path, not relative file paths. For example, if your module is `github.com/user/project`, you might import models as `github.com/user/project/internal/models`.
-Go does not support wildcard imports like `import * as ...` in JavaScript or `from ... import *` in Python. Every imported package must have a unique name (usually derived from the folder name), and you use that name as a prefix when calling functions, types, or variables from the package. To simplify code or avoid naming collisions, Go allows aliases for imports, e.g., `import m "github.com/user/project/internal/models"`, letting you write `m.Result` instead of `models.Result`.
-Finally, Go’s visibility rules are simple: identifiers (functions, types, constants, variables) are exported only if they start with an uppercase letter. Anything starting with a lowercase letter is private to the package. This convention replaces access modifiers like public or private in other languages, and helps maintain encapsulation within packages while keeping the API surface clean.
+  Go does not support wildcard imports like `import * as ...` in JavaScript or `from ... import *` in Python. Every imported package must have a unique name (usually derived from the folder name), and you use that name as a prefix when calling functions, types, or variables from the package. To simplify code or avoid naming collisions, Go allows aliases for imports, e.g., `import m "github.com/user/project/internal/models"`, letting you write `m.Result` instead of `models.Result`.
+  Finally, Go’s visibility rules are simple: identifiers (functions, types, constants, variables) are exported only if they start with an uppercase letter. Anything starting with a lowercase letter is private to the package. This convention replaces access modifiers like public or private in other languages, and helps maintain encapsulation within packages while keeping the API surface clean.
 
 - When you create a file and rename it shortly after, it may happen that VS Code tells you that it doesn't know the new name, yet, and compares it with the previous file name (like "abc" and "abC"). In such a case you won't get any editing support (like syntax highlighting, auto-completion, etc.). To fix this, run `go clean -cache -modcache -i -r`, then refresh the window (or restart VS Code completely).
 
@@ -116,11 +117,13 @@ Finally, Go’s visibility rules are simple: identifiers (functions, types, cons
 - When using the `len()` function on a string, it returns the number of bytes in the string, not the number of characters. This is important to remember when dealing with multi-byte characters (like UTF-8 encoded characters) where the byte count may not equal the character count. In such cases, you may want to use the `utf8.RuneCountInString()` function from the `unicode/utf8` package to get the correct character count (runes (`rune`) are a separate type).
 
 ## Some Helpful Commands
+
 - Initialize a new Go module: `go mod init <module-name>`
 - Build the current module (only build, without directly running): `go build <path>`
 - Build and run the current module: `go run <path>`
 
 ## Some Helpful Methods
+
 - Prints without newline: `fmt.Print("hello")`
 - Prints with newline: `fmt.Println("hello")`
 - Formatted print: `fmt.Printf("Value: %d\n", 10)`
@@ -389,7 +392,6 @@ func main() {
 // Deferred: runs after main function finishes
 ```
 
-
 ### Named Return Values / Naked Returns
 
 Go allows you to name return values in the function signature. A naked return lets you return these values without explicitly specifying them in the return statement. This can make code cleaner, especially when multiple values are being returned.
@@ -423,7 +425,6 @@ func getPoint() (x int, y int) {
 x, _ := getPoint()
 ```
 
-
 ### Multiple Parameters With Same Type
 
 When multiple arguments are of the same type, and are next to each other in the function signature, the type only needs to be declared after the last argument.
@@ -435,6 +436,7 @@ func addToDatabase(hp, damage int, name string) {
 ```
 
 ### Same Line Declarations
+
 ```go
 averageProcessRate, displayMessage := .23, "some_text"
 ```
@@ -490,6 +492,7 @@ func main() {
 ```
 
 ### Initial Statement of an If Block
+
 ```go
 // length is only available in the if block scope
 if length := getLength(message); length < 1 {
@@ -597,7 +600,6 @@ func main() {
 	}
 }
 ```
-
 
 ### Arrays
 
@@ -839,7 +841,6 @@ func main() {
 - `*p` accesses the value at the address `p` points to.
 - Changing `*p` updates `x` because they refer to the same memory location.
 
-
 _Pointers in Functions:_
 
 ```go
@@ -868,17 +869,16 @@ func main() {
     number := 100
 
     // In Go, when you pass a variable to a function by value (which is the default), the function receives a copy of that variable, not the original.
-    // It creates a copy of number - val inside the function is a separate copy of the integer value. 
+    // It creates a copy of number - val inside the function is a separate copy of the integer value.
     // Modifying val does not affect number unless you return and reassign it.
-    number = increment(number) 
+    number = increment(number)
 
     fmt.Println("Incremented:", number)
 }
 ```
 
 _Why it’s more efficient compared to not using pointers_:
-Passing by pointer (*int) avoids copying data, which is especially beneficial with large structs or arrays. The function operates directly on the original value using its memory address, saving memory and processing time compared to making a full copy. This becomes important for large structs or arrays, where copying would be inefficient. Using pointers allows you to modify the original data without the overhead of copying it, leading to better performance and reduced memory usage.
-
+Passing by pointer (\*int) avoids copying data, which is especially beneficial with large structs or arrays. The function operates directly on the original value using its memory address, saving memory and processing time compared to making a full copy. This becomes important for large structs or arrays, where copying would be inefficient. Using pointers allows you to modify the original data without the overhead of copying it, leading to better performance and reduced memory usage.
 
 ### Slices Contain a Pointer to an Underlying Array
 
@@ -900,6 +900,7 @@ fmt.Println(sliceCopy)
 - As a result, both slice and sliceCopy reflect the change, and when you print both, you get `[1 2 4]`
 
 Thus:
+
 - In Go, slices contain a pointer to an underlying array, a length, and a capacity.
 - Assigning one slice to another copies the slice header, not the data, so both variables reference the same data.
 - To make an independent copy (deep copy), you need to allocate a new slice and copy the values, e.g.:
@@ -957,7 +958,6 @@ func dbCall(i int) {
 
 Besides `sync.Mutex`, there is also `sync.RWMutex`. This allows you to have multiple readers or a single writer at a time. It is useful when you have many read operations and few write operations, as it allows concurrent reads while still ensuring exclusive access for writes. When the `RLock()` is run, it looks up if a full lock (`Lock()`) is still in place, and if so, it waits until the lock is released. If no full lock is in place, it allows multiple readers to access the data concurrently. When a writer calls `Lock()`, it blocks all readers until the write operation is complete. This ensures that the reader only sees data, that is consistent and not being modified by a writer at the same time.
 
-
 ### Channels
 
 Use goroutines without channels when you want to run tasks concurrently but don’t need to share data or coordinate between them. For example, fire-and-forget background jobs where the tasks don’t depend on each other or don’t need to communicate results back.
@@ -965,6 +965,7 @@ Use goroutines without channels when you want to run tasks concurrently but don�
 You need channels when your goroutines must communicate, synchronize, or share data safely. Channels let you pass values between goroutines and coordinate their execution without explicit locks. For instance, if one goroutine produces data and another consumes it, or if you want to wait for a goroutine’s result before continuing, channels are the clean, idiomatic way to do that in Go.
 
 In short:
+
 - Use goroutines alone for independent parallelism without communication.
 - Use channels when goroutines need to talk, coordinate, or pass data safely.
 
@@ -1101,16 +1102,17 @@ func main() {
 
 ### colly & goquery
 
-*Colly*: Colly is a fast and easy-to-use scraping framework for Go. It handles HTTP requests, concurrency, and URL visiting automatically. You define “collectors” for pages, attach callbacks for HTML elements (OnHTML), and Colly manages fetching, retries, and rate-limiting. It’s ideal for scraping static websites where JavaScript rendering isn’t required.
+_Colly_: Colly is a fast and easy-to-use scraping framework for Go. It handles HTTP requests, concurrency, and URL visiting automatically. You define “collectors” for pages, attach callbacks for HTML elements (OnHTML), and Colly manages fetching, retries, and rate-limiting. It’s ideal for scraping static websites where JavaScript rendering isn’t required.
 
-*GoQuery*: GoQuery is a Go library that implements jQuery-like syntax for DOM traversal and manipulation. You can select elements (Find), iterate over them (Each), and inspect child nodes (Contents) or attributes. While GoQuery doesn’t fetch pages itself, it pairs perfectly with Colly or the standard library’s HTTP client for parsing HTML.
+_GoQuery_: GoQuery is a Go library that implements jQuery-like syntax for DOM traversal and manipulation. You can select elements (Find), iterate over them (Each), and inspect child nodes (Contents) or attributes. While GoQuery doesn’t fetch pages itself, it pairs perfectly with Colly or the standard library’s HTTP client for parsing HTML.
 
 When JavaScript is required:
-*Chromedp*: Chromedp is a headless Chrome/Chromium controller for Go. Unlike Colly, it can render JavaScript-heavy websites, simulate user interactions, click buttons, and extract dynamic content. It’s more powerful but also heavier and slower than Colly, making it suitable for pages that require a real browser context.
+_Chromedp_: Chromedp is a headless Chrome/Chromium controller for Go. Unlike Colly, it can render JavaScript-heavy websites, simulate user interactions, click buttons, and extract dynamic content. It’s more powerful but also heavier and slower than Colly, making it suitable for pages that require a real browser context.
 
 In short: Colly = fast scraping of static pages, GoQuery = DOM parsing and manipulation, Chromedp = full browser automation for dynamic content.
 
 _colly & goquery:_
+
 ```go
 package main
 
@@ -1216,6 +1218,7 @@ func main() {
 ```
 
 _With chromedp:_
+
 ```go
 package helper
 
@@ -1248,6 +1251,7 @@ func GetFinalHTML(link string) (string, error) {
 ```
 
 ### Initial Statement in if block
+
 ```go
 // something is not exposed to the parent scope
 if something := getSomething(name); something < 3 {
@@ -1282,6 +1286,7 @@ When you write `var a Animal = Dog{}`, the static type of a is Animal (the inter
 ```
 
 Another example:
+
 ```go
 // Define an interface
 type Shape interface {
@@ -1336,18 +1341,19 @@ for _, a := range animals {
 		if (i % 2 == 0 && i != 2) {
 			continue
 		}
-	
+
 		for j := 2; j * j <= i; j++ {
 			if i % j == 0 {
 				continue Outer
 			}
 		}
-	
+
 		fmt.Println(i)
 	}
 ```
 
 ### Initialize Types
+
 ```go
 var r rune = 'a'     // rune literal (alias for int32)
 i := 42              // int with short declaration
