@@ -10,6 +10,12 @@
 - [Defer, Panic, And Recover](https://go.dev/blog/defer-panic-and-recover)
 - [Tricky Slices - append() and capacity](https://www.boot.dev/lessons/f100f470-4a34-4c10-8035-551e1a8e1834)
 
+## Helpful Commands
+
+- Initialize a new Go module: `go mod init <module-name>`
+- Build the current module to receive an executable (only build, without directly running): `go build <path>`
+- Build and run the current module (for testing during development): `go run <path>`
+
 ## Useful Functions
 
 - append -> adds elements to a slice, returns the updated slice
@@ -27,6 +33,30 @@
 - println\* -> like print, but adds a newline (debugging only)
 - real -> returns the real part of a complex number
 - recover -> regains control of a panicking goroutine (used in defer)
+- Prints without newline: `fmt.Print("hello")`
+- Prints with newline: `fmt.Println("hello")`
+- Formatted print: `fmt.Printf("Value: %d\n", 10)`
+- Returns formatted string: `str := fmt.Sprintf("Hello %s", "Go")`
+- Concatenates values to string: `str := fmt.Sprint("Hello", "World")`
+- Concatenates with newline: `str := fmt.Sprintln("Hello", "World")`
+- Create error with message: `err := fmt.Errorf("error: %v", "something went wrong")`
+- Reads space-separated input: `fmt.Scan(&inputVar)`
+- Reads until newline: `fmt.Scanln(&inputVar)`
+- Parses formatted string into variables: `fmt.Sscanf("Age: 30", "Age: %d", &age)`
+- Go syntax representation (structs, slices): `fmt.Printf("%#v\n", someVar)`
+- Prints the type of variable: `fmt.Printf("%T\n", someVar)`
+
+- Append elements to a slice: `slice = append(slice, newElement)`
+- Append one slice to another: `slice = append(slice, slice2...)`
+- Get length of a slice (current number of elements): `length := len(slice)`
+- Get capacity of a slice (maximum number of elements it can hold without reallocating): `capacity := cap(slice)`
+- Make slice with predefined length and capacity (length = 3, capacity = 8): `slice := make([]int, 3, 8)`
+- Make a map with predefined length: `myMap := make(map[string]int)`
+- Copy a slice (creating a new slice with its own underlying array and copying the elements from another slice into it - instead of only referencing to the same data): `copy(copySlice, original)`
+- Cut/Remove element (manual way): `slice = append(slice[:index], slice[index+1:]...)`
+- Clear slice (zero length, same capacity): `slice = slice[:0]`
+
+- Delete a value from a map (by reference, so not return value): `delete(myMap, "key")`
 
 ## General Information
 
@@ -115,39 +145,6 @@
 - When you need to work with individual characters in a string, you should use the `rune` type. It breaks strings up into their individual characters, which can be more than one byte long.
 
 - When using the `len()` function on a string, it returns the number of bytes in the string, not the number of characters. This is important to remember when dealing with multi-byte characters (like UTF-8 encoded characters) where the byte count may not equal the character count. In such cases, you may want to use the `utf8.RuneCountInString()` function from the `unicode/utf8` package to get the correct character count (runes (`rune`) are a separate type).
-
-## Some Helpful Commands
-
-- Initialize a new Go module: `go mod init <module-name>`
-- Build the current module (only build, without directly running): `go build <path>`
-- Build and run the current module: `go run <path>`
-
-## Some Helpful Methods
-
-- Prints without newline: `fmt.Print("hello")`
-- Prints with newline: `fmt.Println("hello")`
-- Formatted print: `fmt.Printf("Value: %d\n", 10)`
-- Returns formatted string: `str := fmt.Sprintf("Hello %s", "Go")`
-- Concatenates values to string: `str := fmt.Sprint("Hello", "World")`
-- Concatenates with newline: `str := fmt.Sprintln("Hello", "World")`
-- Create error with message: `err := fmt.Errorf("error: %v", "something went wrong")`
-- Reads space-separated input: `fmt.Scan(&inputVar)`
-- Reads until newline: `fmt.Scanln(&inputVar)`
-- Parses formatted string into variables: `fmt.Sscanf("Age: 30", "Age: %d", &age)`
-- Go syntax representation (structs, slices): `fmt.Printf("%#v\n", someVar)`
-- Prints the type of variable: `fmt.Printf("%T\n", someVar)`
-
-- Append elements to a slice: `slice = append(slice, newElement)`
-- Append one slice to another: `slice = append(slice, slice2...)`
-- Get length of a slice (current number of elements): `length := len(slice)`
-- Get capacity of a slice (maximum number of elements it can hold without reallocating): `capacity := cap(slice)`
-- Make slice with predefined length and capacity (length = 3, capacity = 8): `slice := make([]int, 3, 8)`
-- Make a map with predefined length: `myMap := make(map[string]int)`
-- Copy a slice (creating a new slice with its own underlying array and copying the elements from another slice into it - instead of only referencing to the same data): `copy(copySlice, original)`
-- Cut/Remove element (manual way): `slice = append(slice[:index], slice[index+1:]...)`
-- Clear slice (zero length, same capacity): `slice = slice[:0]`
-
-- Delete a value from a map (by reference, so not return value): `delete(myMap, "key")`
 
 ## Code Examples
 
