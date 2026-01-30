@@ -60,6 +60,8 @@
 
 ## General Information
 
+- If you are working with MongoDB driver and receive such an error: `error decoding key _id: cannot decode objectID into an array`, it might be worth checking if you mix imports of v1 and v2, for v2 you have to use `go.mongodb.org/mongo-driver/v2/bson` like `ID bson.ObjectID ...` instead of `primitive.ObjectID` from `go.mongodb.org/mongo-driver/bson/primitive`.
+
 - Go automatically dereferences pointers for method calls.
 
 - In Go, a mutex (short for mutual exclusion) is a synchronization primitive used to protect shared resources from concurrent access by multiple goroutines. When multiple goroutines attempt to read and write to the same variable or data structure without coordination, you risk encountering race conditions — unpredictable behavior that can cause incorrect results, crashes, or data corruption. A sync.Mutex ensures that only one goroutine can access the critical section of code at a time, essentially locking the resource until it’s safe for others to use it.
