@@ -5,9 +5,11 @@ It covers both TypeScript and JavaScript.
 
 ## General Information
 
+- In VS Code, you can restart the typescript server via the VS Code command palette.
+
 - `document.cookie = ${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}` -> This line of code will not overwrite all cookies; it only creates or updates the cookie with the name `SIDEBAR_COOKIE_NAME` for the current domain and specified path (`/` in this case, meaning site-wide). Other cookies remain untouched, since `document.cookie` doesn’t replace the whole cookie store — it just adds or updates the one you specify. If a cookie with the same name, path, and domain already exists, it will be overwritten; otherwise, a new one is created.
 
-- In TypeScript, __brand (or similar naming like _brand or brand) is a common pattern for branding types — a way to create nominal types in a structurally typed system. By default, TypeScript only checks the shape of a type (structural typing), so two types with the same structure are interchangeable. Adding a private or fake property like __brand: "UserId" to a type (often via an intersection) makes it unique, so even if it’s just a string underneath, UserId won’t be assignable to a plain string or to another branded type like OrderId. The __brand field doesn’t exist at runtime (it’s never assigned), but it helps the compiler enforce stricter type distinctions.
+- In TypeScript, **brand (or similar naming like \_brand or brand) is a common pattern for branding types — a way to create nominal types in a structurally typed system. By default, TypeScript only checks the shape of a type (structural typing), so two types with the same structure are interchangeable. Adding a private or fake property like **brand: "UserId" to a type (often via an intersection) makes it unique, so even if it’s just a string underneath, UserId won’t be assignable to a plain string or to another branded type like OrderId. The \_\_brand field doesn’t exist at runtime (it’s never assigned), but it helps the compiler enforce stricter type distinctions.
   - `type PositiveNumber = number & { __brand: 'PositiveNumber' };`
 
 - The `toISOString()` method in JavaScript returns a string representation of a date in ISO 8601 format, which is based on UTC (Coordinated Universal Time).
@@ -31,62 +33,65 @@ It covers both TypeScript and JavaScript.
 
 - The values of objects (arrays, objects, functions, etc.) are passed as reference to the object when passing them as arguments to a function, but the reference itself is passed by value. That means inside the function you can modify the object's properties, and those changes will reflect outside the function - `let data = { count: 100 }; ... modify(data); ... // the original "data" was modified afterwards`
 
-
 ## Code Examples
 
 ### Tanstack Table: globalFilterFn
 
 ```ts
 const globalFilterFn: FilterFn<Data> = (row, _, filterValue) => {
-  if (!filterValue) return true // No filter applied
+  if (!filterValue) return true; // No filter applied
 
   // then do some matching with the help of the tableColumns (loop through them, get the value of each row's column with getValue and the table columns' id (you get that from the table column in the loop) and then compare the filterValue with the rowValue and if they match, we want to show the row (if not, it's filtered out) -> if at lest one column of a row matches, we want to show the whole row (use `some` to loop through tableColumns and then return this condition in the end with other conditions if needed))
   // Use table.setGlobalFilter for manually setting the global filter, you can pass whatever in there (doesn't just need to be a string for global search term, you can pass an object in there, too (but you will need a custom globalFilterFn))
   // Have in mind to check if the columns have proper values assigned with the accessFn (or called similarly), this needs to match, what you are trying to filter, any values in cell won't be recognized for filtering)
-}
+};
 ```
 
 ### Example seed script in Payload CMS
+
 ```ts
-import payloadConfig from '@/payload.config'
-import { getPayload } from 'payload'
-import { seedWebsites } from './websites/seedWebsites'
+import payloadConfig from "@/payload.config";
+import { getPayload } from "payload";
+import { seedWebsites } from "./websites/seedWebsites";
 
 /**
  * This is a base seed script that will get the application's payload setup and use it for any seed scripts
  * This script is setup so you can run it directly via 'payload run ./seed.ts'
  * The 'payload run' is special to Payload CMS and helps setting up the option to use getPayload
- * 
+ *
  * In the package.json you can add '"seed": "payload run ./src/path_to_seeder/seed.ts"' to run this script
  * It will run this file where it sees that the seed function is invoked, get the payload setup and run the seedEntitiesScript
  * In the onInit in the payload.config.ts you would not add this script, but a different base script where you get payload as argument or call seedEntitiesScript and other seeder scripts directly in there
  */
 async function seed() {
   try {
-    const payload = await getPayload({ config: payloadConfig })
+    const payload = await getPayload({ config: payloadConfig });
 
-    await seedEntitiesScript(payload)
+    await seedEntitiesScript(payload);
   } catch {
-    process.exit(1)
+    process.exit(1);
   }
 
-  process.exit(0)
+  process.exit(0);
 }
 
-await seed()
+await seed();
 ```
 
 ### Custom Error with Type-Safety
 
 ```ts
-import { APIError, CollectionSlug, GeneratedTypes } from 'payload'
+import { APIError, CollectionSlug, GeneratedTypes } from "payload";
 
-type Collections = GeneratedTypes['collections']
-type Resource = CollectionSlug
+type Collections = GeneratedTypes["collections"];
+type Resource = CollectionSlug;
 
-export class NotFoundError<R extends Resource, K extends keyof Collections[R]> extends APIError {
-  resource: R
-  findWith: { key: K; value: Collections[R][K] }
+export class NotFoundError<
+  R extends Resource,
+  K extends keyof Collections[R],
+> extends APIError {
+  resource: R;
+  findWith: { key: K; value: Collections[R][K] };
 
   constructor(
     resource: R,
@@ -101,9 +106,9 @@ export class NotFoundError<R extends Resource, K extends keyof Collections[R]> e
         findWith,
         ...meta,
       },
-    )
-    this.resource = resource
-    this.findWith = findWith
+    );
+    this.resource = resource;
+    this.findWith = findWith;
   }
 }
 ```

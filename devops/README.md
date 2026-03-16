@@ -50,11 +50,11 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 - `FROM` - Base image to build from -> `FROM node:20-alpine`
 - `WORKDIR` - Set working directory -> `WORKDIR /app`
 - `COPY` - Copy files into the image -> `COPY . .`
-- `RUN` - Run command at build time -> `RUN npm install`
+- `RUN` - Run command at build time -> `RUN npm install` or `RUN chown -R node:node /home/node` (recursively changes ownership of /home/node and all its contents to the node user and group so that this non-root user can access and modify those files inside the container)
 - `CMD` - Default command to run at container start -> `CMD ["node", "index.js"]`
 - `ENTRYPOINT` - Like `CMD` but less overridable -> `ENTRYPOINT ["npm"]`
 - `EXPOSE` - Document the port your app uses `EXPOSE 3000`
-- `ENV` - Set environment variables -> `ENV NODE_ENV=production`
+- `ENV` - Set environment variables -> `ENV NODE_ENV=production` or `ENV CI=true` (needed for pnpm installation)
 - `ARG` - Build-time variable -> `ARG NODE_VERSION=20`
 - `LABEL` - Add metadata -> `LABEL maintainer="someone@example.com"`
 
@@ -544,3 +544,4 @@ helm install myapp ./myapp
     AUTO_DEVOPS_BUILD_IMAGE_FORWARDED_CI_VARIABLES: SENTRY_AUTH_TOKEN,GITLAB_REGISTRY_TOKEN
   ```
   This has to be combined with the mounting of the secret file in the Dockerfile and the copy of your `.npmrc` file (see section in General Docker Information).
+- CI/CD variables configured in GitLab seem to overwrite the envs which are set in the project's `.gitlab-ci.yml`
