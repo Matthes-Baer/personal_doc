@@ -258,7 +258,7 @@ COPY --chown=appuser:nodejs ./src /app/src
 # -----------------------------
 # 5️⃣ Make Go scraper executable
 # -----------------------------
-# chmod 755 = owner rwx, group rx, others rx
+# chmod 755 = owner rwx, group rx, others rx / +x adds execute permission for all, g+x would only for group for example, u+x for owner, o+x for others | 777 would be all permissions (sum of read (4), write (2), execute (1))
 RUN chmod +x /app/src/bin/cmd
 
 # -----------------------------
