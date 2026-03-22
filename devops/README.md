@@ -12,6 +12,10 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 - ...
 
+### General Information
+
+- `chmod` sets what actions (read, write, execute) are allowed for the owner, the group, or everyone else, but it doesn’t assign files to a specific user. `chown` sets who the owner or group is, letting you target a specific user or group for those permissions. Together, `chown` defines the user, and `chmod` defines what that user (and others) can do.
+
 ### Helpful Docker/Docker-related Commands
 
 - Execute into a running container as root: `docker exec -it --user root <container_name_or_id> sh`
