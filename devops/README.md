@@ -64,6 +64,10 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 
 ### General Docker Information
 
+- a `cat` or similar for the secrets file in docker, only works in the same `RUN` command. In the following `RUN` command, you won't be able to find the file anymore.
+
+- If you're using a `workspace.yml` file (for mono repositories with pnpm, for example), you should pick a deeper working directory in the Dockerfile since pnpm seems to look in the parent directory as well. In a case of a working directory like `/home/node`, it would look through `/home` where the node user would not have access rights to. Instead of getting an error, you might get stuck in loading. With a root user it would work.
+
 - Old Docker images can contain security vulnerabilities in both the operating system and the software they include. For example, an outdated Alpine or Debian base might have known flaws in libraries like OpenSSL or glibc, while older Node.js versions or preinstalled npm packages may have unpatched security issues. Even though containers are isolated, these vulnerabilities can still be exploited, potentially compromising the container or, in some misconfigured cases, the host system. Regularly updating images and scanning them with tools like docker scan, Trivy, or Snyk helps reduce these risks.
 
 - In Docker, images like node:22 refer to a base Node.js image using the latest patch version of Node 22.x. Variants like alpine and slim indicate the underlying Linux distribution and size/footprint.
