@@ -68,6 +68,7 @@
 
 ## General Information
 
+- Install a python package: `Python -m pip install <package>`
 - Python is **interpreted**, **dynamic**, and **strongly typed**.
 - **Indentation matters** — Python uses whitespace instead of braces.
 - Variables are **references to objects**, not fixed memory locations.
