@@ -19,6 +19,18 @@ This section includes information for Docker, Kubernetes, and other DevOps-relat
 ### Helpful Docker/Docker-related Commands
 
 - Execute into a running container as root: `docker exec -it --user root <container_name_or_id> sh`
+- Find docker logs: `sudo find /var/lib/docker/containers/ -name "*.log" -exec du -h {} + | sort -h | tail -10`
+- Keep only the first 100 MB of a log file: `sudo truncate -s 100M /var/lib/docker/containers/<id>/*-json.log`
+- Keep the latest 100 MB of a log file:
+
+  ```bash
+    sudo tail -c 100M /var/lib/docker/containers/<id>/<id>-json.og \
+    | sudo tee /var/lib/docker/containers/<id>/<id>-json.log.new > /dev/null
+
+    sudo mv /var/lib/docker/containers/<id>/<id>-json.log.new \
+    /var/lib/docker/containers/<id>/<id>-json.log
+  ```
+
 - Delete Docker logs without having to restart: `truncate -s 0 /var/lib/docker/containers/**/*-json.log`
 
 - Enter a mariadb shell (with Docker Desktop you already have the shell accessible): `docker exec -it container_name -u root -p`
@@ -553,3 +565,4 @@ helm install myapp ./myapp
   ```
   This has to be combined with the mounting of the secret file in the Dockerfile and the copy of your `.npmrc` file (see section in General Docker Information).
 - CI/CD variables configured in GitLab seem to overwrite the envs which are set in the project's `.gitlab-ci.yml`
+- Manually deleting images in GitLab is the same what a cleanup policy would do. The garbage collection step however is responsible for actually making space in the end (can be manually triggered, the corresponding downtime is not too bad: `sudo gitlab-ctl registry-garbage-collect -m` (without adjusting the config for readonly mode since that would require a restart of GitLab)).
